@@ -1,14 +1,14 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { LanguageProvider } from '@/contexts/LanguageContext';
-import { AuthProvider, ProtectedRoute } from '@/contexts/AuthContext';
-import Landing from '@/pages/Landing';
-import Login from '@/pages/auth/Login';
-import BoxRegister from '@/pages/auth/BoxRegister';
-import StudentRegister from '@/pages/auth/StudentRegister';
-import CagioAdminDashboard from '@/pages/cagio/CagioAdminDashboard';
-import BoxOnboarding from '@/pages/cagio/BoxOnboarding';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { Landing } from '@/pages/Landing';
+import { Login } from '@/pages/auth/Login';
+import { BoxRegister } from '@/pages/auth/BoxRegister';
+import { StudentRegister } from '@/pages/auth/StudentRegister';
 import Index from '@/pages/Index';
 import NotFound from '@/pages/NotFound';
 import { BoxDashboard } from '@/pages/box/BoxDashboard';
@@ -28,25 +28,6 @@ function App() {
                 <Route path="/auth/login" element={<Login />} />
                 <Route path="/auth/box-register" element={<BoxRegister />} />
                 <Route path="/auth/student-register" element={<StudentRegister />} />
-
-                {/* Protected Routes - Cagio Admin */}
-                <Route 
-                  path="/admin/dashboard" 
-                  element={
-                    <ProtectedRoute allowedRoles={['cagio_admin']}>
-                      <CagioAdminDashboard />
-                    </ProtectedRoute>
-                  } 
-                />
-                
-                <Route 
-                  path="/admin/box-onboarding" 
-                  element={
-                    <ProtectedRoute allowedRoles={['cagio_admin']}>
-                      <BoxOnboarding />
-                    </ProtectedRoute>
-                  } 
-                />
 
                 {/* Protected Routes - BOX Admin */}
                 <Route 
