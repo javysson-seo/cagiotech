@@ -3,19 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Users, 
-  Clock, 
-  Edit, 
-  Copy, 
-  Trash2,
-  Plus
-} from 'lucide-react';
-import { format, addDays, startOfWeek, isSameDay, parseISO } from 'date-fns';
-import { pt } from 'date-fns/locale';
+import { ChevronLeft, ChevronRight, Plus, Clock, Users } from 'lucide-react';
 
 interface ClassCalendarProps {
   onEditClass: (classData: any) => void;
@@ -27,212 +15,243 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({
   onNewClass,
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'week' | 'day'>('week');
+  const [viewMode, setViewMode] = useState<'day' | 'week'>('week');
 
-  // Mock data - em produção virá da API/Supabase
+  // Mock class data
   const classes = [
     {
       id: 1,
-      title: 'CrossFit',
+      name: 'CrossFit Morning',
+      time: '06:00',
+      duration: 60,
       trainer: 'Carlos Santos',
-      trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=carlos',
-      startTime: '2024-01-15T06:00:00',
-      endTime: '2024-01-15T07:00:00',
+      enrolled: 16,
       capacity: 20,
-      booked: 12,
-      color: 'bg-blue-500',
-      modality: 'CrossFit'
+      color: 'bg-blue-500'
     },
     {
       id: 2,
-      title: 'Yoga Flow',
+      name: 'Yoga Flow',
+      time: '07:30',
+      duration: 60,
       trainer: 'Ana Costa',
-      trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ana',
-      startTime: '2024-01-15T07:30:00',
-      endTime: '2024-01-15T08:30:00',
+      enrolled: 12,
       capacity: 15,
-      booked: 8,
-      color: 'bg-green-500',
-      modality: 'Yoga'
+      color: 'bg-purple-500'
     },
     {
       id: 3,
-      title: 'Functional Training',
+      name: 'HIIT',
+      time: '18:00',
+      duration: 45,
       trainer: 'Pedro Silva',
-      trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=pedro',
-      startTime: '2024-01-15T09:00:00',
-      endTime: '2024-01-15T10:00:00',
-      capacity: 12,
-      booked: 12,
-      color: 'bg-orange-500',
-      modality: 'Functional'
-    },
-    {
-      id: 4,
-      title: 'CrossFit',
-      trainer: 'Carlos Santos',
-      trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=carlos',
-      startTime: '2024-01-15T18:00:00',
-      endTime: '2024-01-15T19:00:00',
-      capacity: 20,
-      booked: 18,
-      color: 'bg-blue-500',
-      modality: 'CrossFit'
-    },
-    // Adicionar mais aulas para outros dias...
-    {
-      id: 5,
-      title: 'Pilates',
-      trainer: 'Ana Costa',
-      trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ana',
-      startTime: '2024-01-16T08:00:00',
-      endTime: '2024-01-16T09:00:00',
-      capacity: 10,
-      booked: 6,
-      color: 'bg-purple-500',
-      modality: 'Pilates'
+      enrolled: 23,
+      capacity: 25,
+      color: 'bg-red-500'
     }
   ];
 
-  const timeSlots = [
-    '06:00', '06:30', '07:00', '07:30', '08:00', '08:30', '09:00', '09:30',
-    '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30',
-    '18:00', '18:30', '19:00', '19:30', '20:00', '20:30', '21:00', '21:30'
-  ];
+  const timeSlots = Array.from({ length: 17 }, (_, i) => {
+    const hour = i + 6; // Start from 6 AM
+    return `${hour.toString().padStart(2, '0')}:00`;
+  });
 
-  const getWeekDays = () => {
-    const start = startOfWeek(currentDate, { weekStartsOn: 1 });
-    return Array.from({ length: 7 }, (_, i) => addDays(start, i));
-  };
+  const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
-  const getClassesForDate = (date: Date) => {
-    return classes.filter(classItem => 
-      isSameDay(parseISO(classItem.startTime), date)
-    );
-  };
-
-  const getClassAtTime = (date: Date, time: string) => {
-    const dateClasses = getClassesForDate(date);
-    return dateClasses.find(classItem => {
-      const startTime = format(parseISO(classItem.startTime), 'HH:mm');
-      return startTime === time;
+  const getWeekDates = () => {
+    const startOfWeek = new Date(currentDate);
+    startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+    
+    return Array.from({ length: 7 }, (_, i) => {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      return date;
     });
   };
 
-  const handlePreviousWeek = () => {
-    setCurrentDate(addDays(currentDate, -7));
+  const navigateWeek = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + (direction === 'next' ? 7 : -7));
+    setCurrentDate(newDate);
   };
 
-  const handleNextWeek = () => {
-    setCurrentDate(addDays(currentDate, 7));
+  const navigateDay = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(currentDate.getDate() + (direction === 'next' ? 1 : -1));
+    setCurrentDate(newDate);
   };
 
-  const getOccupancyColor = (booked: number, capacity: number) => {
-    const percentage = (booked / capacity) * 100;
-    if (percentage >= 90) return 'text-red-600';
-    if (percentage >= 70) return 'text-orange-600';
-    return 'text-green-600';
+  const formatDateRange = () => {
+    if (viewMode === 'day') {
+      return currentDate.toLocaleDateString('pt-PT', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } else {
+      const weekDates = getWeekDates();
+      const start = weekDates[0].toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+      const end = weekDates[6].toLocaleDateString('pt-PT', { day: 'numeric', month: 'short' });
+      return `${start} - ${end}`;
+    }
   };
 
-  if (viewMode === 'week') {
-    const weekDays = getWeekDays();
-    
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Calendário Semanal</CardTitle>
-            <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" onClick={() => setViewMode('day')}>
-                Visão Diária
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handlePreviousWeek}>
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="font-medium">
-                {format(weekDays[0], 'dd MMM', { locale: pt })} - {format(weekDays[6], 'dd MMM yyyy', { locale: pt })}
-              </span>
-              <Button variant="ghost" size="sm" onClick={handleNextWeek}>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-        
-        <CardContent>
-          <div className="overflow-x-auto">
-            <div className="min-w-full">
-              {/* Header com dias da semana */}
-              <div className="grid grid-cols-8 gap-1 mb-2">
-                <div className="p-2 text-sm font-medium">Horário</div>
-                {weekDays.map((day) => (
-                  <div key={day.toString()} className="p-2 text-center">
-                    <div className="font-medium">
-                      {format(day, 'EEE', { locale: pt })}
-                    </div>
-                    <div className="text-lg">
-                      {format(day, 'dd')}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Grid de horários */}
-              <div className="space-y-1">
-                {timeSlots.map((time) => (
-                  <div key={time} className="grid grid-cols-8 gap-1">
-                    <div className="p-2 text-sm text-muted-foreground border-r">
-                      {time}
-                    </div>
-                    {weekDays.map((day) => {
-                      const classAtTime = getClassAtTime(day, time);
-                      
-                      return (
-                        <div key={`${day}-${time}`} className="min-h-[60px] border border-border/50 rounded">
-                          {classAtTime && (
-                            <div 
-                              className={`p-2 rounded m-1 text-white text-xs cursor-pointer ${classAtTime.color} hover:opacity-80`}
-                              onClick={() => onEditClass(classAtTime)}
-                            >
-                              <div className="font-medium truncate">{classAtTime.title}</div>
-                              <div className="flex items-center justify-between mt-1">
-                                <span className="truncate">{classAtTime.trainer}</span>
-                                <span className="ml-1">
-                                  {classAtTime.booked}/{classAtTime.capacity}
-                                </span>
-                              </div>
-                            </div>
-                          )}
-                          {!classAtTime && (
-                            <div 
-                              className="w-full h-full flex items-center justify-center opacity-0 hover:opacity-100 cursor-pointer"
-                              onClick={onNewClass}
-                            >
-                              <Plus className="h-4 w-4 text-muted-foreground" />
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Day view implementation would go here
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Visão Diária</CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>Calendário de Aulas</CardTitle>
+          <div className="flex items-center space-x-2">
+            <div className="flex border rounded-md">
+              <Button
+                variant={viewMode === 'day' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('day')}
+                className="rounded-r-none"
+              >
+                Dia
+              </Button>
+              <Button
+                variant={viewMode === 'week' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('week')}
+                className="rounded-l-none"
+              >
+                Semana
+              </Button>
+            </div>
+            <Button onClick={onNewClass}>
+              <Plus className="h-4 w-4 mr-2" />
+              Nova Aula
+            </Button>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => viewMode === 'week' ? navigateWeek('prev') : navigateDay('prev')}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <h3 className="text-lg font-semibold">{formatDateRange()}</h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => viewMode === 'week' ? navigateWeek('next') : navigateDay('next')}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentDate(new Date())}
+          >
+            Hoje
+          </Button>
+        </div>
       </CardHeader>
+      
       <CardContent>
-        <p className="text-muted-foreground">Visão diária em desenvolvimento...</p>
+        {viewMode === 'week' ? (
+          <div className="grid grid-cols-8 gap-1">
+            {/* Header row */}
+            <div className="p-2"></div>
+            {getWeekDates().map((date, index) => (
+              <div key={index} className="p-2 text-center">
+                <div className="text-xs font-medium text-muted-foreground">
+                  {weekDays[index]}
+                </div>
+                <div className="text-sm font-semibold">
+                  {date.getDate()}
+                </div>
+              </div>
+            ))}
+            
+            {/* Time slots */}
+            {timeSlots.map((time) => (
+              <React.Fragment key={time}>
+                <div className="p-2 text-xs text-muted-foreground text-right border-r">
+                  {time}
+                </div>
+                {getWeekDates().map((date, dayIndex) => (
+                  <div key={`${time}-${dayIndex}`} className="p-1 border-b border-r min-h-[60px] relative">
+                    {/* Mock classes for demo - in real app would filter by date and time */}
+                    {dayIndex === 1 && time === '06:00' && (
+                      <div
+                        className="absolute inset-1 bg-blue-500 text-white text-xs p-1 rounded cursor-pointer hover:bg-blue-600"
+                        onClick={() => onEditClass(classes[0])}
+                      >
+                        <div className="font-medium truncate">CrossFit Morning</div>
+                        <div className="flex items-center justify-between mt-1">
+                          <span>Carlos</span>
+                          <span>16/20</span>
+                        </div>
+                      </div>
+                    )}
+                    {dayIndex === 1 && time === '07:00' && (
+                      <div
+                        className="absolute inset-1 bg-purple-500 text-white text-xs p-1 rounded cursor-pointer hover:bg-purple-600"
+                        onClick={() => onEditClass(classes[1])}
+                      >
+                        <div className="font-medium truncate">Yoga Flow</div>
+                        <div className="flex items-center justify-between mt-1">
+                          <span>Ana</span>
+                          <span>12/15</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </React.Fragment>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Day view */}
+            <div className="space-y-2">
+              {classes.map((classItem) => (
+                <div
+                  key={classItem.id}
+                  className="p-4 border rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                  onClick={() => onEditClass(classItem)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-foreground">{classItem.name}</h4>
+                      <p className="text-sm text-muted-foreground">{classItem.trainer}</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{classItem.time}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Users className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm">{classItem.enrolled}/{classItem.capacity}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {classes.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">Nenhuma aula agendada para hoje.</p>
+                <Button onClick={onNewClass} className="mt-2">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agendar Aula
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

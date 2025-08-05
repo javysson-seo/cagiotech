@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Upload, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AthleteFormProps {
   athlete?: any;
@@ -20,164 +21,149 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
   onSave,
   onCancel,
 }) => {
-  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Personal Data
     name: athlete?.name || '',
     email: athlete?.email || '',
     phone: athlete?.phone || '',
-    birthDate: athlete?.birthDate || '',
+    dateOfBirth: athlete?.dateOfBirth || '',
+    gender: athlete?.gender || '',
     address: athlete?.address || '',
-    city: athlete?.city || '',
-    postalCode: athlete?.postalCode || '',
     emergencyContact: athlete?.emergencyContact || '',
     emergencyPhone: athlete?.emergencyPhone || '',
-    
-    // Plan Data
-    plan: athlete?.plan || 'unlimited',
-    startDate: athlete?.startDate || new Date().toISOString().split('T')[0],
+    plan: athlete?.plan || '',
     trainer: athlete?.trainer || '',
-    paymentMethod: athlete?.paymentMethod || 'monthly',
-    monthlyFee: athlete?.monthlyFee || 75,
-    
-    // Health & Preferences
+    status: athlete?.status || 'active',
+    monthlyFee: athlete?.monthlyFee || '',
+    paymentMethod: athlete?.paymentMethod || '',
     medicalConditions: athlete?.medicalConditions || '',
-    goals: athlete?.goals || '',
-    notes: athlete?.notes || '',
-    
-    // Documents
-    documents: athlete?.documents || []
+    goals: athlete?.goals || [],
+    notes: athlete?.notes || ''
   });
 
-  const steps = [
-    { id: 1, title: 'Dados Pessoais', description: 'Informações básicas do atleta' },
-    { id: 2, title: 'Plano e Pagamento', description: 'Configuração do plano' },
-    { id: 3, title: 'Saúde e Objetivos', description: 'Informações médicas' },
-    { id: 4, title: 'Documentos', description: 'Upload de documentos' }
-  ];
+  const [newGoal, setNewGoal] = useState('');
 
   const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const addGoal = () => {
+    if (newGoal.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        goals: [...prev.goals, newGoal.trim()]
+      }));
+      setNewGoal('');
+    }
+  };
+
+  const removeGoal = (index: number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      goals: prev.goals.filter((_: any, i: number) => i !== index)
     }));
   };
 
-  const handleNext = () => {
-    if (currentStep < 4) {
-      setCurrentStep(currentStep + 1);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.name || !formData.email) {
+      toast.error('Nome e email são obrigatórios');
+      return;
     }
-  };
 
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleSubmit = () => {
-    // Here would save to API/Supabase
-    console.log('Saving athlete:', formData);
+    toast.success(athlete ? 'Atleta atualizado!' : 'Atleta criado!');
     onSave();
   };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          {athlete ? 'Editar Atleta' : 'Novo Atleta'}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Dados Pessoais */}
           <div className="space-y-4">
-            <div className="flex justify-center mb-6">
-              <div className="relative">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={athlete?.avatar} />
-                  <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
-                    {formData.name.split(' ').map(n => n[0]).join('') || 'AT'}
-                  </AvatarFallback>
-                </Avatar>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
-                >
-                  <Upload className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
+            <h4 className="font-medium text-sm text-muted-foreground">Dados Pessoais</h4>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Nome Completo *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  placeholder="Nome do atleta"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  placeholder="email@exemplo.com"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="phone">Telefone *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="name">Nome *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="Nome completo"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="email@exemplo.com"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="+351 9__ ___ ___"
+                  placeholder="+351 912 345 678"
                 />
               </div>
               
-              <div>
-                <Label htmlFor="birthDate">Data Nascimento</Label>
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth">Data Nascimento</Label>
                 <Input
-                  id="birthDate"
+                  id="dateOfBirth"
                   type="date"
-                  value={formData.birthDate}
-                  onChange={(e) => handleInputChange('birthDate', e.target.value)}
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                 />
               </div>
-              
-              <div className="md:col-span-2">
-                <Label htmlFor="address">Morada</Label>
-                <Input
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Rua, número, andar"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="city">Cidade</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => handleInputChange('city', e.target.value)}
-                  placeholder="Cidade"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="postalCode">Código Postal</Label>
-                <Input
-                  id="postalCode"
-                  value={formData.postalCode}
-                  onChange={(e) => handleInputChange('postalCode', e.target.value)}
-                  placeholder="0000-000"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="emergencyContact">Contacto Emergência</Label>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="gender">Género</Label>
+              <Select value={formData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecionar género" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Masculino</SelectItem>
+                  <SelectItem value="female">Feminino</SelectItem>
+                  <SelectItem value="other">Outro</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="address">Morada</Label>
+              <Textarea
+                id="address"
+                value={formData.address}
+                onChange={(e) => handleInputChange('address', e.target.value)}
+                placeholder="Morada completa"
+                rows={2}
+              />
+            </div>
+          </div>
+
+          {/* Contacto de Emergência */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Contacto de Emergência</h4>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="emergencyContact">Nome</Label>
                 <Input
                   id="emergencyContact"
                   value={formData.emergencyContact}
@@ -186,80 +172,58 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
                 />
               </div>
               
-              <div>
-                <Label htmlFor="emergencyPhone">Telefone Emergência</Label>
+              <div className="space-y-2">
+                <Label htmlFor="emergencyPhone">Telefone</Label>
                 <Input
                   id="emergencyPhone"
                   value={formData.emergencyPhone}
                   onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
-                  placeholder="+351 9__ ___ ___"
+                  placeholder="+351 912 345 678"
                 />
               </div>
             </div>
           </div>
-        );
-        
-      case 2:
-        return (
+
+          {/* Dados da Subscrição */}
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="plan">Plano *</Label>
-                <select
-                  id="plan"
-                  value={formData.plan}
-                  onChange={(e) => handleInputChange('plan', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                >
-                  <option value="unlimited">Ilimitado (€75/mês)</option>
-                  <option value="8x">8x por Semana (€50/mês)</option>
-                  <option value="4x">4x por Semana (€35/mês)</option>
-                  <option value="dropin">Drop-in (€15/aula)</option>
-                </select>
+            <h4 className="font-medium text-sm text-muted-foreground">Subscrição</h4>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="plan">Plano</Label>
+                <Select value={formData.plan} onValueChange={(value) => handleInputChange('plan', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar plano" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unlimited">Ilimitado</SelectItem>
+                    <SelectItem value="8x">8x Semana</SelectItem>
+                    <SelectItem value="4x">4x Semana</SelectItem>
+                    <SelectItem value="2x">2x Semana</SelectItem>
+                    <SelectItem value="personal">Personal Training</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
-              <div>
-                <Label htmlFor="startDate">Data Início *</Label>
-                <Input
-                  id="startDate"
-                  type="date"
-                  value={formData.startDate}
-                  onChange={(e) => handleInputChange('startDate', e.target.value)}
-                />
-              </div>
-              
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="trainer">Personal Trainer</Label>
-                <select
-                  id="trainer"
-                  value={formData.trainer}
-                  onChange={(e) => handleInputChange('trainer', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                >
-                  <option value="">Selecionar trainer...</option>
-                  <option value="carlos">Carlos Santos</option>
-                  <option value="ana">Ana Costa</option>
-                  <option value="pedro">Pedro Silva</option>
-                </select>
+                <Select value={formData.trainer} onValueChange={(value) => handleInputChange('trainer', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar trainer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="carlos">Carlos Santos</SelectItem>
+                    <SelectItem value="ana">Ana Costa</SelectItem>
+                    <SelectItem value="pedro">Pedro Silva</SelectItem>
+                    <SelectItem value="maria">Maria Oliveira</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              
-              <div>
-                <Label htmlFor="paymentMethod">Forma Pagamento</Label>
-                <select
-                  id="paymentMethod"
-                  value={formData.paymentMethod}
-                  onChange={(e) => handleInputChange('paymentMethod', e.target.value)}
-                  className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                >
-                  <option value="monthly">Mensal</option>
-                  <option value="quarterly">Trimestral</option>
-                  <option value="yearly">Anual</option>
-                  <option value="cash">Dinheiro</option>
-                </select>
-              </div>
-              
-              <div className="md:col-span-2">
-                <Label htmlFor="monthlyFee">Valor Mensal (€)</Label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="monthlyFee">Mensalidade (€)</Label>
                 <Input
                   id="monthlyFee"
                   type="number"
@@ -268,154 +232,93 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
                   placeholder="75"
                 />
               </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="status">Estado</Label>
+                <Select value={formData.status} onValueChange={(value) => handleInputChange('status', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Ativo</SelectItem>
+                    <SelectItem value="inactive">Inativo</SelectItem>
+                    <SelectItem value="frozen">Congelado</SelectItem>
+                    <SelectItem value="pending">Pendente</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
-        );
-        
-      case 3:
-        return (
+
+          {/* Informações Médicas */}
           <div className="space-y-4">
-            <div>
+            <h4 className="font-medium text-sm text-muted-foreground">Informações de Saúde</h4>
+            
+            <div className="space-y-2">
               <Label htmlFor="medicalConditions">Condições Médicas</Label>
               <Textarea
                 id="medicalConditions"
                 value={formData.medicalConditions}
                 onChange={(e) => handleInputChange('medicalConditions', e.target.value)}
-                placeholder="Lesões, alergias, medicação..."
-                rows={3}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="goals">Objetivos Fitness</Label>
-              <Textarea
-                id="goals"
-                value={formData.goals}
-                onChange={(e) => handleInputChange('goals', e.target.value)}
-                placeholder="Perder peso, ganhar força, competição..."
-                rows={3}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="notes">Notas e Observações</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => handleInputChange('notes', e.target.value)}
-                placeholder="Informações adicionais..."
-                rows={3}
+                placeholder="Lesões, alergias, medicamentos..."
+                rows={2}
               />
             </div>
           </div>
-        );
-        
-      case 4:
-        return (
+
+          {/* Objetivos */}
           <div className="space-y-4">
-            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-              <Upload className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-lg font-medium mb-2">Upload de Documentos</p>
-              <p className="text-muted-foreground mb-4">
-                Arraste ficheiros aqui ou clique para selecionar
-              </p>
-              <Button variant="outline">
-                Selecionar Ficheiros
+            <h4 className="font-medium text-sm text-muted-foreground">Objetivos</h4>
+            
+            <div className="flex gap-2">
+              <Input
+                value={newGoal}
+                onChange={(e) => setNewGoal(e.target.value)}
+                placeholder="Adicionar objetivo"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addGoal())}
+              />
+              <Button type="button" onClick={addGoal} size="sm">
+                <Plus className="h-4 w-4" />
               </Button>
             </div>
             
-            <div className="space-y-2">
-              <h4 className="font-medium">Documentos Obrigatórios:</h4>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between p-2 border border-border rounded">
-                  <span>Termo de Responsabilidade</span>
-                  <Badge variant="destructive">Pendente</Badge>
-                </div>
-                <div className="flex items-center justify-between p-2 border border-border rounded">
-                  <span>Questionário PAR-Q</span>
-                  <Badge variant="destructive">Pendente</Badge>
-                </div>
-                <div className="flex items-center justify-between p-2 border border-border rounded">
-                  <span>RGPD Consent</span>
-                  <Badge variant="destructive">Pendente</Badge>
-                </div>
+            {formData.goals.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.goals.map((goal: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {goal}
+                    <X
+                      className="h-3 w-3 cursor-pointer"
+                      onClick={() => removeGoal(index)}
+                    />
+                  </Badge>
+                ))}
               </div>
-            </div>
+            )}
           </div>
-        );
-        
-      default:
-        return null;
-    }
-  };
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>{athlete ? 'Editar Atleta' : 'Novo Atleta'}</span>
-          <Button variant="ghost" size="sm" onClick={onCancel}>
-            <X className="h-4 w-4" />
-          </Button>
-        </CardTitle>
-        
-        {/* Progress Steps */}
-        <div className="flex items-center space-x-2 mt-4">
-          {steps.map((step, index) => (
-            <div key={step.id} className="flex items-center">
-              <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  step.id === currentStep
-                    ? 'bg-blue-600 text-white'
-                    : step.id < currentStep
-                    ? 'bg-green-600 text-white'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {step.id}
-              </div>
-              {index < steps.length - 1 && (
-                <div className={`w-8 h-0.5 ${
-                  step.id < currentStep ? 'bg-green-600' : 'bg-muted'
-                }`} />
-              )}
-            </div>
-          ))}
-        </div>
-        
-        <div className="mt-2">
-          <h3 className="font-medium">{steps[currentStep - 1].title}</h3>
-          <p className="text-sm text-muted-foreground">
-            {steps[currentStep - 1].description}
-          </p>
-        </div>
-      </CardHeader>
-      
-      <CardContent>
-        {renderStepContent()}
-        
-        {/* Navigation */}
-        <div className="flex items-center justify-between mt-6 pt-6 border-t border-border">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-          >
-            <ChevronLeft className="h-4 w-4 mr-2" />
-            Anterior
-          </Button>
-          
-          {currentStep < 4 ? (
-            <Button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700">
-              Próximo
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          ) : (
-            <Button onClick={handleSubmit} className="bg-green-600 hover:bg-green-700">
+          {/* Notas */}
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notas</Label>
+            <Textarea
+              id="notes"
+              value={formData.notes}
+              onChange={(e) => handleInputChange('notes', e.target.value)}
+              placeholder="Notas adicionais sobre o atleta..."
+              rows={3}
+            />
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button type="submit" className="flex-1">
               {athlete ? 'Atualizar' : 'Criar'} Atleta
             </Button>
-          )}
-        </div>
+            <Button type="button" variant="outline" onClick={onCancel}>
+              Cancelar
+            </Button>
+          </div>
+        </form>
       </CardContent>
     </Card>
   );
