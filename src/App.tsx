@@ -15,6 +15,8 @@ import { BoxDashboard } from '@/pages/box/BoxDashboard';
 import { AthleteManagement } from '@/pages/box/AthleteManagement';
 import { TrainerManagement } from '@/pages/box/TrainerManagement';
 import { ClassManagement } from '@/pages/box/ClassManagement';
+import { StudentDashboard } from '@/pages/student/StudentDashboard';
+import { BookingManagement } from '@/pages/student/BookingManagement';
 
 function App() {
   return (
@@ -63,6 +65,25 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['box_admin']}>
                       <ClassManagement />
+                    </ProtectedRoute>
+                  } 
+                />
+
+                {/* Protected Routes - Student */}
+                <Route 
+                  path="/student/dashboard" 
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <StudentDashboard />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/student/bookings" 
+                  element={
+                    <ProtectedRoute allowedRoles={['student']}>
+                      <BookingManagement />
                     </ProtectedRoute>
                   } 
                 />
