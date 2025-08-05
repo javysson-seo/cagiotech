@@ -10,6 +10,7 @@ import { StudentRegister } from "./pages/auth/StudentRegister";
 import { CagioAdminDashboard } from "./pages/admin/CagioAdminDashboard";
 import { BoxOnboarding } from "./pages/admin/BoxOnboarding";
 import { BoxDashboard } from "./pages/box/BoxDashboard";
+import { AthleteManagement } from "./pages/box/AthleteManagement";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -73,17 +74,12 @@ const App = () => (
             } 
           />
           
-          {/* Placeholder routes for BOX features */}
+          {/* BOX Features - Updated routes */}
           <Route 
             path="/box/athletes" 
             element={
               <ProtectedRoute allowedRoles={['box_admin']}>
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Gestão de Atletas</h1>
-                    <p className="text-muted-foreground">Será implementado na Etapa 3</p>
-                  </div>
-                </div>
+                <AthleteManagement />
               </ProtectedRoute>
             } 
           />
