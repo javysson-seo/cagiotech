@@ -1,4 +1,3 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
@@ -9,6 +8,7 @@ import { Landing } from '@/pages/Landing';
 import { Login } from '@/pages/auth/Login';
 import { BoxRegister } from '@/pages/auth/BoxRegister';
 import { StudentRegister } from '@/pages/auth/StudentRegister';
+import { CagioAdminDashboard } from '@/pages/admin/CagioAdminDashboard';
 import { BoxDashboard } from '@/pages/box/BoxDashboard';
 import { AthleteManagement } from '@/pages/box/AthleteManagement';
 import { TrainerManagement } from '@/pages/box/TrainerManagement';
@@ -29,6 +29,13 @@ function App() {
               <Route path="/auth/login" element={<Login />} />
               <Route path="/auth/box-register" element={<BoxRegister />} />
               <Route path="/auth/student-register" element={<StudentRegister />} />
+              
+              {/* Cagio Admin Routes */}
+              <Route path="/admin/dashboard" element={
+                <ProtectedRoute allowedRoles={['cagio_admin']}>
+                  <CagioAdminDashboard />
+                </ProtectedRoute>
+              } />
               
               {/* BOX Admin Routes */}
               <Route path="/box/dashboard" element={
