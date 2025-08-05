@@ -1,136 +1,100 @@
 
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Users, Euro, Calendar, AlertTriangle, TrendingUp, TrendingDown } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { DashboardCharts } from '@/components/box/DashboardCharts';
 import { QuickActions } from '@/components/box/QuickActions';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Calendar, Users, TrendingUp, Euro } from 'lucide-react';
 
 export const BoxDashboard: React.FC = () => {
-  const { t } = useTranslation();
-
-  // Mock data - em produção virá da API/Supabase
-  const kpiData = {
-    totalAtletas: { value: 147, growth: 12.5 },
-    receitaMensal: { value: 8750, growth: 8.3 },
-    aulasHoje: { value: 12, total: 15, ocupacao: 80 },
-    pagamentosPendentes: { value: 5, alert: true }
-  };
+  const stats = [
+    {
+      title: 'Atletas Ativos',
+      value: '142',
+      change: '+12%',
+      icon: Users,
+    },
+    {
+      title: 'Aulas Hoje',
+      value: '8',
+      change: '+2',
+      icon: Calendar,
+    },
+    {
+      title: 'Receita Mensal',
+      value: '€4,230',
+      change: '+8%',
+      icon: Euro,
+    },
+    {
+      title: 'Taxa Crescimento',
+      value: '15%',
+      change: '+3%',
+      icon: TrendingUp,
+    },
+  ];
 
   return (
     <div className="flex h-screen bg-background">
       <BoxSidebar />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0">
         <BoxHeader />
         
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
-            {/* Welcome Section */}
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">
-                Bem-vindo de volta! 👋
-              </h1>
-              <p className="text-muted-foreground">
-                Aqui está um resumo da sua BOX hoje
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="max-w-7xl mx-auto space-y-8">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Dashboard da BOX</h1>
+              <p className="text-muted-foreground mt-2">
+                Visão geral da sua BOX
               </p>
             </div>
 
-            {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              {/* Total Atletas */}
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Total Atletas
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-blue-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat) => (
+                <Card key={stat.title}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium text-muted-foreground">
+                      {stat.title}
+                    </CardTitle>
+                    <stat.icon className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <p className="text-xs text-green-600 font-medium">
+                      {stat.change} vs mês anterior
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gráficos de Performance</CardTitle>
+                  <CardDescription>
+                    Estatísticas da sua BOX
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {kpiData.totalAtletas.value}
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                    <span className="text-green-600">+{kpiData.totalAtletas.growth}%</span>
-                    <span className="text-muted-foreground ml-1">vs mês anterior</span>
-                  </div>
+                  <DashboardCharts />
                 </CardContent>
               </Card>
 
-              {/* Receita Mensal */}
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Receita Mensal
-                  </CardTitle>
-                  <Euro className="h-4 w-4 text-green-600" />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Ações Rápidas</CardTitle>
+                  <CardDescription>
+                    Funcionalidades mais utilizadas
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    €{kpiData.receitaMensal.value.toLocaleString()}
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                    <span className="text-green-600">+{kpiData.receitaMensal.growth}%</span>
-                    <span className="text-muted-foreground ml-1">vs mês anterior</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Aulas Hoje */}
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Aulas Hoje
-                  </CardTitle>
-                  <Calendar className="h-4 w-4 text-purple-600" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {kpiData.aulasHoje.value}/{kpiData.aulasHoje.total}
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2 mb-1">
-                    <div 
-                      className="bg-purple-600 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${kpiData.aulasHoje.ocupacao}%` }}
-                    />
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {kpiData.aulasHoje.ocupacao}% ocupação
-                  </span>
-                </CardContent>
-              </Card>
-
-              {/* Pagamentos Pendentes */}
-              <Card className="border-0 shadow-md hover:shadow-lg transition-shadow">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-muted-foreground">
-                    Pagamentos Pendentes
-                  </CardTitle>
-                  <AlertTriangle className="h-4 w-4 text-orange-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-foreground mb-1">
-                    {kpiData.pagamentosPendentes.value}
-                  </div>
-                  <div className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-2" />
-                    <span className="text-orange-500">Requer atenção</span>
-                  </div>
+                  <QuickActions />
                 </CardContent>
               </Card>
             </div>
-
-            {/* Charts Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <DashboardCharts />
-            </div>
-
-            {/* Quick Actions */}
-            <QuickActions />
           </div>
         </main>
       </div>
