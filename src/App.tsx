@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -6,7 +7,7 @@ import { Landing } from '@/pages/Landing';
 import { Login } from '@/pages/auth/Login';
 import { BoxRegister } from '@/pages/auth/BoxRegister';
 import { StudentRegister } from '@/pages/auth/StudentRegister';
-import { NotFound } from '@/pages/NotFound';
+import NotFound from '@/pages/NotFound';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { MobileAdminRedirect } from '@/components/MobileAdminRedirect';
 import { Toaster } from '@/components/ui/sonner';
