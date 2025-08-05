@@ -92,11 +92,97 @@ export const Login: React.FC = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="login" className="space-y-4">
+        <Tabs defaultValue="demo" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="demo">Demo</TabsTrigger>
+            <TabsTrigger value="login">Login Manual</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="demo">
+            <Card>
+              <CardHeader>
+                <CardTitle>Acesso Demo</CardTitle>
+                <CardDescription>
+                  Use estas contas para testar diferentes funcionalidades
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Administrador Cagio</p>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('admin@cagio.com', 'admin123', 'cagio_admin')}
+                    disabled={isLoading}
+                  >
+                    <div>
+                      <p className="font-medium">admin@cagio.com</p>
+                      <p className="text-xs text-muted-foreground">Gestão completa da plataforma</p>
+                    </div>
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Administrador BOX</p>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('joao@crossfitbenfica.com', 'box123', 'box_admin')}
+                    disabled={isLoading}
+                  >
+                    <div>
+                      <p className="font-medium">joao@crossfitbenfica.com</p>
+                      <p className="text-xs text-muted-foreground">CrossFit Benfica</p>
+                    </div>
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Personal Trainer</p>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('carlos@crossfitbenfica.com', 'trainer123', 'trainer')}
+                    disabled={isLoading}
+                  >
+                    <div>
+                      <p className="font-medium">carlos@crossfitbenfica.com</p>
+                      <p className="text-xs text-muted-foreground">Personal Trainer - CrossFit Benfica</p>
+                    </div>
+                  </Button>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Aluno</p>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('ana@email.com', 'student123', 'student')}
+                    disabled={isLoading}
+                  >
+                    <div>
+                      <p className="font-medium">ana@email.com</p>
+                      <p className="text-xs text-muted-foreground">Atleta - CrossFit Benfica</p>
+                    </div>
+                  </Button>
+                </div>
+
+                {isLoading && (
+                  <div className="text-center py-4">
+                    <Loading size="sm" text="Fazendo login..." />
+                  </div>
+                )}
+
+                {error && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="login">
             <Card>
@@ -194,85 +280,6 @@ export const Login: React.FC = () => {
                     Registrar como Aluno
                   </Link>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="demo">
-            <Card>
-              <CardHeader>
-                <CardTitle>Acesso Demo</CardTitle>
-                <CardDescription>
-                  Use estas contas para testar diferentes funcionalidades
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Administrador Cagio</p>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto p-3"
-                    onClick={() => quickLogin('admin@cagio.com', 'admin123', 'cagio_admin')}
-                    disabled={isLoading}
-                  >
-                    <div>
-                      <p className="font-medium">admin@cagio.com</p>
-                      <p className="text-xs text-muted-foreground">Gestão completa da plataforma</p>
-                    </div>
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Administrador BOX</p>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto p-3"
-                    onClick={() => quickLogin('carlos@base10crossfit.pt', 'box123', 'box_admin')}
-                    disabled={isLoading}
-                  >
-                    <div>
-                      <p className="font-medium">carlos@base10crossfit.pt</p>
-                      <p className="text-xs text-muted-foreground">Base10 CrossFit</p>
-                    </div>
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Personal Trainer</p>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto p-3"
-                    onClick={() => quickLogin('carlos@crossfitbenfica.com', 'trainer123', 'trainer')}
-                    disabled={isLoading}
-                  >
-                    <div>
-                      <p className="font-medium">carlos@crossfitbenfica.com</p>
-                      <p className="text-xs text-muted-foreground">Personal Trainer</p>
-                    </div>
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Aluno</p>
-                  <Button
-                    variant="outline"
-                    className="w-full justify-start text-left h-auto p-3"
-                    onClick={() => quickLogin('ana@email.com', 'student123', 'student')}
-                    disabled={isLoading}
-                  >
-                    <div>
-                      <p className="font-medium">ana@email.com</p>
-                      <p className="text-xs text-muted-foreground">Atleta</p>
-                    </div>
-                  </Button>
-                </div>
-
-                {isLoading && (
-                  <div className="text-center py-4">
-                    <Loading size="sm" text="Fazendo login..." />
-                  </div>
-                )}
               </CardContent>
             </Card>
           </TabsContent>
