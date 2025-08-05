@@ -1,46 +1,47 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import { ThemeProvider } from "@/components/ui/theme-provider"
 
 // Import pages
-import Landing from './pages/Landing';
-import Login from './pages/Login';
-import BoxRegister from './pages/BoxRegister';
-import StudentRegister from './pages/StudentRegister';
+import { Landing } from './pages/Landing';
+import Login from './pages/auth/Login';
+import { BoxRegister } from './pages/auth/BoxRegister';
+import { StudentRegister } from './pages/auth/StudentRegister';
 import NotFound from './pages/NotFound';
 
 // Admin Pages
-import CagioAdminDashboard from './pages/admin/CagioAdminDashboard';
-import BoxManagement from './pages/admin/BoxManagement';
-import BoxOnboarding from './pages/admin/BoxOnboarding';
-import UserManagement from './pages/admin/UserManagement';
-import Reports from './pages/admin/Reports';
-import SystemSettings from './pages/admin/SystemSettings';
+import { CagioAdminDashboard } from './pages/admin/CagioAdminDashboard';
+import { BoxManagement } from './pages/admin/BoxManagement';
+import { BoxOnboarding } from './pages/admin/BoxOnboarding';
+import { UserManagement } from './pages/admin/UserManagement';
+import { Reports } from './pages/admin/Reports';
+import { SystemSettings } from './pages/admin/SystemSettings';
 
 // Box Pages
-import BoxDashboard from './pages/box/BoxDashboard';
-import AthleteManagement from './pages/box/AthleteManagement';
-import TrainerManagement from './pages/box/TrainerManagement';
-import ClassManagement from './pages/box/ClassManagement';
-import FinancialManagement from './pages/box/FinancialManagement';
-import CommunicationCenter from './pages/box/CommunicationCenter';
-import BoxSettings from './pages/box/BoxSettings';
-import BoxCRM from './pages/box/BoxCRM';
+import { BoxDashboard } from './pages/box/BoxDashboard';
+import { AthleteManagement } from './pages/box/AthleteManagement';
+import { TrainerManagement } from './pages/box/TrainerManagement';
+import { ClassManagement } from './pages/box/ClassManagement';
+import { FinancialManagement } from './pages/box/FinancialManagement';
+import { CommunicationCenter } from './pages/box/CommunicationCenter';
+import { BoxSettings } from './pages/box/BoxSettings';
+import { BoxCRM } from './pages/box/BoxCRM';
 
 // Trainer Pages
-import TrainerDashboard from './pages/trainer/TrainerDashboard';
-import TrainerSchedule from './pages/trainer/TrainerSchedule';
-import TrainerStudents from './pages/trainer/TrainerStudents';
-import TrainerWorkoutPlans from './pages/trainer/TrainerWorkoutPlans';
-import TrainerNutritionPlans from './pages/trainer/TrainerNutritionPlans';
+import { TrainerDashboard } from './pages/trainer/TrainerDashboard';
+import { TrainerSchedule } from './pages/trainer/TrainerSchedule';
+import { TrainerStudents } from './pages/trainer/TrainerStudents';
+import { TrainerWorkoutPlans } from './pages/trainer/TrainerWorkoutPlans';
+import { TrainerNutritionPlans } from './pages/trainer/TrainerNutritionPlans';
 
 // Student Pages
-import StudentDashboard from './pages/student/StudentDashboard';
-import BookingManagement from './pages/student/BookingManagement';
-import ProgressTracking from './pages/student/ProgressTracking';
-import PaymentManagement from './pages/student/PaymentManagement';
+import { StudentDashboard } from './pages/student/StudentDashboard';
+import { BookingManagement } from './pages/student/BookingManagement';
+import { ProgressTracking } from './pages/student/ProgressTracking';
+import { PaymentManagement } from './pages/student/PaymentManagement';
 
 // Contexts
 import { AuthProvider, useAuth, UserRole } from './contexts/AuthContext';
