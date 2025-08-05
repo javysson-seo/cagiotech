@@ -1,6 +1,6 @@
 
 import React, { Suspense } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,22 @@ import { CheckCircle, Users, BarChart3, MessageSquare, ArrowRight } from 'lucide
 
 const LandingContent: React.FC = () => {
   const { t, ready } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    console.log('Login button clicked, navigating to /auth/login');
+    navigate('/auth/login');
+  };
+
+  const handleBoxRegisterClick = () => {
+    console.log('Box register button clicked, navigating to /auth/box-register');
+    navigate('/auth/box-register');
+  };
+
+  const handleStudentRegisterClick = () => {
+    console.log('Student register button clicked, navigating to /auth/student-register');
+    navigate('/auth/student-register');
+  };
 
   if (!ready) {
     return (
@@ -29,9 +45,9 @@ const LandingContent: React.FC = () => {
             <h1 className="text-2xl font-bold">CagioTech</h1>
           </div>
           <div className="flex items-center space-x-4">
-            <Link to="/auth/login">
-              <Button variant="outline">{t('auth.login')}</Button>
-            </Link>
+            <Button variant="outline" onClick={handleLoginClick}>
+              {t('auth.login')}
+            </Button>
           </div>
         </div>
       </header>
@@ -60,12 +76,10 @@ const LandingContent: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Link to="/auth/box-register">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                  {t('landing.getStarted')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={handleBoxRegisterClick}>
+                {t('landing.getStarted')}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </CardContent>
           </Card>
 
@@ -80,12 +94,10 @@ const LandingContent: React.FC = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
-              <Link to="/auth/student-register">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">
-                  {t('landing.getStarted')}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={handleStudentRegisterClick}>
+                {t('landing.getStarted')}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -127,16 +139,12 @@ const LandingContent: React.FC = () => {
             Junte-se a centenas de BOXes que já confiam no CagioTech
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth/box-register">
-              <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100">
-                Registar como BOX
-              </Button>
-            </Link>
-            <Link to="/auth/student-register">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
-                Registar como Aluno
-              </Button>
-            </Link>
+            <Button size="lg" variant="secondary" className="bg-white text-blue-600 hover:bg-gray-100" onClick={handleBoxRegisterClick}>
+              Registar como BOX
+            </Button>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" onClick={handleStudentRegisterClick}>
+              Registar como Aluno
+            </Button>
           </div>
         </div>
       </main>
