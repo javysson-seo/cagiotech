@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import { CagioAdminDashboard } from "./pages/admin/CagioAdminDashboard";
 import { BoxOnboarding } from "./pages/admin/BoxOnboarding";
+import { BoxDashboard } from "./pages/box/BoxDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
@@ -50,17 +50,12 @@ const App = () => (
             } 
           />
           
-          {/* Temporary redirects for other roles - will be implemented in next stages */}
+          {/* Protected Routes - BOX Admin */}
           <Route 
             path="/box/dashboard" 
             element={
               <ProtectedRoute allowedRoles={['box_admin']}>
-                <div className="min-h-screen flex items-center justify-center">
-                  <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">BOX Dashboard</h1>
-                    <p className="text-muted-foreground">Será implementado na Etapa 2</p>
-                  </div>
-                </div>
+                <BoxDashboard />
               </ProtectedRoute>
             } 
           />
@@ -77,6 +72,88 @@ const App = () => (
               </ProtectedRoute>
             } 
           />
+          
+          {/* Placeholder routes for BOX features */}
+          <Route 
+            path="/box/athletes" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Gestão de Atletas</h1>
+                    <p className="text-muted-foreground">Será implementado na Etapa 3</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/box/trainers" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Gestão de Trainers</h1>
+                    <p className="text-muted-foreground">Será implementado na Etapa 4</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/box/classes" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Aulas & Serviços</h1>
+                    <p className="text-muted-foreground">Será implementado na Etapa 5</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/box/financial" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Gestão Financeira</h1>
+                    <p className="text-muted-foreground">Será implementado na Etapa 6</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/box/communication" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Comunicação</h1>
+                    <p className="text-muted-foreground">Será implementado na Etapa 7</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/box/settings" 
+            element={
+              <ProtectedRoute allowedRoles={['box_admin']}>
+                <div className="min-h-screen flex items-center justify-center">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Configurações</h1>
+                    <p className="text-muted-foreground">Será implementado nas próximas etapas</p>
+                  </div>
+                </div>
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Other role routes remain the same */}
           <Route 
             path="/trainer/dashboard" 
             element={
