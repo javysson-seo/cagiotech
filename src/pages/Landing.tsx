@@ -1,10 +1,10 @@
 
 import React, { Suspense } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckCircle, Users, BarChart3, MessageSquare, ArrowRight } from 'lucide-react';
+import { CheckCircle, Users, BarChart3, MessageSquare, ArrowRight, Dumbbell } from 'lucide-react';
 
 const LandingContent: React.FC = () => {
   const { t, ready } = useTranslation();
@@ -41,8 +41,11 @@ const LandingContent: React.FC = () => {
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-border px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            <h1 className="text-2xl font-bold">CagioTech</h1>
+          <div className="flex items-center space-x-2">
+            <Dumbbell className="h-8 w-8 text-blue-600" />
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold">CagioTech</h1>
+            </div>
           </div>
           <div className="flex items-center space-x-4">
             <Button variant="outline" onClick={handleLoginClick}>
@@ -152,8 +155,11 @@ const LandingContent: React.FC = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-8 mt-16">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            <h3 className="text-xl font-bold mb-2">CagioTech</h3>
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <Dumbbell className="h-6 w-6 text-blue-400" />
+            <div className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <h3 className="text-xl font-bold">CagioTech</h3>
+            </div>
           </div>
           <p className="text-gray-400">© 2024 CagioTech. Todos os direitos reservados.</p>
         </div>

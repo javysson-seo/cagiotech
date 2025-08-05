@@ -1,154 +1,106 @@
 
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import { 
-  LayoutDashboard, 
+  Home, 
   Users, 
-  UserCheck, 
-  Calendar, 
-  Euro, 
-  MessageCircle, 
+  UserCheck,
+  Calendar,
+  BarChart3,
   Settings, 
-  ChevronLeft,
-  ChevronRight
+  LogOut,
+  Dumbbell,
+  UserCog,
+  Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-
-interface SidebarItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-  path: string;
-  badge?: number;
-}
+import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const BoxSidebar: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { user, logout } = useAuth();
 
-  const sidebarItems: SidebarItem[] = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      path: '/box/dashboard'
-    },
-    {
-      id: 'atletas',
-      label: 'Atletas/Membros',
-      icon: Users,
-      path: '/box/athletes',
-      badge: 5
-    },
-    {
-      id: 'trainers',
-      label: 'Personal Trainers',
-      icon: UserCheck,
-      path: '/box/trainers'
-    },
-    {
-      id: 'aulas',
-      label: 'Aulas & Serviços',
-      icon: Calendar,
-      path: '/box/classes'
-    },
-    {
-      id: 'financeiro',
-      label: 'Financeiro',
-      icon: Euro,
-      path: '/box/financial',
-      badge: 3
-    },
-    {
-      id: 'comunicacao',
-      label: 'Comunicação',
-      icon: MessageCircle,
-      path: '/box/communication'
-    },
-    {
-      id: 'configuracoes',
-      label: 'Configurações',
-      icon: Settings,
-      path: '/box/settings'
-    }
+  const navigation = [
+    { name: 'Dashboard', href: '/box/dashboard', icon: Home },
+    { name: 'CRM', href: '/box/crm', icon: Target },
+    { name: 'Atletas', href: '/box/athletes', icon: Users },
+    { name: 'Personal Trainers', href: '/box/trainers', icon: UserCog },
+    { name: 'Aulas', href: '/box/classes', icon: Calendar },
+    { name: 'Relatórios', href: '/box/reports', icon: BarChart3 },
+    { name: 'Configurações', href: '/box/settings', icon: Settings },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
-
   return (
-    <div className={cn(
-      "bg-card border-r border-border flex flex-col transition-all duration-300",
-      isCollapsed ? "w-16" : "w-64"
-    )}>
-      {/* Header */}
-      <div className="p-4 border-b border-border">
-        <div className="flex items-center justify-between">
-          {!isCollapsed && (
-            <div>
-              <h2 className="font-semibold text-foreground">CrossFit Porto</h2>
-              <p className="text-sm text-muted-foreground">BOX Admin</p>
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="ml-auto"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="h-4 w-4" />
-            ) : (
-              <ChevronLeft className="h-4 w-4" />
-            )}
-          </Button>
+    <div className="flex flex-col w-64 bg-card border-r border-border">
+      {/* Logo */}
+      <div className="flex items-center h-16 px-6 border-b border-border">
+        <div className="flex items-center space-x-2">
+          <Dumbbell className="h-8 w-8 text-blue-600" />
+          <span className="text-xl font-bold text-foreground">CAGIO</span>
+          <Badge className="bg-blue-100 text-blue-800 text-xs">BOX</Badge>
+        </div>
+      </div>
+
+      {/* User Info */}
+      <div className="p-6 border-b border-border">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+            <span className="text-white font-medium">
+              {user?.name?.charAt(0)}
+            </span>
+          </div>
+          <div>
+            <p className="font-medium text-foreground">{user?.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {user?.boxName}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-2">
-        <div className="space-y-1">
-          {sidebarItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            
-            return (
-              <Button
-                key={item.id}
-                variant={active ? "secondary" : "ghost"}
-                className={cn(
-                  "w-full justify-start relative",
-                  isCollapsed && "justify-center px-2",
-                  active && "bg-blue-50 text-blue-600 border-r-2 border-blue-600"
-                )}
-                onClick={() => navigate(item.path)}
-              >
-                <Icon className={cn("h-4 w-4", !isCollapsed && "mr-3")} />
-                {!isCollapsed && (
-                  <>
-                    <span className="flex-1 text-left">{item.label}</span>
-                    {item.badge && (
-                      <span className="ml-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {item.badge}
-                      </span>
-                    )}
-                  </>
-                )}
-              </Button>
-            );
-          })}
-        </div>
+      <nav className="flex-1 px-3 py-4 space-y-1">
+        {navigation.map((item) => (
+          <NavLink
+            key={item.name}
+            to={item.href}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                isActive
+                  ? 'bg-blue-600 text-white'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              )
+            }
+          >
+            <item.icon className="mr-3 h-5 w-5" />
+            {item.name}
+          </NavLink>
+        ))}
       </nav>
 
-      {/* Footer */}
-      {!isCollapsed && (
-        <div className="p-4 border-t border-border">
-          <div className="text-xs text-muted-foreground text-center">
-            CagioTech v1.0
+      {/* BOX Status */}
+      <div className="p-3 border-t border-border">
+        <div className="bg-green-50 p-3 rounded-lg mb-3">
+          <div className="flex items-center space-x-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-green-800">BOX Ativa</span>
           </div>
+          <p className="text-xs text-green-600 mt-1">
+            147 atletas ativos
+          </p>
         </div>
-      )}
+        
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          onClick={logout}
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Sair
+        </Button>
+      </div>
     </div>
   );
 };
