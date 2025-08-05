@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider"
 
 // Import pages
 import { Landing } from './pages/Landing';
-import Login from './pages/auth/Login';
+import { Login } from './pages/auth/Login';
 import { BoxRegister } from './pages/auth/BoxRegister';
 import { StudentRegister } from './pages/auth/StudentRegister';
 import NotFound from './pages/NotFound';
