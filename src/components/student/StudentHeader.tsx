@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { Bell, Search, Settings, Sun, Moon, Globe, LogOut } from 'lucide-react';
+import { Bell, Search, Settings, Sun, Moon, Globe, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ import { toast } from 'sonner';
 export const StudentHeader: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -42,31 +43,31 @@ export const StudentHeader: React.FC = () => {
   };
 
   return (
-    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
-      {/* Search */}
-      <div className="flex-1 max-w-md">
+    <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6">
+      {/* Search - responsive */}
+      <div className="flex-1 max-w-xs md:max-w-md">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Pesquisar aulas, trainers..."
-            className="pl-10"
+            placeholder="Pesquisar..."
+            className="pl-10 text-sm"
           />
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex items-center space-x-4">
+      {/* Actions - responsive */}
+      <div className="flex items-center space-x-2 md:space-x-4">
         {/* Notifications */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-5 w-5 text-xs bg-red-500 hover:bg-red-600">
+              <Badge className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-red-500 hover:bg-red-600 p-0 flex items-center justify-center">
                 3
               </Badge>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuContent align="end" className="w-80 max-w-[90vw]">
             <div className="p-4">
               <h4 className="font-semibold mb-2">Notificações</h4>
               <div className="space-y-3">
@@ -87,14 +88,30 @@ export const StudentHeader: React.FC = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Settings */}
+        {/* Settings & User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <Settings className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+              <Avatar className="h-6 w-6 md:h-8 md:w-8">
+                <AvatarImage src={user?.avatar} alt={user?.name} />
+                <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                  {user?.name?.split(' ').map(n => n[0]).join('').toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <Settings className="h-4 w-4 md:block hidden" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="px-2 py-1.5 text-sm">
+              <p className="font-medium">{user?.name}</p>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <User className="mr-2 h-4 w-4" />
+              Meu Perfil
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={toggleTheme}>
               {theme === 'dark' ? (
                 <Sun className="mr-2 h-4 w-4" />

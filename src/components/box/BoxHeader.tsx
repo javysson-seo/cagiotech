@@ -58,7 +58,7 @@ export const BoxHeader: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center space-x-4">
-          {/* Settings */}
+          {/* Settings & Logout */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm">
