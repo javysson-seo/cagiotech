@@ -17,6 +17,7 @@ import {
   Database
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const AdminSidebar: React.FC = () => {
