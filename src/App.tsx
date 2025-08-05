@@ -20,7 +20,7 @@ import { ProgressTracking } from '@/pages/student/ProgressTracking';
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <ThemeProvider>
         <LanguageProvider>
           <AuthProvider>
@@ -81,7 +81,7 @@ function App() {
           </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>
-    </BrowserRouter>
+    </Router>
   );
 }
 
