@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -13,31 +14,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Eye, EyeOff, Dumbbell, AlertCircle } from 'lucide-react';
 import { useAuth, UserRole } from '@/contexts/AuthContext';
 import { Loading } from '@/components/ui/loading';
+
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(3, 'Password deve ter pelo menos 3 caracteres'),
   role: z.enum(['cagio_admin', 'box_admin', 'trainer', 'student']).optional()
 });
+
 type LoginFormData = z.infer<typeof loginSchema>;
+
 export const Login: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    login,
-    isLoading,
-    error,
-    clearError,
-    user
-  } = useAuth();
+  const { login, isLoading, error, clearError, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
-  const {
-    register,
-    handleSubmit,
-    formState: {
-      errors
-    },
-    reset
-  } = useForm<LoginFormData>({
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema)
   });
 
@@ -60,6 +52,7 @@ export const Login: React.FC = () => {
       }
     }
   }, [user, navigate]);
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
@@ -68,6 +61,7 @@ export const Login: React.FC = () => {
       // Error is handled in AuthContext
     }
   };
+
   const quickLogin = async (email: string, password: string, role: UserRole) => {
     try {
       clearError();
@@ -76,20 +70,16 @@ export const Login: React.FC = () => {
       // Error is handled in AuthContext
     }
   };
-  const roleOptions = [{
-    value: 'cagio_admin',
-    label: 'Administrador Cagio'
-  }, {
-    value: 'box_admin',
-    label: 'Administrador BOX'
-  }, {
-    value: 'trainer',
-    label: 'Personal Trainer'
-  }, {
-    value: 'student',
-    label: 'Aluno'
-  }];
-  return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+
+  const roleOptions = [
+    { value: 'cagio_admin', label: 'Administrador Cagio' },
+    { value: 'box_admin', label: 'Administrador BOX' },
+    { value: 'trainer', label: 'Personal Trainer' },
+    { value: 'student', label: 'Aluno' }
+  ];
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
@@ -119,38 +109,72 @@ export const Login: React.FC = () => {
 
               <CardContent>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                  {error && <Alert variant="destructive">
+                  {error && (
+                    <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>{error}</AlertDescription>
-                    </Alert>}
+                    </Alert>
+                  )}
 
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="seu@email.com" {...register('email')} disabled={isLoading} />
-                    {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      {...register('email')}
+                      disabled={isLoading}
+                    />
+                    {errors.email && (
+                      <p className="text-sm text-destructive">{errors.email.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <div className="relative">
-                      <Input id="password" type={showPassword ? 'text' : 'password'} placeholder="Sua password" {...register('password')} disabled={isLoading} />
-                      <Button type="button" variant="ghost" size="sm" className="absolute right-0 top-0 h-full px-3 hover:bg-transparent" onClick={() => setShowPassword(!showPassword)} disabled={isLoading}>
-                        {showPassword ? <EyeOff className="h-4 w-4 text-muted-foreground" /> : <Eye className="h-4 w-4 text-muted-foreground" />}
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Sua password"
+                        {...register('password')}
+                        disabled={isLoading}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                        onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        )}
                       </Button>
                     </div>
-                    {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+                    {errors.password && (
+                      <p className="text-sm text-destructive">{errors.password.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label>Função (Opcional)</Label>
-                    <Select value={selectedRole} onValueChange={value => setSelectedRole(value as UserRole)}>
+                    <Select
+                      value={selectedRole}
+                      onValueChange={(value) => setSelectedRole(value as UserRole)}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecionar função" />
                       </SelectTrigger>
                       <SelectContent>
-                        {roleOptions.map(option => <SelectItem key={option.value} value={option.value}>
+                        {roleOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
                             {option.label}
-                          </SelectItem>)}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -162,11 +186,11 @@ export const Login: React.FC = () => {
 
                 <div className="mt-6 text-center text-sm">
                   <span className="text-muted-foreground">Não tem conta? </span>
-                  <Link to="/auth/box-register" className="text-blue-600 hover:underline font-medium">
+                  <Link to="/register/box" className="text-blue-600 hover:underline font-medium">
                     Registrar BOX
                   </Link>
                   <span className="text-muted-foreground"> ou </span>
-                  <Link to="/auth/student-register" className="text-blue-600 hover:underline font-medium">
+                  <Link to="/register/student" className="text-blue-600 hover:underline font-medium">
                     Registrar como Aluno
                   </Link>
                 </div>
@@ -186,7 +210,12 @@ export const Login: React.FC = () => {
               <CardContent className="space-y-3">
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Administrador Cagio</p>
-                  <Button variant="outline" className="w-full justify-start text-left h-auto p-3" onClick={() => quickLogin('admin@cagio.com', 'admin123', 'cagio_admin')} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('admin@cagio.com', 'admin123', 'cagio_admin')}
+                    disabled={isLoading}
+                  >
                     <div>
                       <p className="font-medium">admin@cagio.com</p>
                       <p className="text-xs text-muted-foreground">Gestão completa da plataforma</p>
@@ -196,17 +225,27 @@ export const Login: React.FC = () => {
 
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Administrador BOX</p>
-                  <Button variant="outline" className="w-full justify-start text-left h-auto p-3" onClick={() => quickLogin('joao@crossfitbenfica.com', 'box123', 'box_admin')} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('carlos@base10crossfit.pt', 'box123', 'box_admin')}
+                    disabled={isLoading}
+                  >
                     <div>
                       <p className="font-medium">carlos@base10crossfit.pt</p>
-                      <p className="text-xs text-muted-foreground">base10</p>
+                      <p className="text-xs text-muted-foreground">Base10 CrossFit</p>
                     </div>
                   </Button>
                 </div>
 
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Personal Trainer</p>
-                  <Button variant="outline" className="w-full justify-start text-left h-auto p-3" onClick={() => quickLogin('carlos@crossfitbenfica.com', 'trainer123', 'trainer')} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('carlos@crossfitbenfica.com', 'trainer123', 'trainer')}
+                    disabled={isLoading}
+                  >
                     <div>
                       <p className="font-medium">carlos@crossfitbenfica.com</p>
                       <p className="text-xs text-muted-foreground">Personal Trainer</p>
@@ -216,7 +255,12 @@ export const Login: React.FC = () => {
 
                 <div className="space-y-2">
                   <p className="text-sm font-medium">Aluno</p>
-                  <Button variant="outline" className="w-full justify-start text-left h-auto p-3" onClick={() => quickLogin('ana@email.com', 'student123', 'student')} disabled={isLoading}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto p-3"
+                    onClick={() => quickLogin('ana@email.com', 'student123', 'student')}
+                    disabled={isLoading}
+                  >
                     <div>
                       <p className="font-medium">ana@email.com</p>
                       <p className="text-xs text-muted-foreground">Atleta</p>
@@ -224,13 +268,16 @@ export const Login: React.FC = () => {
                   </Button>
                 </div>
 
-                {isLoading && <div className="text-center py-4">
+                {isLoading && (
+                  <div className="text-center py-4">
                     <Loading size="sm" text="Fazendo login..." />
-                  </div>}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
-    </div>;
+    </div>
+  );
 };

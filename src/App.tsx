@@ -29,6 +29,8 @@ import { FinancialManagement } from './pages/box/FinancialManagement';
 import { CommunicationCenter } from './pages/box/CommunicationCenter';
 import { BoxSettings } from './pages/box/BoxSettings';
 import { BoxCRM } from './pages/box/BoxCRM';
+import { MembersDocuments } from '@/pages/box/MembersDocuments';
+import { MembershipPlans } from '@/pages/box/MembershipPlans';
 
 // Trainer Pages
 import { TrainerDashboard } from './pages/trainer/TrainerDashboard';
@@ -46,10 +48,6 @@ import { PaymentManagement } from './pages/student/PaymentManagement';
 // Contexts
 import { AuthProvider, useAuth, UserRole } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-
-// Components
-import { MembersDocuments } from '@/pages/box/MembersDocuments';
-import { MembershipPlans } from '@/pages/box/MembershipPlans';
 
 const queryClient = new QueryClient();
 
