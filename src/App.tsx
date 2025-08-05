@@ -14,6 +14,7 @@ import NotFound from '@/pages/NotFound';
 import { BoxDashboard } from '@/pages/box/BoxDashboard';
 import { AthleteManagement } from '@/pages/box/AthleteManagement';
 import { TrainerManagement } from '@/pages/box/TrainerManagement';
+import { ClassManagement } from '@/pages/box/ClassManagement';
 
 function App() {
   return (
@@ -53,6 +54,15 @@ function App() {
                   element={
                     <ProtectedRoute allowedRoles={['box_admin']}>
                       <TrainerManagement />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                <Route 
+                  path="/box/classes" 
+                  element={
+                    <ProtectedRoute allowedRoles={['box_admin']}>
+                      <ClassManagement />
                     </ProtectedRoute>
                   } 
                 />
