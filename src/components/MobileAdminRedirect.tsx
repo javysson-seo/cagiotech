@@ -4,13 +4,11 @@ import { Monitor, Smartphone } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/contexts/AuthContext';
 
 export const MobileAdminRedirect: React.FC = () => {
   const isMobile = useIsMobile();
-  const { user } = useAuth();
 
-  if (!isMobile || !user || (user.role !== 'cagio_admin' && user.role !== 'box_admin')) {
+  if (!isMobile) {
     return null;
   }
 

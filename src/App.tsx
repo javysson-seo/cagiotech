@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { MobileAdminRedirect } from '@/components/MobileAdminRedirect';
 import { Landing } from '@/pages/Landing';
 import { Login } from '@/pages/auth/Login';
 import { BoxRegister } from '@/pages/auth/BoxRegister';
@@ -19,8 +20,16 @@ import { StudentDashboard } from '@/pages/student/StudentDashboard';
 import { BookingManagement } from '@/pages/student/BookingManagement';
 import { PaymentManagement } from '@/pages/student/PaymentManagement';
 import { ProgressTracking } from '@/pages/student/ProgressTracking';
+import { useAuth } from '@/contexts/AuthContext';
 
-function App() {
+function AppContent() {
+  const { user } = useAuth();
+
+  // Show mobile redirect for admin users
+  if (user && (user.role === 'cagio_admin' || user.role === 'box_admin')) {
+    return <MobileAdminRedirect />;
+  }
+
   return (
     <Router>
       <Routes>
@@ -106,6 +115,10 @@ function App() {
       <Toaster />
     </Router>
   );
+}
+
+function App() {
+  return <AppContent />;
 }
 
 export default App;
