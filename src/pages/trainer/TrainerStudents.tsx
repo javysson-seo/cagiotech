@@ -9,16 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Search, 
-  Plus, 
-  Users,
-  TrendingUp,
+  Filter, 
+  Users, 
+  TrendingUp, 
   Calendar,
-  MessageSquare,
-  Phone,
-  Mail,
-  MoreHorizontal,
-  User,
-  Activity
+  FileText,
+  BookOpen,
+  MessageCircle,
+  Eye,
+  Plus
 } from 'lucide-react';
 
 export const TrainerStudents: React.FC = () => {
@@ -29,73 +28,69 @@ export const TrainerStudents: React.FC = () => {
   const students = [
     {
       id: 1,
-      name: 'Ana Silva',
-      email: 'ana.silva@email.com',
+      name: 'Maria Silva',
+      email: 'maria@email.com',
       phone: '+351 912 345 678',
-      avatar: null,
-      membershipPlan: 'Premium',
-      joinDate: '2024-01-15',
-      lastWorkout: '2024-01-20',
-      totalWorkouts: 45,
-      progression: 'Excelente',
-      goals: ['Perder peso', 'Ganhar força'],
-      status: 'Ativo',
-      nextSession: '2024-01-22 10:00'
+      joinDate: '2023-06-15',
+      lastClass: '2024-01-15',
+      totalClasses: 48,
+      workoutPlan: 'Força & Condicionamento',
+      nutritionPlan: 'Perda de Peso',
+      progress: 85,
+      status: 'active',
+      nextClass: '2024-01-16 09:00',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=maria',
+      goals: ['Perder 5kg', 'Aumentar força', 'Melhorar resistência'],
+      notes: 'Aluna muito dedicada, progresso excelente.'
     },
     {
       id: 2,
-      name: 'Carlos Santos',
-      email: 'carlos.santos@email.com',
+      name: 'João Santos',
+      email: 'joao@email.com',
       phone: '+351 913 456 789',
-      avatar: null,
-      membershipPlan: 'Standard',
-      joinDate: '2023-12-10',
-      lastWorkout: '2024-01-19',
-      totalWorkouts: 32,
-      progression: 'Bom',
-      goals: ['Hipertrofia', 'Condicionamento'],
-      status: 'Ativo',
-      nextSession: '2024-01-22 15:00'
+      joinDate: '2023-08-20',
+      lastClass: '2024-01-14',
+      totalClasses: 32,
+      workoutPlan: 'Hipertrofia',
+      nutritionPlan: 'Ganho de Massa',
+      progress: 72,
+      status: 'active',
+      nextClass: '2024-01-17 11:00',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=joao',
+      goals: ['Ganhar massa muscular', 'Melhorar técnica'],
+      notes: 'Precisa de mais foco na dieta.'
     },
     {
       id: 3,
-      name: 'Maria Oliveira',
-      email: 'maria.oliveira@email.com',
+      name: 'Ana Costa',
+      email: 'ana@email.com',
       phone: '+351 914 567 890',
-      avatar: null,
-      membershipPlan: 'Premium',
-      joinDate: '2024-01-08',
-      lastWorkout: '2024-01-18',
-      totalWorkouts: 28,
-      progression: 'Médio',
-      goals: ['Reabilitação', 'Mobilidade'],
-      status: 'Pausa',
-      nextSession: null
+      joinDate: '2023-04-10',
+      lastClass: '2024-01-15',
+      totalClasses: 65,
+      workoutPlan: 'Funcional',
+      nutritionPlan: 'Manutenção',
+      progress: 93,
+      status: 'active',
+      nextClass: '2024-01-16 15:00',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ana',
+      goals: ['Manter forma física', 'Flexibilidade'],
+      notes: 'Aluna experiente, excelente dedicação.'
     }
   ];
 
-  const filteredStudents = students.filter(student =>
+  const filteredStudents = students.filter(student => 
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Ativo': return 'bg-green-100 text-green-700';
-      case 'Pausa': return 'bg-yellow-100 text-yellow-700';
-      case 'Inativo': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
-  };
-
-  const getProgressionColor = (progression: string) => {
-    switch (progression) {
-      case 'Excelente': return 'text-green-600';
-      case 'Bom': return 'text-blue-600';
-      case 'Médio': return 'text-yellow-600';
-      case 'Precisa melhorar': return 'text-red-600';
-      default: return 'text-gray-600';
-    }
+  const getStatusBadge = (status: string) => {
+    const config = {
+      active: { label: 'Ativo', variant: 'default' as const },
+      inactive: { label: 'Inativo', variant: 'secondary' as const },
+      pending: { label: 'Pendente', variant: 'outline' as const }
+    };
+    return config[status as keyof typeof config] || config.active;
   };
 
   return (
@@ -114,7 +109,7 @@ export const TrainerStudents: React.FC = () => {
                   Meus Alunos
                 </h1>
                 <p className="text-muted-foreground">
-                  Acompanhe o progresso e evolução dos seus alunos
+                  Gerir alunos, planos e acompanhar progressos
                 </p>
               </div>
               
@@ -141,12 +136,10 @@ export const TrainerStudents: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Activity className="h-8 w-8 text-green-600" />
+                    <TrendingUp className="h-8 w-8 text-green-600" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Alunos Ativos</p>
-                      <p className="text-2xl font-bold">
-                        {students.filter(s => s.status === 'Ativo').length}
-                      </p>
+                      <p className="text-sm font-medium text-muted-foreground">Progresso Médio</p>
+                      <p className="text-2xl font-bold">83%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -155,12 +148,10 @@ export const TrainerStudents: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <TrendingUp className="h-8 w-8 text-purple-600" />
+                    <Calendar className="h-8 w-8 text-purple-600" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Prog. Excelente</p>
-                      <p className="text-2xl font-bold">
-                        {students.filter(s => s.progression === 'Excelente').length}
-                      </p>
+                      <p className="text-sm font-medium text-muted-foreground">Aulas Esta Semana</p>
+                      <p className="text-2xl font-bold">24</p>
                     </div>
                   </div>
                 </CardContent>
@@ -169,216 +160,186 @@ export const TrainerStudents: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Calendar className="h-8 w-8 text-orange-600" />
+                    <FileText className="h-8 w-8 text-orange-600" />
                     <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Sessões Hoje</p>
-                      <p className="text-2xl font-bold">
-                        {students.filter(s => s.nextSession && s.nextSession.includes('2024-01-22')).length}
-                      </p>
+                      <p className="text-sm font-medium text-muted-foreground">Planos Ativos</p>
+                      <p className="text-2xl font-bold">15</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Search */}
+            {/* Filters */}
             <Card>
               <CardContent className="p-6">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Pesquisar alunos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                  />
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder="Pesquisar alunos..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Button variant="outline">
+                    <Filter className="h-4 w-4 mr-2" />
+                    Filtros
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Students List */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Students List */}
               <div className="lg:col-span-2">
-                <div className="grid gap-4">
-                  {filteredStudents.map((student) => (
-                    <Card 
-                      key={student.id} 
-                      className={`hover:shadow-md transition-shadow cursor-pointer ${
-                        selectedStudent?.id === student.id ? 'ring-2 ring-blue-500' : ''
-                      }`}
-                      onClick={() => setSelectedStudent(student)}
-                    >
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-start space-x-4">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={student.avatar} />
-                              <AvatarFallback>
-                                {student.name.split(' ').map(n => n[0]).join('')}
-                              </AvatarFallback>
-                            </Avatar>
-                            
-                            <div className="flex-1">
+                <Card>
+                  <CardContent className="p-0">
+                    <div className="divide-y divide-border">
+                      {filteredStudents.map((student) => {
+                        const statusBadge = getStatusBadge(student.status);
+                        
+                        return (
+                          <div 
+                            key={student.id} 
+                            className="p-4 hover:bg-muted/50 transition-colors cursor-pointer"
+                            onClick={() => setSelectedStudent(student)}
+                          >
+                            <div className="flex items-center space-x-4">
+                              <Avatar className="h-12 w-12">
+                                <AvatarImage src={student.avatar} alt={student.name} />
+                                <AvatarFallback className="bg-green-100 text-green-600">
+                                  {student.name.split(' ').map(n => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <h3 className="font-medium text-foreground truncate">
+                                    {student.name}
+                                  </h3>
+                                  <Badge variant={statusBadge.variant}>
+                                    {statusBadge.label}
+                                  </Badge>
+                                </div>
+                                
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  <p>Próxima aula: {student.nextClass}</p>
+                                  <p>Total de aulas: {student.totalClasses}</p>
+                                  <div className="flex items-center space-x-2">
+                                    <span>Progresso:</span>
+                                    <div className="w-20 bg-muted rounded-full h-2">
+                                      <div 
+                                        className="bg-green-600 h-2 rounded-full" 
+                                        style={{ width: `${student.progress}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-xs font-medium">{student.progress}%</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
                               <div className="flex items-center space-x-2">
-                                <h3 className="font-semibold text-lg">{student.name}</h3>
-                                <Badge className={getStatusColor(student.status)}>
-                                  {student.status}
-                                </Badge>
+                                <Button variant="ghost" size="sm">
+                                  <MessageCircle className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm">
+                                  <Eye className="h-4 w-4" />
+                                </Button>
                               </div>
-                              
-                              <div className="mt-2 space-y-1">
-                                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                  <Mail className="h-4 w-4" />
-                                  <span>{student.email}</span>
-                                </div>
-                                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                                  <Phone className="h-4 w-4" />
-                                  <span>{student.phone}</span>
-                                </div>
-                              </div>
-
-                              <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
-                                <div>
-                                  <p className="text-muted-foreground">Treinos</p>
-                                  <p className="font-medium">{student.totalWorkouts}</p>
-                                </div>
-                                <div>
-                                  <p className="text-muted-foreground">Plano</p>
-                                  <p className="font-medium">{student.membershipPlan}</p>
-                                </div>
-                                <div>
-                                  <p className="text-muted-foreground">Progresso</p>
-                                  <p className={`font-medium ${getProgressionColor(student.progression)}`}>
-                                    {student.progression}
-                                  </p>
-                                </div>
-                              </div>
-                              
-                              {student.nextSession && (
-                                <div className="mt-3 p-2 bg-blue-50 rounded-lg">
-                                  <p className="text-sm text-blue-700">
-                                    <Calendar className="h-4 w-4 inline mr-1" />
-                                    Próxima sessão: {new Date(student.nextSession).toLocaleString('pt-PT')}
-                                  </p>
-                                </div>
-                              )}
                             </div>
                           </div>
-                          
-                          <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* Student Details */}
+              {/* Student Details Panel */}
               <div className="lg:col-span-1">
                 {selectedStudent ? (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <User className="h-5 w-5" />
-                        <span>Detalhes do Aluno</span>
-                      </CardTitle>
+                      <CardTitle>Detalhes do Aluno</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                      <div className="text-center">
-                        <Avatar className="h-20 w-20 mx-auto mb-4">
-                          <AvatarImage src={selectedStudent.avatar} />
-                          <AvatarFallback className="text-lg">
-                            {selectedStudent.name.split(' ').map(n => n[0]).join('')}
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={selectedStudent.avatar} alt={selectedStudent.name} />
+                          <AvatarFallback>
+                            {selectedStudent.name.split(' ').map((n: string) => n[0]).join('')}
                           </AvatarFallback>
                         </Avatar>
-                        <h3 className="font-semibold text-lg">{selectedStudent.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Membro desde {new Date(selectedStudent.joinDate).toLocaleDateString('pt-PT')}
-                        </p>
+                        <div>
+                          <h3 className="font-medium">{selectedStudent.name}</h3>
+                          <p className="text-sm text-muted-foreground">{selectedStudent.email}</p>
+                        </div>
                       </div>
 
-                      <div className="space-y-4">
+                      <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium mb-2">Objetivos</h4>
-                          <div className="space-y-1">
-                            {selectedStudent.goals.map((goal, index) => (
-                              <Badge key={index} variant="outline" className="mr-1">
+                          <h4 className="font-medium text-sm text-muted-foreground">Planos Atuais</h4>
+                          <div className="space-y-2 mt-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Treino:</span>
+                              <Badge variant="outline">{selectedStudent.workoutPlan}</Badge>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">Nutrição:</span>
+                              <Badge variant="outline">{selectedStudent.nutritionPlan}</Badge>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h4 className="font-medium text-sm text-muted-foreground">Objetivos</h4>
+                          <div className="mt-2 space-y-1">
+                            {selectedStudent.goals.map((goal: string, index: number) => (
+                              <div key={index} className="text-sm bg-muted p-2 rounded">
                                 {goal}
-                              </Badge>
+                              </div>
                             ))}
                           </div>
                         </div>
 
                         <div>
-                          <h4 className="font-medium mb-2">Estatísticas</h4>
-                          <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span>Total de treinos:</span>
-                              <span className="font-medium">{selectedStudent.totalWorkouts}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Último treino:</span>
-                              <span className="font-medium">
-                                {new Date(selectedStudent.lastWorkout).toLocaleDateString('pt-PT')}
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span>Progresso:</span>
-                              <span className={`font-medium ${getProgressionColor(selectedStudent.progression)}`}>
-                                {selectedStudent.progression}
-                              </span>
-                            </div>
-                          </div>
+                          <h4 className="font-medium text-sm text-muted-foreground">Notas</h4>
+                          <p className="text-sm bg-muted p-3 rounded mt-2">
+                            {selectedStudent.notes}
+                          </p>
                         </div>
                       </div>
 
-                      <div className="flex flex-col space-y-2">
+                      <div className="space-y-2">
                         <Button className="w-full">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          Agendar Sessão
+                          <FileText className="h-4 w-4 mr-2" />
+                          Atualizar Plano Treino
                         </Button>
                         <Button variant="outline" className="w-full">
-                          <MessageSquare className="h-4 w-4 mr-2" />
+                          <BookOpen className="h-4 w-4 mr-2" />
+                          Plano Nutricional
+                        </Button>
+                        <Button variant="outline" className="w-full">
+                          <MessageCircle className="h-4 w-4 mr-2" />
                           Enviar Mensagem
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                          <TrendingUp className="h-4 w-4 mr-2" />
-                          Ver Progresso
                         </Button>
                       </div>
                     </CardContent>
                   </Card>
                 ) : (
                   <Card>
-                    <CardContent className="text-center py-12">
-                      <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="text-lg font-medium mb-2">Selecione um aluno</h3>
+                    <CardContent className="text-center py-8">
+                      <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                       <p className="text-muted-foreground">
-                        Clique num aluno da lista para ver os detalhes e opções.
+                        Selecione um aluno para ver os detalhes
                       </p>
                     </CardContent>
                   </Card>
                 )}
               </div>
             </div>
-
-            {filteredStudents.length === 0 && (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <Users className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Nenhum aluno encontrado</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Não foram encontrados alunos com os critérios de pesquisa.
-                  </p>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar Primeiro Aluno
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </main>
       </div>

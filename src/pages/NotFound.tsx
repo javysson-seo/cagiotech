@@ -1,53 +1,57 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Home, ArrowLeft, Dumbbell } from 'lucide-react';
+import { Home, AlertCircle } from 'lucide-react';
 
-const NotFound: React.FC = () => {
+const NotFound = () => {
+  const location = useLocation();
   const navigate = useNavigate();
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-xl mb-4">
-            <Dumbbell className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">CAGIO</h1>
-        </div>
+  useEffect(() => {
+    console.error(
+      "404 Error: User attempted to access non-existent route:",
+      location.pathname
+    );
+  }, [location.pathname]);
 
-        <Card>
-          <CardHeader className="text-center">
-            <div className="text-6xl font-bold text-blue-600 mb-4">404</div>
-            <CardTitle className="text-2xl">Página não encontrada</CardTitle>
-          </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <p className="text-muted-foreground">
-              A página que está a procurar não existe ou foi movida para outro local.
-            </p>
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="max-w-md w-full">
+        <CardContent className="pt-6">
+          <div className="text-center space-y-6">
+            <div className="mx-auto w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+              <AlertCircle className="h-8 w-8 text-destructive" />
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                variant="outline"
-                onClick={() => navigate(-1)}
-                className="flex-1"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Voltar
+            <div>
+              <h1 className="text-4xl font-bold text-foreground mb-2">404</h1>
+              <h2 className="text-xl font-semibold text-foreground mb-2">
+                Página Não Encontrada
+              </h2>
+              <p className="text-muted-foreground">
+                A página que você está procurando não existe ou foi movida.
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <Button onClick={() => navigate('/')} className="w-full">
+                <Home className="mr-2 h-4 w-4" />
+                Voltar ao Início
               </Button>
-              <Button
-                onClick={() => navigate('/')}
-                className="flex-1"
+              <Button 
+                variant="outline" 
+                onClick={() => window.history.back()} 
+                className="w-full"
               >
-                <Home className="w-4 h-4 mr-2" />
-                Página Inicial
+                Página Anterior
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
