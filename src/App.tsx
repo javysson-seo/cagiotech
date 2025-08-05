@@ -26,7 +26,7 @@ import { BoxDashboard } from '@/pages/box/BoxDashboard';
 import { AthleteManagement } from '@/pages/box/AthleteManagement';
 import { TrainerManagement } from '@/pages/box/TrainerManagement';
 import { ClassManagement } from '@/pages/box/ClassManagement';
-import { BoxReports } from '@/pages/box/Reports';
+import { Reports as BoxReports } from '@/pages/box/Reports';
 import { BoxCRM } from '@/pages/box/BoxCRM';
 
 // Trainer Pages
@@ -47,7 +47,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+        <ThemeProvider>
           <AuthProvider>
             <Router>
               <div className="min-h-screen bg-background text-foreground">
