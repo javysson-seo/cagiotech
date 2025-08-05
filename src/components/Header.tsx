@@ -14,12 +14,28 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export const Header: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
   const { user, logout } = useAuth();
+
+  const handleLanguageChange = async (newLang: 'pt' | 'en') => {
+    try {
+      await changeLanguage(newLang);
+      await i18n.changeLanguage(newLang);
+      toast.success(newLang === 'pt' ? 'Idioma alterado para Português' : 'Language changed to English');
+    } catch (error) {
+      toast.error('Erro ao alterar idioma');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success(t('common.logout'));
+  };
 
   return (
     <header className="bg-background border-b border-border px-6 py-4">
@@ -40,10 +56,10 @@ export const Header: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => changeLanguage('pt')}>
+              <DropdownMenuItem onClick={() => handleLanguageChange('pt')}>
                 🇵🇹 {t('common.portuguese')}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage('en')}>
+              <DropdownMenuItem onClick={() => handleLanguageChange('en')}>
                 🇺🇸 {t('common.english')}
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -103,7 +119,7 @@ export const Header: React.FC = () => {
                     {t('common.settings')}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout} className="text-red-600">
+                  <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
                     {t('common.logout')}
                   </DropdownMenuItem>

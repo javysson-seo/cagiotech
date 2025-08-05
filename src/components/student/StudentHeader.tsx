@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, Settings, Sun, Moon } from 'lucide-react';
+import { Bell, Search, Settings, Sun, Moon, Globe, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -8,14 +8,38 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const StudentHeader: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
+  const { logout } = useAuth();
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleLanguageChange = async (newLang: 'pt' | 'en') => {
+    try {
+      await changeLanguage(newLang);
+      await i18n.changeLanguage(newLang);
+      toast.success(newLang === 'pt' ? 'Idioma alterado para Português' : 'Language changed to English');
+    } catch (error) {
+      toast.error('Erro ao alterar idioma');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+    toast.success('Logout realizado com sucesso');
+  };
 
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6">
@@ -80,9 +104,15 @@ export const StudentHeader: React.FC = () => {
               {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => changeLanguage(language === 'pt' ? 'en' : 'pt')}
+              onClick={() => handleLanguageChange(language === 'pt' ? 'en' : 'pt')}
             >
-              {language === 'pt' ? '🇬🇧 English' : '🇵🇹 Português'}
+              <Globe className="mr-2 h-4 w-4" />
+              {language === 'pt' ? 'English' : 'Português'}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

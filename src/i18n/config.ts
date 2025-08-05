@@ -12,15 +12,26 @@ const initI18n = async () => {
         pt: { translation: ptTranslations },
         en: { translation: enTranslations }
       },
-      lng: 'pt',
+      lng: localStorage.getItem('language') || 'pt',
       fallbackLng: 'pt',
       interpolation: {
         escapeValue: false
       },
       react: {
-        useSuspense: false
-      }
+        useSuspense: false,
+        bindI18n: 'languageChanged loaded',
+        bindI18nStore: 'added removed',
+        transEmptyNodeValue: '',
+        transSupportBasicHtmlNodes: true,
+        transKeepBasicHtmlNodesFor: ['br', 'strong', 'i']
+      },
+      debug: false
     });
+
+  // Listen for language change events
+  window.addEventListener('languageChanged', (event: any) => {
+    i18n.changeLanguage(event.detail);
+  });
 };
 
 // Initialize i18n immediately

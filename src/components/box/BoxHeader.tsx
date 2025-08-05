@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Bell, Search, User, LogOut, Settings } from 'lucide-react';
+import { Bell, Search, User, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -13,15 +13,33 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { language, changeLanguage } = useLanguage();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+
+  const handleLanguageChange = async (newLang: 'pt' | 'en') => {
+    try {
+      await changeLanguage(newLang);
+      await i18n.changeLanguage(newLang);
+      toast.success(newLang === 'pt' ? 'Idioma alterado para Português' : 'Language changed to English');
+    } catch (error) {
+      toast.error('Erro ao alterar idioma');
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/');
+    toast.success('Logout realizado com sucesso');
   };
 
   return (
@@ -40,6 +58,36 @@ export const BoxHeader: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center space-x-4">
+          {/* Settings */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={toggleTheme}>
+                {theme === 'dark' ? (
+                  <Sun className="mr-2 h-4 w-4" />
+                ) : (
+                  <Moon className="mr-2 h-4 w-4" />
+                )}
+                {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleLanguageChange(language === 'pt' ? 'en' : 'pt')}
+              >
+                <Globe className="mr-2 h-4 w-4" />
+                {language === 'pt' ? 'English' : 'Português'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Notifications */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -109,12 +157,8 @@ export const BoxHeader: React.FC = () => {
                 <User className="mr-2 h-4 w-4" />
                 Meu Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/box/settings')}>
-                <Settings className="mr-2 h-4 w-4" />
-                Configurações
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 Sair
               </DropdownMenuItem>
