@@ -1,78 +1,49 @@
 
 import React, { useState } from 'react';
-import { StudentSidebar } from '@/components/student/StudentSidebar';
+import { ResponsiveStudentSidebar } from '@/components/student/ResponsiveStudentSidebar';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { BookingCalendar } from '@/components/bookings/BookingCalendar';
 import { UpcomingBookings } from '@/components/bookings/UpcomingBookings';
 import { BookingHistory } from '@/components/bookings/BookingHistory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Footer } from '@/components/Footer';
 
 export const BookingManagement: React.FC = () => {
+  const [activeTab, setActiveTab] = useState('calendar');
+
   return (
-    <div className="flex h-screen bg-background">
-      <StudentSidebar />
+    <div className="flex min-h-screen bg-background">
+      <ResponsiveStudentSidebar />
       
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col">
         <StudentHeader />
         
-        <main className="flex-1 p-6 overflow-auto">
-          <div className="max-w-7xl mx-auto space-y-8">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">Minhas Reservas</h1>
-              <p className="text-muted-foreground mt-2">
-                Gerencie suas reservas de aulas
+        <main className="flex-1 p-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-foreground">Reservas</h1>
+              <p className="text-muted-foreground">
+                Gerencie suas reservas de aulas e treinos
               </p>
             </div>
 
-            <Tabs defaultValue="calendar" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="calendar">Calendário</TabsTrigger>
                 <TabsTrigger value="upcoming">Próximas</TabsTrigger>
                 <TabsTrigger value="history">Histórico</TabsTrigger>
               </TabsList>
 
               <TabsContent value="calendar">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Calendário de Aulas</CardTitle>
-                    <CardDescription>
-                      Selecione uma data para ver as aulas disponíveis
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <BookingCalendar />
-                  </CardContent>
-                </Card>
+                <BookingCalendar />
               </TabsContent>
 
               <TabsContent value="upcoming">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Próximas Reservas</CardTitle>
-                    <CardDescription>
-                      Suas aulas agendadas para os próximos dias
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <UpcomingBookings />
-                  </CardContent>
-                </Card>
+                <UpcomingBookings />
               </TabsContent>
 
               <TabsContent value="history">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Histórico de Reservas</CardTitle>
-                    <CardDescription>
-                      Todas as suas reservas passadas
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <BookingHistory />
-                  </CardContent>
-                </Card>
+                <BookingHistory />
               </TabsContent>
             </Tabs>
           </div>

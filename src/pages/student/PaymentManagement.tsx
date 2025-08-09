@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { StudentSidebar } from '@/components/student/StudentSidebar';
+import { ResponsiveStudentSidebar } from '@/components/student/ResponsiveStudentSidebar';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { PaymentHistory } from '@/components/payments/PaymentHistory';
 import { CurrentPlan } from '@/components/payments/CurrentPlan';
@@ -12,13 +12,13 @@ export const PaymentManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState('plan');
 
   return (
-    <div className="flex h-screen bg-background">
-      <StudentSidebar />
+    <div className="flex min-h-screen bg-background">
+      <ResponsiveStudentSidebar />
       
       <div className="flex-1 flex flex-col">
         <StudentHeader />
         
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6">
           <div className="max-w-6xl mx-auto">
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-foreground">Pagamentos</h1>
