@@ -7,6 +7,7 @@ import { RecentActivity } from '@/components/student/RecentActivity';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Clock, Target, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Footer } from '@/components/Footer';
 
 export const StudentDashboard: React.FC = () => {
   const quickStats = [
@@ -100,6 +101,8 @@ export const StudentDashboard: React.FC = () => {
             </div>
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { UpcomingBookings } from '@/components/bookings/UpcomingBookings';
 import { BookingHistory } from '@/components/bookings/BookingHistory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Footer } from '@/components/Footer';
 
 export const BookingManagement: React.FC = () => {
   return (
@@ -76,6 +77,8 @@ export const BookingManagement: React.FC = () => {
             </Tabs>
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );

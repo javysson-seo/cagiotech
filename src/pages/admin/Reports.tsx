@@ -24,6 +24,7 @@ import { BoxPerformanceChart } from '@/components/admin/reports/BoxPerformanceCh
 import { MetricsOverview } from '@/components/admin/reports/MetricsOverview';
 import { TopBoxes } from '@/components/admin/reports/TopBoxes';
 import { ReportFilters } from '@/components/admin/reports/ReportFilters';
+import { Footer } from '@/components/Footer';
 
 export const Reports: React.FC = () => {
   const [dateRange, setDateRange] = useState('30');
@@ -135,6 +136,8 @@ export const Reports: React.FC = () => {
             <TopBoxes dateRange={dateRange} />
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );

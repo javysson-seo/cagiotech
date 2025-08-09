@@ -6,6 +6,7 @@ import { ProgressStats } from '@/components/student/ProgressStats';
 import { ProgressCharts } from '@/components/progress/ProgressCharts';
 import { GoalsManagement } from '@/components/progress/GoalsManagement';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Footer } from '@/components/Footer';
 
 export const ProgressTracking: React.FC = () => {
   const [activeTab, setActiveTab] = useState('stats');
@@ -47,6 +48,8 @@ export const ProgressTracking: React.FC = () => {
             </Tabs>
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );

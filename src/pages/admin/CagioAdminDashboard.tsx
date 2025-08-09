@@ -7,6 +7,7 @@ import { RecentBoxes } from '@/components/admin/RecentBoxes';
 import { SystemAlerts } from '@/components/admin/SystemAlerts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MobileAdminRedirect } from '@/components/MobileAdminRedirect';
+import { Footer } from '@/components/Footer';
 
 export const CagioAdminDashboard: React.FC = () => {
   return (
@@ -56,6 +57,8 @@ export const CagioAdminDashboard: React.FC = () => {
               </div>
             </div>
           </main>
+          
+          <Footer />
         </div>
       </div>
     </>

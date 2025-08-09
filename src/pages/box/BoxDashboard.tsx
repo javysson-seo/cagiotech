@@ -6,6 +6,7 @@ import { DashboardCharts } from '@/components/box/DashboardCharts';
 import { QuickActions } from '@/components/box/QuickActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, TrendingUp, Euro } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export const BoxDashboard: React.FC = () => {
   const stats = [
@@ -97,6 +98,8 @@ export const BoxDashboard: React.FC = () => {
             </div>
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );

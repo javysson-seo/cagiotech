@@ -6,6 +6,7 @@ import { PaymentHistory } from '@/components/payments/PaymentHistory';
 import { CurrentPlan } from '@/components/payments/CurrentPlan';
 import { PaymentMethods } from '@/components/payments/PaymentMethods';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Footer } from '@/components/Footer';
 
 export const PaymentManagement: React.FC = () => {
   const [activeTab, setActiveTab] = useState('plan');
@@ -47,6 +48,8 @@ export const PaymentManagement: React.FC = () => {
             </Tabs>
           </div>
         </main>
+        
+        <Footer />
       </div>
     </div>
   );
