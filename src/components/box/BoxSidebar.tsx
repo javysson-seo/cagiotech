@@ -10,7 +10,6 @@ import {
   BarChart3,
   Settings, 
   LogOut,
-  Dumbbell,
   UserCog,
   Target
 } from 'lucide-react';
@@ -36,16 +35,15 @@ export const BoxSidebar: React.FC = () => {
       {/* Logo */}
       <div className="flex items-center h-16 px-6 border-b border-border">
         <div className="flex items-center space-x-2">
-          <Dumbbell className="h-8 w-8 text-blue-600" />
-          <span className="text-xl font-bold text-foreground">CAGIO</span>
-          <Badge className="bg-blue-100 text-blue-800 text-xs">BOX</Badge>
+          <img src="/lovable-uploads/8dbf4355-937c-46a1-b5ed-612c0fa8be8e.png" alt="CagioTech" className="h-8 w-auto" />
+          <Badge className="bg-cagio-green text-white text-xs hover:bg-cagio-green">BOX</Badge>
         </div>
       </div>
 
       {/* User Info */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-cagio-green flex items-center justify-center">
             <span className="text-white font-medium">
               {user?.name?.charAt(0)}
             </span>
@@ -69,7 +67,7 @@ export const BoxSidebar: React.FC = () => {
               cn(
                 'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 isActive
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-cagio-green text-white'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
@@ -82,12 +80,12 @@ export const BoxSidebar: React.FC = () => {
 
       {/* BOX Status */}
       <div className="p-3 border-t border-border">
-        <div className="bg-green-50 p-3 rounded-lg mb-3">
+        <div className="bg-cagio-green-light p-3 rounded-lg mb-3">
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-green-800">BOX Ativa</span>
+            <div className="w-2 h-2 bg-cagio-green rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-cagio-green-dark">BOX Ativa</span>
           </div>
-          <p className="text-xs text-green-600 mt-1">
+          <p className="text-xs text-cagio-green-dark mt-1">
             147 atletas ativos
           </p>
         </div>

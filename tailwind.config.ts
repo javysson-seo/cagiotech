@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// CagioTech Brand Colors
+				cagio: {
+					green: {
+						DEFAULT: 'hsl(var(--cagio-green))',
+						light: 'hsl(var(--cagio-green-light))',
+						dark: 'hsl(var(--cagio-green-dark))'
+					}
 				}
 			},
 			borderRadius: {
