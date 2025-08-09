@@ -63,12 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// CagioTech Brand Colors
+				// CagioTech Brand Colors - Professional Green Palette
 				cagio: {
 					green: {
 						DEFAULT: 'hsl(var(--cagio-green))',
 						light: 'hsl(var(--cagio-green-light))',
-						dark: 'hsl(var(--cagio-green-dark))'
+						dark: 'hsl(var(--cagio-green-dark))',
+						muted: 'hsl(var(--cagio-green-muted))'
 					}
 				}
 			},

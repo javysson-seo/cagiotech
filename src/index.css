@@ -5,98 +5,100 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
-CagioTech Brand Colors: White, Black, and Green (#bad72f)
+CagioTech Brand Colors: White, Black, and Professional Green
 */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --foreground: 0 0% 3.9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 0 0% 3.9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 3.9%;
 
-    --primary: 71 72% 45%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 71 72% 45%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 91%;
-    --input: 0 0% 91%;
-    --ring: 71 72% 45%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142 71% 45%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 0 0% 9%;
-    --sidebar-primary: 71 72% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 96%;
-    --sidebar-accent-foreground: 0 0% 9%;
-    --sidebar-border: 0 0% 91%;
-    --sidebar-ring: 71 72% 45%;
+    --sidebar-foreground: 0 0% 3.9%;
+    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 0 0% 3.9%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 142 71% 45%;
 
-    /* CagioTech Brand Colors */
-    --cagio-green: 71 72% 45%;
-    --cagio-green-light: 71 72% 85%;
-    --cagio-green-dark: 71 72% 25%;
+    /* CagioTech Brand Colors - Professional Green Palette */
+    --cagio-green: 142 71% 45%;
+    --cagio-green-light: 142 71% 95%;
+    --cagio-green-dark: 142 71% 35%;
+    --cagio-green-muted: 142 30% 88%;
   }
 
   .dark {
-    --background: 0 0% 4%;
+    --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 4%;
+    --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 4%;
+    --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 71 72% 45%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 3.9%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 71 72% 45%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 63% 31%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 71 72% 45%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142 71% 45%;
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 71 72% 45%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 16%;
+    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary-foreground: 0 0% 3.9%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 0 0% 16%;
-    --sidebar-ring: 71 72% 45%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 142 71% 45%;
 
-    /* CagioTech Brand Colors */
-    --cagio-green: 71 72% 45%;
-    --cagio-green-light: 71 72% 25%;
-    --cagio-green-dark: 71 72% 65%;
+    /* CagioTech Brand Colors - Dark Mode */
+    --cagio-green: 142 71% 45%;
+    --cagio-green-light: 142 30% 15%;
+    --cagio-green-dark: 142 71% 55%;
+    --cagio-green-muted: 142 20% 20%;
   }
 }
 
@@ -107,6 +109,7 @@ CagioTech Brand Colors: White, Black, and Green (#bad72f)
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
@@ -129,6 +132,18 @@ CagioTech Brand Colors: White, Black, and Green (#bad72f)
   }
   
   .bg-cagio-green-dark {
+    background-color: hsl(var(--cagio-green-dark));
+  }
+
+  .bg-cagio-green-muted {
+    background-color: hsl(var(--cagio-green-muted));
+  }
+  
+  .text-cagio-green-dark {
+    color: hsl(var(--cagio-green-dark));
+  }
+
+  .hover\:bg-cagio-green-dark:hover {
     background-color: hsl(var(--cagio-green-dark));
   }
 }
