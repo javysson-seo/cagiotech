@@ -19,7 +19,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 142 71% 45%;
+    --primary: 69 84% 43%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 210 40% 96%;
@@ -36,24 +36,24 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 142 71% 45%;
+    --ring: 69 84% 43%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 3.9%;
-    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary: 69 84% 43%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 0 0% 3.9%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 69 84% 43%;
 
     /* CagioTech Brand Colors - Professional Green Palette */
-    --cagio-green: 142 71% 45%;
-    --cagio-green-light: 142 71% 95%;
-    --cagio-green-dark: 142 71% 35%;
-    --cagio-green-muted: 142 30% 88%;
+    --cagio-green: 69 84% 43%;
+    --cagio-green-light: 69 84% 95%;
+    --cagio-green-dark: 69 84% 33%;
+    --cagio-green-muted: 69 40% 88%;
   }
 
   .dark {
@@ -66,7 +66,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 142 71% 45%;
+    --primary: 69 84% 43%;
     --primary-foreground: 0 0% 3.9%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -83,22 +83,22 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 142 71% 45%;
+    --ring: 69 84% 43%;
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 142 71% 45%;
+    --sidebar-primary: 69 84% 43%;
     --sidebar-primary-foreground: 0 0% 3.9%;
     --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 142 71% 45%;
+    --sidebar-ring: 69 84% 43%;
 
     /* CagioTech Brand Colors - Dark Mode */
-    --cagio-green: 142 71% 45%;
-    --cagio-green-light: 142 30% 15%;
-    --cagio-green-dark: 142 71% 55%;
-    --cagio-green-muted: 142 20% 20%;
+    --cagio-green: 69 84% 43%;
+    --cagio-green-light: 69 30% 15%;
+    --cagio-green-dark: 69 84% 53%;
+    --cagio-green-muted: 69 20% 20%;
   }
 }
 
