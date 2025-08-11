@@ -63,7 +63,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// CagioTech Brand Colors - Professional Green Palette
+				// CagioTech Brand Colors - Professional Purple Palette
 				cagio: {
 					green: {
 						DEFAULT: 'hsl(var(--cagio-green))',
