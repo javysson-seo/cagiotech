@@ -5,12 +5,12 @@
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
-CagioTech Brand Colors: White, Black, and Professional Purple
+CagioTech Brand Colors: White, Black, and Professional Magenta
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 0 0% 97%;
     --foreground: 0 0% 3.9%;
 
     --card: 0 0% 100%;
@@ -19,7 +19,7 @@ CagioTech Brand Colors: White, Black, and Professional Purple
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
 
-    --primary: 282 69% 22%;
+    --primary: 321 100% 38%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 210 40% 96%;
@@ -36,37 +36,37 @@ CagioTech Brand Colors: White, Black, and Professional Purple
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 282 69% 22%;
+    --ring: 321 100% 38%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 95%;
     --sidebar-foreground: 0 0% 3.9%;
-    --sidebar-primary: 282 69% 22%;
+    --sidebar-primary: 321 100% 38%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 0 0% 3.9%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 282 69% 22%;
+    --sidebar-ring: 321 100% 38%;
 
-    /* CagioTech Brand Colors - Professional Purple Palette */
-    --cagio-green: 282 69% 22%;
-    --cagio-green-light: 282 69% 95%;
-    --cagio-green-dark: 282 69% 15%;
-    --cagio-green-muted: 282 30% 88%;
+    /* CagioTech Brand Colors - Professional Magenta Palette */
+    --cagio-green: 321 100% 38%;
+    --cagio-green-light: 321 100% 95%;
+    --cagio-green-dark: 321 100% 28%;
+    --cagio-green-muted: 321 40% 88%;
   }
 
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 7%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 3.9%;
+    --card: 0 0% 9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 282 69% 22%;
+    --primary: 321 100% 38%;
     --primary-foreground: 0 0% 3.9%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -83,22 +83,22 @@ CagioTech Brand Colors: White, Black, and Professional Purple
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 282 69% 22%;
+    --ring: 321 100% 38%;
 
     --sidebar-background: 0 0% 6%;
     --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 282 69% 22%;
+    --sidebar-primary: 321 100% 38%;
     --sidebar-primary-foreground: 0 0% 3.9%;
     --sidebar-accent: 217.2 32.6% 17.5%;
     --sidebar-accent-foreground: 0 0% 95%;
     --sidebar-border: 217.2 32.6% 17.5%;
-    --sidebar-ring: 282 69% 22%;
+    --sidebar-ring: 321 100% 38%;
 
     /* CagioTech Brand Colors - Dark Mode */
-    --cagio-green: 282 69% 22%;
-    --cagio-green-light: 282 30% 15%;
-    --cagio-green-dark: 282 69% 30%;
-    --cagio-green-muted: 282 20% 20%;
+    --cagio-green: 321 100% 38%;
+    --cagio-green-light: 321 30% 15%;
+    --cagio-green-dark: 321 100% 48%;
+    --cagio-green-muted: 321 20% 20%;
   }
 }
 
