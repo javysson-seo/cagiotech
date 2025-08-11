@@ -10,7 +10,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
 @layer base {
   :root {
-    --background: 0 0% 71%;
+    --background: 0 0% 91%;
     --foreground: 0 0% 3.9%;
 
     --card: 0 0% 100%;
@@ -40,7 +40,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 76%;
+    --sidebar-background: 0 0% 95%;
     --sidebar-foreground: 0 0% 3.9%;
     --sidebar-primary: 69 84% 43%;
     --sidebar-primary-foreground: 0 0% 98%;
