@@ -5,11 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-export const MobileAdminRedirect: React.FC = () => {
+interface MobileAdminRedirectProps {
+  children: React.ReactNode;
+}
+
+export const MobileAdminRedirect: React.FC<MobileAdminRedirectProps> = ({ children }) => {
   const isMobile = useIsMobile();
 
   if (!isMobile) {
-    return null;
+    return <>{children}</>;
   }
 
   return (
