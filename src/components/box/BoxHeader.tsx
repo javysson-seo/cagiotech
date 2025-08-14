@@ -16,7 +16,7 @@ import { Logo } from '@/components/ui/logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useAreaTheme } from '@/contexts/AreaThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
   const { language, changeLanguage } = useLanguage();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useAreaTheme();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -61,8 +61,14 @@ export const BoxHeader: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center space-x-4">
-          {/* Theme Toggle */}
-          <ThemeToggle />
+          {/* Theme Toggle - Específico para área BOX */}
+          <Button variant="ghost" size="sm" onClick={toggleTheme}>
+            {theme === 'dark' ? (
+              <div className="h-4 w-4 rounded-full bg-white border"></div>
+            ) : (
+              <div className="h-4 w-4 rounded-full bg-black"></div>
+            )}
+          </Button>
 
           {/* Settings & Logout */}
           <DropdownMenu>

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Plus, Search, Filter, Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,8 +9,9 @@ import { AthleteList } from '@/components/athletes/AthleteList';
 import { AthleteForm } from '@/components/athletes/AthleteForm';
 import { AthleteProfile } from '@/components/athletes/AthleteProfile';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 
-export const AthleteManagement: React.FC = () => {
+const AthleteManagementContent: React.FC = () => {
   const [selectedAthlete, setSelectedAthlete] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -154,5 +154,13 @@ export const AthleteManagement: React.FC = () => {
         </main>
       </div>
     </div>
+  );
+};
+
+export const AthleteManagement: React.FC = () => {
+  return (
+    <AreaThemeProvider area="box">
+      <AthleteManagementContent />
+    </AreaThemeProvider>
   );
 };

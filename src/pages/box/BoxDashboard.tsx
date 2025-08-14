@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
@@ -7,8 +6,9 @@ import { QuickActions } from '@/components/box/QuickActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, TrendingUp, Euro } from 'lucide-react';
 import { Footer } from '@/components/Footer';
+import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 
-export const BoxDashboard: React.FC = () => {
+const BoxDashboardContent: React.FC = () => {
   const stats = [
     {
       title: 'Atletas Ativos',
@@ -102,5 +102,13 @@ export const BoxDashboard: React.FC = () => {
         <Footer />
       </div>
     </div>
+  );
+};
+
+export const BoxDashboard: React.FC = () => {
+  return (
+    <AreaThemeProvider area="box">
+      <BoxDashboardContent />
+    </AreaThemeProvider>
   );
 };
