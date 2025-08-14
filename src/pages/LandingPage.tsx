@@ -70,7 +70,7 @@ const LandingPage: React.FC = () => {
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Email submitted:', email);
-    navigate('/auth/box-register');
+    navigate('/box-register');
   };
 
   const features = [
@@ -82,7 +82,7 @@ const LandingPage: React.FC = () => {
     },
     {
       icon: <Calendar className="h-8 w-8" />,
-      title: "Agendamento Inteligente",
+      title: "Agendamento Inteligente", 
       description: "Sistema de reservas automático com lista de espera e notificações",
       details: ["Mapa de aulas visual", "Reservas online", "Check-in QR Code"]
     },
@@ -124,7 +124,7 @@ const LandingPage: React.FC = () => {
     },
     {
       name: "PROFESSIONAL",
-      price: "€59",
+      price: "€59", 
       period: "/mês",
       description: "Mais popular",
       features: ["Até 150 alunos", "5 trainers", "Todas as funcionalidades", "App para alunos", "Suporte prioritário", "Relatórios avançados"],
@@ -134,7 +134,7 @@ const LandingPage: React.FC = () => {
     {
       name: "BUSINESS",
       price: "€99",
-      period: "/mês",
+      period: "/mês", 
       description: "Para BOX estabelecidas",
       features: ["Até 300 alunos", "10 trainers", "Gamificação completa", "Integrações avançadas", "Gestor de conta dedicado", "Treino e onboarding"],
       cta: "Falar com Vendas",
@@ -218,10 +218,10 @@ const LandingPage: React.FC = () => {
             </nav>
 
             <div className="hidden md:flex items-center space-x-4">
-              <Button variant="outline" onClick={() => navigate('/auth/login')}>
+              <Button variant="outline" onClick={() => navigate('/login')}>
                 Entrar
               </Button>
-              <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
+              <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/box-register')}>
                 Começar Grátis
               </Button>
             </div>
@@ -244,8 +244,8 @@ const LandingPage: React.FC = () => {
                 <a href="#depoimentos" className="text-muted-foreground hover:text-foreground transition-colors">Clientes</a>
                 <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
                 <div className="flex flex-col space-y-2 pt-4">
-                  <Button variant="outline" onClick={() => navigate('/auth/login')}>Entrar</Button>
-                  <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
+                  <Button variant="outline" onClick={() => navigate('/login')}>Entrar</Button>
+                  <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/box-register')}>
                     Começar Grátis
                   </Button>
                 </div>
@@ -293,7 +293,7 @@ const LandingPage: React.FC = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
+                <Button size="lg" className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/box-register')}>
                   Experimente Grátis por 14 Dias
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -458,7 +458,7 @@ const LandingPage: React.FC = () => {
                   <Button 
                     className={`w-full ${plan.popular ? 'bg-[#bed700] hover:bg-[#a5c400] text-white' : ''}`}
                     variant={plan.popular ? 'default' : 'outline'}
-                    onClick={() => navigate('/auth/box-register')}
+                    onClick={() => navigate('/box-register')}
                   >
                     {plan.cta}
                   </Button>
