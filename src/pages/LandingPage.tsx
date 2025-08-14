@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { 
   Menu, 
   X, 
@@ -11,14 +13,24 @@ import {
   Check, 
   Users, 
   Calendar, 
-  BarChart3, 
-  MessageSquare,
+  CreditCard, 
+  Dumbbell,
+  Smartphone,
+  BarChart3,
   Star,
   ChevronDown,
   Play,
+  Phone,
+  Mail,
+  MapPin,
+  Linkedin,
+  Instagram,
+  Youtube,
+  Clock,
   Shield,
   Zap,
-  Heart
+  Heart,
+  Target
 } from 'lucide-react';
 
 export const LandingPage: React.FC = () => {
@@ -37,64 +49,108 @@ export const LandingPage: React.FC = () => {
     {
       id: 1,
       icon: Users,
-      title: 'Gestão Simplificada de Atletas',
-      description: 'Acompanhe o progresso, gerencie planos de treino e personalize a experiência de cada atleta.',
+      title: 'Gestão de Alunos',
+      description: 'Cadastre, organize e acompanhe todos os seus atletas numa interface intuitiva com fichas completas e histórico de pagamentos.',
     },
     {
       id: 2,
       icon: Calendar,
-      title: 'Agendamento Inteligente de Aulas',
-      description: 'Otimize a ocupação da sua box com um sistema de agendamento fácil de usar e totalmente integrado.',
+      title: 'Agendamento Inteligente',
+      description: 'Sistema de reservas automático com lista de espera, notificações e check-in QR Code para máxima eficiência.',
     },
     {
       id: 3,
-      icon: BarChart3,
-      title: 'Análise de Desempenho em Tempo Real',
-      description: 'Tome decisões informadas com base em dados precisos sobre o desempenho da sua box e dos seus atletas.',
+      icon: CreditCard,
+      title: 'Pagamentos Simplificados',
+      description: 'Multibanco, MB Way e débito direto. Tudo integrado e automático com relatórios fiscais e zero trabalho manual.',
     },
     {
       id: 4,
-      icon: MessageSquare,
-      title: 'Comunicação Direta com a sua Comunidade',
-      description: 'Mantenha todos informados com atualizações, novidades e promoções através de canais de comunicação integrados.',
+      icon: Dumbbell,
+      title: 'Área do Personal Trainer',
+      description: 'Ferramenta completa para trainers criarem WODs, planos personalizados e acompanharem resultados dos alunos.',
+    },
+    {
+      id: 5,
+      icon: Smartphone,
+      title: 'App para Alunos',
+      description: 'Seus alunos podem reservar aulas, ver treinos, acompanhar evolução e chat com trainer numa app intuitiva.',
+    },
+    {
+      id: 6,
+      icon: BarChart3,
+      title: 'Relatórios Poderosos',
+      description: 'Analytics completos com dashboard executivo, previsões de receita e análise de ocupação para decisões baseadas em dados.',
     },
   ];
 
   const plans = [
     {
       id: 1,
-      title: 'Plano Base',
-      price: 'Grátis',
+      title: 'Starter',
+      price: '€29',
+      period: '/mês',
+      description: 'Perfeito para começar',
       features: [
-        'Até 5 atletas',
-        'Agendamento de aulas',
-        'Relatórios básicos',
+        'Até 50 alunos',
+        '2 trainers',
+        'Funcionalidades básicas',
+        'Suporte email',
+        'Setup gratuito',
       ],
-      cta: 'Começar agora',
+      cta: 'Começar Grátis',
+      popular: false,
     },
     {
       id: 2,
-      title: 'Plano Pro',
-      price: '€29/mês',
+      title: 'Professional',
+      price: '€59',
+      period: '/mês',
+      description: 'Mais popular',
       features: [
-        'Até 50 atletas',
-        'Agendamento avançado',
-        'Relatórios personalizados',
+        'Até 150 alunos',
+        '5 trainers',
+        'Todas as funcionalidades',
+        'App para alunos',
         'Suporte prioritário',
+        'Relatórios avançados',
       ],
-      cta: 'Experimentar Pro',
+      cta: 'Escolher Plano',
+      popular: true,
     },
     {
       id: 3,
-      title: 'Plano Premium',
-      price: '€59/mês',
+      title: 'Business',
+      price: '€99',
+      period: '/mês',
+      description: 'Para BOX estabelecidas',
       features: [
-        'Atletas ilimitados',
-        'Todas as funcionalidades Pro',
-        'Consultoria individualizada',
-        'Integrações exclusivas',
+        'Até 300 alunos',
+        '10 trainers',
+        'Gamificação completa',
+        'Integrações avançadas',
+        'Gestor de conta dedicado',
+        'Treino e onboarding',
       ],
-      cta: 'Contactar Premium',
+      cta: 'Falar com Vendas',
+      popular: false,
+    },
+    {
+      id: 4,
+      title: 'Enterprise',
+      price: 'Sob consulta',
+      period: '',
+      description: 'Redes e franchises',
+      features: [
+        'Alunos ilimitados',
+        'Trainers ilimitados',
+        'Multi-localização',
+        'API personalizada',
+        'SLA garantido',
+        'Desenvolvimento custom',
+      ],
+      cta: 'Contactar',
+      popular: false,
     },
   ];
 
@@ -102,77 +158,103 @@ export const LandingPage: React.FC = () => {
     {
       id: 1,
       name: 'João Silva',
-      role: 'Proprietário da CrossFit Porto',
-      testimonial: 'A plataforma revolucionou a forma como gerimos a nossa box. Recomendo vivamente!',
-      image: 'https://images.unsplash.com/photo-1573496896073-ca9949faefd8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8dGVzdGltb25pYWxzfGVufDB8fDB8fA%3D%3D',
+      role: 'CrossFit Porto',
+      testimonial: 'Desde que mudámos para o CagioTech, poupamos 10 horas por semana em tarefas administrativas. O sistema de pagamentos é fantástico!',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
     },
     {
       id: 2,
-      name: 'Ana Pereira',
-      role: 'Treinadora da CrossFit Lisboa',
-      testimonial: 'Com a plataforma, consigo acompanhar de perto o progresso de cada aluno e personalizar os treinos.',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8dGVzdGltb25pYWxzfGVufDB8fDB8fA%3D%3D',
+      name: 'Maria Santos',
+      role: 'FunctionalFit Lisboa',
+      testimonial: 'Os meus alunos adoram a app. As reservas aumentaram 40% e o no-show diminuiu drasticamente.',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1494790108755-2616b612b601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
     },
     {
       id: 3,
-      name: 'Carlos Martins',
-      role: 'Aluno da CrossFit Coimbra',
-      testimonial: 'A plataforma é muito intuitiva e fácil de usar. Consigo ver o meu progresso e agendar as aulas sem problemas.',
-      image: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dGVzdGltb25pYWxzfGVufDB8fDB8fA%3D%3D',
+      name: 'Pedro Costa',
+      role: 'StrongBox Braga',
+      testimonial: 'Relatórios incríveis! Finalmente tenho visibilidade total do negócio. Recomendo a 100%.',
+      rating: 5,
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
     },
   ];
 
   const faqs = [
     {
       id: 1,
-      question: 'Como posso começar a usar a plataforma?',
-      answer: 'Basta criar uma conta e começar a adicionar os seus atletas e aulas. Oferecemos um período de teste gratuito para que possa experimentar todas as funcionalidades.',
+      question: 'É difícil migrar os dados da minha BOX?',
+      answer: 'Não! A nossa equipa faz toda a migração gratuitamente. Normalmente fica pronto em 24h.',
     },
     {
       id: 2,
-      question: 'Quais são os métodos de pagamento aceites?',
-      answer: 'Aceitamos pagamentos por cartão de crédito, débito e transferência bancária.',
+      question: 'Os meus alunos vão conseguir usar facilmente?',
+      answer: 'Sim! A nossa app é super intuitiva. Disponibilizamos treino gratuito para a sua equipa e alunos.',
     },
     {
       id: 3,
-      question: 'Posso cancelar a minha subscrição a qualquer momento?',
-      answer: 'Sim, pode cancelar a sua subscrição a qualquer momento sem qualquer custo adicional.',
+      question: 'Que métodos de pagamento suportam?',
+      answer: 'Multibanco, MB Way, débito direto SEPA e dinheiro. Tudo integrado e sem taxas extra.',
     },
     {
       id: 4,
-      question: 'Oferecem suporte técnico?',
-      answer: 'Sim, oferecemos suporte técnico por email e telefone.',
+      question: 'E se eu não gostar?',
+      answer: 'Oferecemos 30 dias de garantia. Se não ficar satisfeito, devolvemos o dinheiro.',
+    },
+    {
+      id: 5,
+      question: 'Têm suporte em português?',
+      answer: 'Claro! Somos uma empresa portuguesa com suporte 100% nacional.',
+    },
+    {
+      id: 6,
+      question: 'Posso testar antes de pagar?',
+      answer: 'Sim! 14 dias grátis, sem necessidade de cartão de crédito.',
     },
   ];
 
+  const competitiveFeatures = [
+    { others: 'Complexos e caros', cagiotech: 'Simples e acessível', advantage: '50% mais barato' },
+    { others: 'Suporte internacional', cagiotech: 'Suporte 100% português', advantage: 'Resposta em 2h' },
+    { others: 'Pagamentos limitados', cagiotech: 'Multibanco nativo', advantage: 'Zero taxas extras' },
+    { others: 'Interface desatualizada', cagiotech: 'Design moderno', advantage: 'Interface intuitiva' },
+    { others: 'Setup complicado', cagiotech: 'Online em 24h', advantage: 'Migração gratuita' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-[#bed700] rounded-lg flex items-center justify-center">
-                <span className="text-black font-bold text-sm">C</span>
-              </div>
-              <span className="text-xl font-bold text-black">CagioTech</span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
+                alt="CagioTech" 
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-bold text-[#2d3748]">CagioTech</span>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center space-x-8">
-              <a href="#funcionalidades" className="text-muted-foreground hover:text-foreground transition-colors">Funcionalidades</a>
-              <a href="#precos" className="text-muted-foreground hover:text-foreground transition-colors">Preços</a>
-              <a href="#depoimentos" className="text-muted-foreground hover:text-foreground transition-colors">Clientes</a>
-              <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+              <a href="#funcionalidades" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Funcionalidades</a>
+              <a href="#precos" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Preços</a>
+              <a href="#depoimentos" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Clientes</a>
+              <a href="#faq" className="text-[#2d3748] hover:text-[#bed700] transition-colors">FAQ</a>
             </nav>
 
             <div className="hidden md:flex items-center space-x-4">
               <Button variant="outline" onClick={() => navigate('/auth/login')}>
                 Entrar
               </Button>
-              <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
-                Começar Grátis
+              <Button 
+                className="bg-[#bed700] hover:bg-[#a5c400] text-white font-semibold"
+                onClick={() => navigate('/auth/box-register')}
+              >
+                Experimente Grátis
               </Button>
             </div>
 
@@ -189,14 +271,17 @@ export const LandingPage: React.FC = () => {
           {isMenuOpen && (
             <div className="md:hidden mt-4 pb-4 border-t">
               <nav className="flex flex-col space-y-4 pt-4">
-                <a href="#funcionalidades" className="text-muted-foreground hover:text-foreground transition-colors">Funcionalidades</a>
-                <a href="#precos" className="text-muted-foreground hover:text-foreground transition-colors">Preços</a>
-                <a href="#depoimentos" className="text-muted-foreground hover:text-foreground transition-colors">Clientes</a>
-                <a href="#faq" className="text-muted-foreground hover:text-foreground transition-colors">FAQ</a>
+                <a href="#funcionalidades" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Funcionalidades</a>
+                <a href="#precos" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Preços</a>
+                <a href="#depoimentos" className="text-[#2d3748] hover:text-[#bed700] transition-colors">Clientes</a>
+                <a href="#faq" className="text-[#2d3748] hover:text-[#bed700] transition-colors">FAQ</a>
                 <div className="flex flex-col space-y-2 pt-4">
                   <Button variant="outline" onClick={() => navigate('/auth/login')}>Entrar</Button>
-                  <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
-                    Começar Grátis
+                  <Button 
+                    className="bg-[#bed700] hover:bg-[#a5c400] text-white font-semibold"
+                    onClick={() => navigate('/auth/box-register')}
+                  >
+                    Experimente Grátis
                   </Button>
                 </div>
               </nav>
@@ -206,81 +291,168 @@ export const LandingPage: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto">
-            <Badge className="mb-6 bg-[#bed700]/10 text-[#bed700] border-[#bed700]/20">
-              ✨ Novo: App para alunos disponível
-            </Badge>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              A Plataforma que Revoluciona a Gestão da sua BOX
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Simplifique a gestão da sua academia de CrossFit. Desde o agendamento até ao faturamento, 
-              tudo numa plataforma intuitiva e poderosa.
-            </p>
+      <section className="min-h-screen bg-gradient-to-b from-white to-gray-50 py-20">
+        <div className="container mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+            <div className="lg:pr-8">
+              <Badge className="mb-6 bg-[#bed700]/10 text-[#bed700] border-[#bed700]/20 font-semibold">
+                ✨ Novo: App para alunos disponível
+              </Badge>
+              
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-[#2d3748] leading-tight">
+                Revolucione a Gestão da sua BOX com o CagioTech
+              </h1>
+              
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+                A plataforma completa para ginásios portugueses. 
+                Gerencie alunos, aulas, pagamentos e muito mais numa só ferramenta.
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <form onSubmit={handleEmailSubmit} className="flex gap-2 w-full sm:w-auto">
-                <Input
-                  type="email"
-                  placeholder="Introduza o seu email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="min-w-[300px]"
-                  required
-                />
-                <Button type="submit" className="bg-[#bed700] hover:bg-[#a5c400] text-white">
-                  Começar Grátis
-                  <ArrowRight className="ml-2 h-4 w-4" />
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center space-x-3">
+                  <Check className="h-5 w-5 text-[#bed700]" />
+                  <span className="text-gray-700">Gestão completa de membros e trainers</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Check className="h-5 w-5 text-[#bed700]" />
+                  <span className="text-gray-700">Sistema de reservas inteligente</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Check className="h-5 w-5 text-[#bed700]" />
+                  <span className="text-gray-700">Pagamentos Multibanco e MB Way</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Check className="h-5 w-5 text-[#bed700]" />
+                  <span className="text-gray-700">Relatórios em tempo real</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Check className="h-5 w-5 text-[#bed700]" />
+                  <span className="text-gray-700">100% adaptado à realidade portuguesa</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <Button 
+                  size="lg" 
+                  className="bg-[#bed700] hover:bg-[#a5c400] text-white font-semibold text-lg px-8 py-4"
+                  onClick={() => navigate('/auth/box-register')}
+                >
+                  Experimente Grátis por 14 Dias
+                  <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
-              </form>
+                <Button size="lg" variant="outline" className="font-semibold text-lg px-8 py-4">
+                  <Play className="mr-2 h-5 w-5" />
+                  Ver Demo ao Vivo
+                </Button>
+              </div>
+
+              <p className="text-sm text-gray-500">
+                ✓ Teste grátis por 14 dias • ✓ Sem compromisso • ✓ Cancelamento a qualquer momento
+              </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-[#bed700] hover:bg-[#a5c400] text-white" onClick={() => navigate('/auth/box-register')}>
-                Experimente Grátis por 14 Dias
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-              <Button size="lg" variant="outline">
-                <Play className="mr-2 h-4 w-4" />
-                Ver Demonstração
-              </Button>
+            <div className="lg:pl-8">
+              <div className="relative">
+                <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-lg font-semibold text-[#2d3748]">Dashboard CagioTech</h3>
+                      <Badge variant="secondary" className="bg-[#bed700]/10 text-[#bed700]">Online</Badge>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="text-2xl font-bold text-[#bed700]">150+</div>
+                          <div className="text-sm text-gray-600">BOX Ativas</div>
+                        </CardContent>
+                      </Card>
+                      <Card>
+                        <CardContent className="p-4">
+                          <div className="text-2xl font-bold text-[#bed700]">15K+</div>
+                          <div className="text-sm text-gray-600">Alunos</div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                    <div className="h-32 bg-gradient-to-r from-[#bed700]/20 to-[#a5c400]/20 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="h-12 w-12 text-[#bed700]" />
+                    </div>
+                  </div>
+                </div>
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-[#bed700] rounded-full flex items-center justify-center shadow-lg">
+                  <Zap className="h-8 w-8 text-white" />
+                </div>
+              </div>
             </div>
-
-            <p className="text-sm text-muted-foreground mt-4">
-              ✓ Teste grátis por 14 dias • ✓ Sem compromisso • ✓ Cancelamento a qualquer momento
-            </p>
           </div>
         </div>
       </section>
 
+      {/* Social Proof */}
+      <section className="py-16 bg-[#e8e8e8]">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-[#2d3748] mb-4">
+            Já somos a escolha de mais de 150+ BOX em Portugal
+          </h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mt-12">
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#bed700] mb-2">
+                <AnimatedCounter end={150} suffix="+" />
+              </div>
+              <div className="text-gray-600">BOX ativas</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#bed700] mb-2">
+                <AnimatedCounter end={15000} suffix="+" />
+              </div>
+              <div className="text-gray-600">alunos gerenciados</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#bed700] mb-2">
+                <AnimatedCounter end={98} suffix="%" />
+              </div>
+              <div className="text-gray-600">satisfação dos clientes</div>
+            </div>
+            <div className="text-center">
+              <div className="text-4xl font-bold text-[#bed700] mb-2">
+                <AnimatedCounter end={45} suffix="%" />
+              </div>
+              <div className="text-gray-600">aumento na receita média</div>
+            </div>
+          </div>
+
+          <p className="text-gray-600 mt-8 font-medium">
+            Juntam-se a nós todas as semanas
+          </p>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section id="funcionalidades" className="py-16 bg-muted">
+      <section id="funcionalidades" className="py-20 bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              Funcionalidades que Impulsionam o seu Sucesso
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#2d3748]">
+              Tudo o que precisa para gerir a sua BOX
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Descubra como a nossa plataforma pode transformar a gestão da sua box, 
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Descubra como a nossa plataforma pode transformar a gestão da sua BOX, 
               otimizar o desempenho dos seus atletas e impulsionar o crescimento do seu negócio.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {features.map((feature) => (
-              <Card key={feature.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <feature.icon className="h-6 w-6 text-[#bed700] mb-4" />
-                  <CardTitle className="text-lg font-semibold">
+              <Card key={feature.id} className="group hover:shadow-xl transition-all duration-300 border-gray-100 hover:border-[#bed700]/30">
+                <CardHeader className="pb-4">
+                  <div className="w-12 h-12 bg-[#bed700]/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-[#bed700] transition-colors">
+                    <feature.icon className="h-6 w-6 text-[#bed700] group-hover:text-white transition-colors" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-[#2d3748] group-hover:text-[#bed700] transition-colors">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CardDescription className="text-sm text-muted-foreground">
+                  <CardDescription className="text-gray-600 leading-relaxed">
                     {feature.description}
                   </CardDescription>
                 </CardContent>
@@ -290,86 +462,172 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="precos" className="py-16">
+      {/* Competitive Advantage */}
+      <section className="py-20 bg-gradient-to-r from-[#bed700] to-[#a5c400] text-white">
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              Planos de Preços Flexíveis para Todas as Necessidades
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Por que escolher o CagioTech?
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Escolha o plano que melhor se adapta ao tamanho da sua box e comece a usufruir 
-              de todas as funcionalidades da nossa plataforma.
+          </div>
+
+          <div className="max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <h3 className="text-xl font-semibold mb-4 opacity-90">Outros Sistemas</h3>
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold mb-4">CagioTech</h3>
+              </div>
+              <div className="text-center">
+                <h3 className="text-xl font-semibold mb-4 opacity-90">Vantagem</h3>
+              </div>
+            </div>
+
+            <div className="space-y-4 mt-8">
+              {competitiveFeatures.map((item, index) => (
+                <div key={index} className="grid md:grid-cols-3 gap-4 bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                  <div className="flex items-center text-center md:text-left">
+                    <X className="h-4 w-4 mr-2 text-red-300 flex-shrink-0" />
+                    <span>{item.others}</span>
+                  </div>
+                  <div className="flex items-center text-center md:text-left">
+                    <Check className="h-4 w-4 mr-2 text-white flex-shrink-0" />
+                    <span className="font-semibold">{item.cagiotech}</span>
+                  </div>
+                  <div className="text-center md:text-left font-medium">
+                    {item.advantage}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="precos" className="py-20 bg-[#e8e8e8]">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#2d3748]">
+              Planos feitos para o seu crescimento
+            </h2>
+            <p className="text-xl text-gray-600">
+              Sem surpresas. Sem taxas ocultas. Cancele quando quiser.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {plans.map((plan) => (
-              <Card key={plan.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="text-center">
-                  <CardTitle className="text-2xl font-bold">
-                    {plan.title}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {plan.price === 'Grátis' ? 'Plano Gratuito' : `A partir de ${plan.price}`}
+              <Card key={plan.id} className={`relative ${plan.popular ? 'ring-2 ring-[#bed700] scale-105' : ''} hover:shadow-xl transition-all duration-300`}>
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <Badge className="bg-[#bed700] text-white px-4 py-1 font-semibold">
+                      Mais Popular
+                    </Badge>
+                  </div>
+                )}
+                <CardHeader className="text-center pb-4">
+                  <div className="flex items-center justify-center mb-2">
+                    <Target className="h-6 w-6 text-[#bed700] mr-2" />
+                    <CardTitle className="text-2xl font-bold text-[#2d3748]">
+                      {plan.title}
+                    </CardTitle>
+                  </div>
+                  <CardDescription className="text-gray-600 mb-4">
+                    {plan.description}
                   </CardDescription>
+                  <div className="flex items-baseline justify-center">
+                    <span className="text-4xl font-bold text-[#2d3748]">{plan.price}</span>
+                    <span className="text-gray-600 ml-1">{plan.period}</span>
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-2">
+                <CardContent className="space-y-6">
+                  <ul className="space-y-3">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center text-muted-foreground">
-                        <Check className="h-4 w-4 mr-2 text-[#bed700]" />
-                        {feature}
+                      <li key={index} className="flex items-center text-gray-700">
+                        <Check className="h-4 w-4 text-[#bed700] mr-3 flex-shrink-0" />
+                        <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full bg-[#bed700] hover:bg-[#a5c400] text-white">
+                  <Button 
+                    className={`w-full font-semibold ${
+                      plan.popular 
+                        ? 'bg-[#bed700] hover:bg-[#a5c400] text-white' 
+                        : 'bg-white hover:bg-gray-50 text-[#2d3748] border border-gray-200'
+                    }`}
+                    onClick={() => navigate('/auth/box-register')}
+                  >
                     {plan.cta}
                   </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
+
+          <div className="mt-12 text-center space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+              <div className="flex items-center justify-center space-x-2">
+                <Check className="h-5 w-5 text-[#bed700]" />
+                <span className="text-gray-700">14 dias grátis sem cartão</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Check className="h-5 w-5 text-[#bed700]" />
+                <span className="text-gray-700">Migração gratuita dos dados</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Check className="h-5 w-5 text-[#bed700]" />
+                <span className="text-gray-700">Suporte 24/7 em português</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Check className="h-5 w-5 text-[#bed700]" />
+                <span className="text-gray-700">Garantia 30 dias</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section id="depoimentos" className="py-16 bg-muted">
+      <section id="depoimentos" className="py-20 bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
-              O que os Nossos Clientes Dizem
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#2d3748]">
+              O que dizem os nossos clientes
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Descubra como a nossa plataforma tem ajudado boxes de CrossFit a alcançar o sucesso.
+            <p className="text-xl text-gray-600">
+              Descubra como o CagioTech tem ajudado BOX portuguesas a alcançar o sucesso.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {testimonials.map((testimonial) => (
-              <Card key={testimonial.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
-                <CardHeader className="flex items-center space-x-4">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div>
-                    <CardTitle className="text-lg font-semibold">
-                      {testimonial.name}
-                    </CardTitle>
-                    <CardDescription className="text-sm text-muted-foreground">
-                      {testimonial.role}
-                    </CardDescription>
+              <Card key={testimonial.id} className="hover:shadow-xl transition-shadow duration-300">
+                <CardHeader>
+                  <div className="flex items-center space-x-4">
+                    <img
+                      src={testimonial.image}
+                      alt={testimonial.name}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <CardTitle className="text-lg font-semibold text-[#2d3748]">
+                        {testimonial.name}
+                      </CardTitle>
+                      <CardDescription className="text-gray-600">
+                        {testimonial.role}
+                      </CardDescription>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground italic">
+                  <p className="text-gray-700 italic mb-4 leading-relaxed">
                     "{testimonial.testimonial}"
                   </p>
-                  <div className="flex items-center mt-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-500" />
+                  <div className="flex items-center">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 text-yellow-500 fill-current" />
                     ))}
                   </div>
                 </CardContent>
@@ -380,33 +638,40 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-16">
+      <section id="faq" className="py-20 bg-[#e8e8e8]">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#2d3748]">
               Perguntas Frequentes
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600">
               Tire as suas dúvidas sobre a nossa plataforma.
             </p>
           </div>
 
-          <div className="max-w-3xl mx-auto space-y-4">
+          <div className="max-w-4xl mx-auto space-y-4">
             {faqs.map((faq) => (
-              <Card key={faq.id} className="shadow-md">
-                <CardHeader className="flex items-center justify-between">
-                  <CardTitle className="text-lg font-semibold">
-                    {faq.question}
-                  </CardTitle>
-                  <Button variant="ghost" size="sm" onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
+              <Card key={faq.id} className="hover:shadow-lg transition-shadow duration-300">
+                <CardHeader 
+                  className="cursor-pointer"
+                  onClick={() => setOpenFaq(openFaq === faq.id ? null : faq.id)}
+                >
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg font-semibold text-[#2d3748] text-left">
+                      {faq.question}
+                    </CardTitle>
+                    <ChevronDown 
+                      className={`h-5 w-5 text-gray-500 transition-transform ${
+                        openFaq === faq.id ? 'rotate-180' : ''
+                      }`} 
+                    />
+                  </div>
                 </CardHeader>
                 {openFaq === faq.id && (
-                  <CardContent>
-                    <CardDescription className="text-muted-foreground">
+                  <CardContent className="pt-0">
+                    <p className="text-gray-700 leading-relaxed">
                       {faq.answer}
-                    </CardDescription>
+                    </p>
                   </CardContent>
                 )}
               </Card>
@@ -415,12 +680,136 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 bg-muted border-t">
+      {/* Final CTA */}
+      <section className="py-20 bg-gradient-to-r from-[#bed700] to-[#a5c400] text-white">
         <div className="container mx-auto px-6 text-center">
-          <p className="text-muted-foreground text-sm">
-            © 2024 CagioTech. Todos os direitos reservados.
-          </p>
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              Pronto para revolucionar a sua BOX?
+            </h2>
+            <p className="text-xl mb-8 opacity-90">
+              Junte-se a centenas de ginásios que já crescem com o CagioTech
+            </p>
+
+            <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Introduza o seu email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-white text-[#2d3748] placeholder:text-gray-500 border-white focus:ring-white"
+                required
+              />
+              <Button 
+                type="submit" 
+                size="lg"
+                className="bg-white text-[#bed700] hover:bg-gray-100 font-semibold whitespace-nowrap"
+              >
+                Começar Grátis Agora
+              </Button>
+            </form>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="flex items-center justify-center space-x-2">
+                <Clock className="h-5 w-5" />
+                <span>Setup em 24 horas</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Shield className="h-5 w-5" />
+                <span>Migração gratuita</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Heart className="h-5 w-5" />
+                <span>Suporte dedicado</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Zap className="h-5 w-5" />
+                <span>14 dias grátis</span>
+              </div>
+            </div>
+
+            <p className="text-lg opacity-90">
+              Prefere falar connosco? 📞 +351 XXX XXX XXX
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 bg-[#2d3748] text-white">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center space-x-3 mb-4">
+                <img 
+                  src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" 
+                  alt="CagioTech" 
+                  className="h-8 w-auto"
+                />
+                <span className="text-lg font-bold">CagioTech</span>
+              </div>
+              <p className="text-gray-300 text-sm">
+                A plataforma completa para gestão de ginásios portugueses.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Produto</h4>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li><a href="#" className="hover:text-white transition-colors">Funcionalidades</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Preços</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Sobre nós</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Suporte</h4>
+              <ul className="space-y-2 text-sm text-gray-300">
+                <li><a href="#" className="hover:text-white transition-colors">Contacto</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Centro de Ajuda</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Política Privacidade</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Termos de Uso</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4">Contacto</h4>
+              <div className="space-y-2 text-sm text-gray-300">
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4" />
+                  <span>ola@cagiotech.pt</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4" />
+                  <span>+351 XXX XXX XXX</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>Lisboa, Portugal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-600 pt-8">
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <p className="text-sm text-gray-300 mb-4 md:mb-0">
+                © 2024 CagioTech. Todos os direitos reservados.
+              </p>
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <Linkedin className="h-5 w-5" />
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a href="#" className="text-gray-300 hover:text-white transition-colors">
+                  <Youtube className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
