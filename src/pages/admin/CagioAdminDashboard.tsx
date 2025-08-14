@@ -11,8 +11,7 @@ import { Footer } from '@/components/Footer';
 
 export const CagioAdminDashboard: React.FC = () => {
   return (
-    <>
-      <MobileAdminRedirect />
+    <MobileAdminRedirect>
       <div className="flex h-screen bg-background">
         <AdminSidebar />
         
@@ -61,6 +60,6 @@ export const CagioAdminDashboard: React.FC = () => {
           <Footer />
         </div>
       </div>
-    </>
+    </MobileAdminRedirect>
   );
 };
