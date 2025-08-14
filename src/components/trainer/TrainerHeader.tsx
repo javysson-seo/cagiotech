@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Bell, Search, Settings, Sun, Moon, Globe, LogOut, User, Calendar } from 'lucide-react';
+import { Bell, Search, Settings, Globe, LogOut, User, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -12,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTheme } from '@/contexts/ThemeContext';
+import { Logo } from '@/components/ui/logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +20,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export const TrainerHeader: React.FC = () => {
-  const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
   const { user, logout } = useAuth();
   const { t, i18n } = useTranslation();
@@ -44,9 +43,10 @@ export const TrainerHeader: React.FC = () => {
 
   return (
     <header className="h-16 bg-card border-b border-border flex items-center justify-between px-4 md:px-6">
-      {/* Search - responsive */}
-      <div className="flex-1 max-w-xs md:max-w-md">
-        <div className="relative">
+      {/* Logo + Search - responsive */}
+      <div className="flex items-center space-x-4 flex-1 max-w-xs md:max-w-md">
+        <Logo size="sm" className="md:w-8 md:h-8" />
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Pesquisar atletas, aulas..."
@@ -62,6 +62,9 @@ export const TrainerHeader: React.FC = () => {
           <Calendar className="h-4 w-4 mr-2" />
           Agenda
         </Button>
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
 
         {/* Notifications */}
         <DropdownMenu>
@@ -123,14 +126,6 @@ export const TrainerHeader: React.FC = () => {
               Minha Agenda
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={toggleTheme}>
-              {theme === 'dark' ? (
-                <Sun className="mr-2 h-4 w-4" />
-              ) : (
-                <Moon className="mr-2 h-4 w-4" />
-              )}
-              {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
-            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleLanguageChange(language === 'pt' ? 'en' : 'pt')}
             >

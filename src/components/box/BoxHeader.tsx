@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Bell, Search, User, LogOut, Settings, Globe, Sun, Moon } from 'lucide-react';
+import { Bell, Search, User, LogOut, Settings, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -12,8 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Logo } from '@/components/ui/logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +21,6 @@ import { toast } from 'sonner';
 
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { language, changeLanguage } = useLanguage();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -45,8 +44,9 @@ export const BoxHeader: React.FC = () => {
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
-        {/* Search */}
+        {/* Logo + Search */}
         <div className="flex items-center space-x-4 flex-1">
+          <Logo size="md" />
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -58,6 +58,9 @@ export const BoxHeader: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center space-x-4">
+          {/* Theme Toggle */}
+          <ThemeToggle />
+
           {/* Settings & Logout */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -66,14 +69,6 @@ export const BoxHeader: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={toggleTheme}>
-                {theme === 'dark' ? (
-                  <Sun className="mr-2 h-4 w-4" />
-                ) : (
-                  <Moon className="mr-2 h-4 w-4" />
-                )}
-                {theme === 'dark' ? 'Tema Claro' : 'Tema Escuro'}
-              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleLanguageChange(language === 'pt' ? 'en' : 'pt')}
               >
