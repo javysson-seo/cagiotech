@@ -10,7 +10,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
 @layer base {
   :root {
-    --background: 0 0% 91%;
+    --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
     --card: 0 0% 100%;
@@ -40,7 +40,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 95%;
+    --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 0 0% 3.9%;
     --sidebar-primary: 69 84% 43%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -110,6 +110,7 @@ CagioTech Brand Colors: White, Black, and Professional Green
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    font-family: 'Inter', sans-serif;
   }
 }
 
@@ -146,4 +147,28 @@ CagioTech Brand Colors: White, Black, and Professional Green
   .hover\:bg-cagio-green-dark:hover {
     background-color: hsl(var(--cagio-green-dark));
   }
+}
+
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
 }
