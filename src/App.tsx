@@ -11,9 +11,10 @@ import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 
 // Pages
 import Index from "./pages/Index";
-import LandingPage from "./pages/LandingPage";
+import { LandingPage } from "./pages/LandingPage";
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/auth/Login";
+import { LoginPage } from "./pages/auth/LoginPage";
 import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import NotFound from "./pages/NotFound";
@@ -61,7 +62,7 @@ function App() {
                   {/* Public Routes */}
                   <Route path="/" element={<LandingPage />} />
                   <Route path="/old-landing" element={<Landing />} />
-                  <Route path="/auth/login" element={<Login />} />
+                  <Route path="/auth/login" element={<LoginPage />} />
                   <Route path="/auth/box-register" element={<BoxRegister />} />
                   <Route path="/auth/student-register" element={<StudentRegister />} />
 
