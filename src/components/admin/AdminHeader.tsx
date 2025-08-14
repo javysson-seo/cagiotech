@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Bell, Search, Settings, Globe, LogOut, Monitor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { Logo } from '@/components/ui/logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -21,6 +23,7 @@ import { toast } from 'sonner';
 export const AdminHeader: React.FC = () => {
   const { language, changeLanguage } = useLanguage();
   const { logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
@@ -104,6 +107,19 @@ export const AdminHeader: React.FC = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={toggleTheme}>
+              {theme === 'dark' ? (
+                <>
+                  <div className="mr-2 h-4 w-4 rounded-full bg-white border"></div>
+                  Tema Claro
+                </>
+              ) : (
+                <>
+                  <div className="mr-2 h-4 w-4 rounded-full bg-black"></div>
+                  Tema Escuro
+                </>
+              )}
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => handleLanguageChange(language === 'pt' ? 'en' : 'pt')}
             >
