@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,65 +10,57 @@ import { Eye, EyeOff, ArrowLeft, Mail, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-type UserType = 'student' | 'box' | 'trainer';
+type UserType = 'student' | 'box_admin' | 'trainer';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login, isLoading, error, clearError } = useAuth();
   const [selectedUserType, setSelectedUserType] = useState<UserType>('student');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
-  const [error, setError] = useState('');
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError('');
+    clearError();
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Mock validation
     if (!credentials.email || !credentials.password) {
-      setError('Por favor, preencha todos os campos');
-      setIsLoading(false);
       return;
     }
 
-    if (credentials.password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres');
-      setIsLoading(false);
-      return;
-    }
+    try {
+      // Convert selectedUserType to the correct role format
+      const roleMapping = {
+        'student': 'student',
+        'box_admin': 'box_admin',
+        'trainer': 'trainer'
+      } as const;
 
-    // Mock success - redirect based on user type
-    switch (selectedUserType) {
-      case 'student':
-        navigate('/student/dashboard');
-        break;
-      case 'box':
-        navigate('/box/dashboard');
-        break;
-      case 'trainer':
-        navigate('/trainer/dashboard');
-        break;
+      await login(credentials.email, credentials.password, roleMapping[selectedUserType]);
+      
+      // Redirect based on user type after successful login
+      const redirectPaths = {
+        'student': '/student',
+        'box_admin': '/box',
+        'trainer': '/trainer'
+      };
+      
+      navigate(redirectPaths[selectedUserType]);
+    } catch (err) {
+      // Error is handled by the AuthContext
+      console.error('Login error:', err);
     }
-    
-    setIsLoading(false);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setForgotPasswordSent(true);
-    setIsLoading(false);
   };
 
   const resetForgotPassword = () => {
@@ -86,7 +78,7 @@ export const LoginPage: React.FC = () => {
               <div className="flex justify-center mb-4">
                 <img 
                   src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
-                  alt="CagioTech" 
+                  alt="Cagiotech" 
                   className="h-12 w-auto"
                 />
               </div>
@@ -186,13 +178,13 @@ export const LoginPage: React.FC = () => {
           <div className="flex justify-center mb-4">
             <img 
               src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
-              alt="CagioTech" 
+              alt="Cagiotech" 
               className="h-12 w-auto"
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">CagioTech</h1>
+          <h1 className="text-2xl font-bold text-foreground">Cagiotech</h1>
           <p className="text-muted-foreground mt-1">
-            Sistema de Gestão para BOX de CrossFit
+            Sistema de Gestão para Fitness e Wellness
           </p>
         </div>
 
@@ -208,7 +200,7 @@ export const LoginPage: React.FC = () => {
             <Tabs value={selectedUserType} onValueChange={(value) => setSelectedUserType(value as UserType)}>
               <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger value="student">Aluno</TabsTrigger>
-                <TabsTrigger value="box">BOX</TabsTrigger>
+                <TabsTrigger value="box_admin">Empresa</TabsTrigger>
                 <TabsTrigger value="trainer">Personal</TabsTrigger>
               </TabsList>
 
@@ -282,9 +274,9 @@ export const LoginPage: React.FC = () => {
               </form>
 
               <div className="mt-6 text-center text-sm">
-                <span className="text-muted-foreground">BOX não registada? </span>
+                <span className="text-muted-foreground">Empresa não registrada? </span>
                 <Link to="/auth/box-register" className="text-[#bed700] hover:text-[#a5c400] font-medium">
-                  Registar BOX
+                  Registar Empresa
                 </Link>
               </div>
             </Tabs>
