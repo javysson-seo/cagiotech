@@ -1,11 +1,10 @@
-
 export const ptTranslations = {
   // Landing Page
   landing: {
-    title: "CagioTech - Gestão Inteligente para a sua BOX",
-    subtitle: "A plataforma completa para gerir a sua academia, atletas e personal trainers",
-    boxOption: "Sou uma BOX",
-    boxDescription: "Gerir a minha academia/box",
+    title: "CagioTech - Gestão Inteligente para a sua empresa",
+    subtitle: "A plataforma completa para gerir a sua empresa de fitness, atletas e personal trainers",
+    boxOption: "Sou uma empresa",
+    boxDescription: "Gerir a minha empresa de fitness",
     studentOption: "Sou Aluno",
     studentDescription: "Aceder às minhas aulas e progresso",
     getStarted: "Começar Agora",
@@ -28,15 +27,16 @@ export const ptTranslations = {
     confirmPassword: "Confirmar palavra-passe",
     name: "Nome",
     phone: "Telefone",
-    boxName: "Nome da BOX",
+    boxName: "Nome da empresa",
+    companyName: "Nome da empresa",
     loginTitle: "Entrar na sua conta",
     registerTitle: "Criar nova conta",
     forgotPassword: "Esqueceu a palavra-passe?",
     noAccount: "Não tem conta?",
     hasAccount: "Já tem conta?",
-    loginAsBox: "Entrar como BOX",
+    loginAsBox: "Entrar como empresa",
     loginAsStudent: "Entrar como Aluno",
-    registerBox: "Registar BOX",
+    registerBox: "Registar empresa",
     registerStudent: "Registar Aluno"
   },
 
@@ -44,12 +44,12 @@ export const ptTranslations = {
   dashboard: {
     welcome: "Bem-vindo ao CagioTech",
     overview: "Visão Geral",
-    totalBoxes: "Total de BOX",
+    totalBoxes: "Total de empresas",
     totalStudents: "Total de Alunos", 
     monthlyRevenue: "Receita Mensal",
     activeTrainers: "Trainers Ativos",
-    recentBoxes: "BOX Recentes",
-    addNewBox: "Cadastrar Nova BOX",
+    recentBoxes: "Empresas Recentes",
+    addNewBox: "Cadastrar Nova empresa",
     viewAll: "Ver Todas",
     metrics: "Métricas",
     growth: "crescimento"
@@ -81,7 +81,7 @@ export const ptTranslations = {
   // Navigation
   nav: {
     dashboard: "Dashboard",
-    boxes: "BOX",
+    boxes: "Empresas",
     students: "Alunos",
     trainers: "Trainers",
     classes: "Aulas",
@@ -92,19 +92,19 @@ export const ptTranslations = {
 
   // Onboarding
   onboarding: {
-    title: "Configurar Nova BOX",
+    title: "Configurar Nova empresa",
     step1: "Informações Básicas",
     step2: "Configurações",
     step3: "Planos e Preços",
     step4: "Confirmação",
-    boxInfo: "Informações da BOX",
+    boxInfo: "Informações da empresa",
     address: "Morada",
     city: "Cidade",
     postalCode: "Código Postal",
     country: "País",
     website: "Website",
     socialMedia: "Redes Sociais",
-    adminInfo: "Administrador da BOX",
+    adminInfo: "Administrador da empresa",
     adminName: "Nome do Administrador",
     adminEmail: "Email do Administrador",
     adminPhone: "Telefone do Administrador",

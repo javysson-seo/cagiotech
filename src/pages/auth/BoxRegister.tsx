@@ -18,7 +18,7 @@ export const BoxRegister: React.FC = () => {
     name: '',
     email: '',
     phone: '',
-    boxName: '',
+    companyName: '',
     password: '',
     confirmPassword: ''
   });
@@ -38,7 +38,7 @@ export const BoxRegister: React.FC = () => {
     try {
       await register({
         ...formData,
-        boxId: `box_${Date.now()}`
+        boxId: `company_${Date.now()}`
       }, 'box_admin');
       
       navigate('/box');
@@ -69,10 +69,10 @@ export const BoxRegister: React.FC = () => {
                 <div className="text-white text-2xl font-bold">🏢</div>
               </div>
               <CardTitle className="text-2xl">
-                {t('auth.registerTitle')}
+                Criar conta da empresa
               </CardTitle>
               <CardDescription>
-                {t('auth.registerBox')}
+                Registre a sua empresa no CagioTech
               </CardDescription>
             </CardHeader>
             
@@ -80,7 +80,7 @@ export const BoxRegister: React.FC = () => {
               <form onSubmit={handleRegister} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="name">{t('auth.name')}</Label>
+                    <Label htmlFor="name">Nome completo</Label>
                     <Input
                       id="name"
                       placeholder="João Silva"
@@ -91,7 +91,7 @@ export const BoxRegister: React.FC = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="phone">{t('auth.phone')}</Label>
+                    <Label htmlFor="phone">Telefone</Label>
                     <Input
                       id="phone"
                       placeholder="+351 912 345 678"
@@ -103,22 +103,22 @@ export const BoxRegister: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="boxName">{t('auth.boxName')}</Label>
+                  <Label htmlFor="companyName">Nome da empresa</Label>
                   <Input
-                    id="boxName"
-                    placeholder="CrossFit Porto"
-                    value={formData.boxName}
-                    onChange={(e) => handleInputChange('boxName', e.target.value)}
+                    id="companyName"
+                    placeholder="Fitness Premium"
+                    value={formData.companyName}
+                    onChange={(e) => handleInputChange('companyName', e.target.value)}
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.email')}</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="joao@crossfitporto.com"
+                    placeholder="joao@fitnesspremium.com"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
@@ -126,7 +126,7 @@ export const BoxRegister: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password">{t('auth.password')}</Label>
+                  <Label htmlFor="password">Palavra-passe</Label>
                   <Input
                     id="password"
                     type="password"
@@ -138,7 +138,7 @@ export const BoxRegister: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">{t('auth.confirmPassword')}</Label>
+                  <Label htmlFor="confirmPassword">Confirmar palavra-passe</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -154,18 +154,18 @@ export const BoxRegister: React.FC = () => {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? t('common.loading') : t('auth.register')}
+                  {isLoading ? 'A carregar...' : 'Criar conta'}
                 </Button>
                 
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground">
-                    {t('auth.hasAccount')}{' '}
+                    Já tem conta?{' '}
                     <Button 
                       variant="link" 
                       className="p-0 h-auto font-normal"
                       onClick={() => navigate('/auth/login')}
                     >
-                      {t('auth.login')}
+                      Entrar
                     </Button>
                   </p>
                 </div>

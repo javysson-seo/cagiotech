@@ -1,11 +1,10 @@
-
 export const enTranslations = {
   // Landing Page
   landing: {
-    title: "CagioTech - Intelligent Management for your BOX",
-    subtitle: "The complete platform to manage your gym, athletes and personal trainers",
-    boxOption: "I'm a BOX",
-    boxDescription: "Manage my gym/box",
+    title: "CagioTech - Intelligent Management for your company",
+    subtitle: "The complete platform to manage your fitness company, athletes and personal trainers",
+    boxOption: "I'm a company",
+    boxDescription: "Manage my fitness company",
     studentOption: "I'm a Student",
     studentDescription: "Access my classes and progress",
     getStarted: "Get Started",
@@ -28,15 +27,16 @@ export const enTranslations = {
     confirmPassword: "Confirm Password",
     name: "Name",
     phone: "Phone",
-    boxName: "BOX Name",
+    boxName: "Company Name",
+    companyName: "Company Name",
     loginTitle: "Login to your account",
     registerTitle: "Create new account",
     forgotPassword: "Forgot password?",
     noAccount: "Don't have an account?",
     hasAccount: "Already have an account?",
-    loginAsBox: "Login as BOX",
+    loginAsBox: "Login as company",
     loginAsStudent: "Login as Student",
-    registerBox: "Register BOX",
+    registerBox: "Register company",
     registerStudent: "Register Student"
   },
 
@@ -44,12 +44,12 @@ export const enTranslations = {
   dashboard: {
     welcome: "Welcome to CagioTech",
     overview: "Overview",
-    totalBoxes: "Total BOX",
+    totalBoxes: "Total companies",
     totalStudents: "Total Students",
     monthlyRevenue: "Monthly Revenue", 
     activeTrainers: "Active Trainers",
-    recentBoxes: "Recent BOX",
-    addNewBox: "Add New BOX",
+    recentBoxes: "Recent companies",
+    addNewBox: "Add New company",
     viewAll: "View All",
     metrics: "Metrics",
     growth: "growth"
@@ -81,7 +81,7 @@ export const enTranslations = {
   // Navigation
   nav: {
     dashboard: "Dashboard",
-    boxes: "BOX",
+    boxes: "Companies",
     students: "Students", 
     trainers: "Trainers",
     classes: "Classes",
@@ -92,19 +92,19 @@ export const enTranslations = {
 
   // Onboarding
   onboarding: {
-    title: "Setup New BOX",
+    title: "Setup New company",
     step1: "Basic Information",
     step2: "Settings", 
     step3: "Plans and Pricing",
     step4: "Confirmation",
-    boxInfo: "BOX Information",
+    boxInfo: "Company Information",
     address: "Address",
     city: "City",
     postalCode: "Postal Code",
     country: "Country",
     website: "Website",
     socialMedia: "Social Media",
-    adminInfo: "BOX Administrator",
+    adminInfo: "Company Administrator",
     adminName: "Administrator Name",
     adminEmail: "Administrator Email", 
     adminPhone: "Administrator Phone",
