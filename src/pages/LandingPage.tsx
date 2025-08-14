@@ -206,7 +206,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" alt="CagioTech" className="h-10 w-auto" />
+              <img src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" alt="CagioTech" className="h-10 w-auto" />
             </div>
             
             {/* Desktop Navigation */}
@@ -612,7 +612,7 @@ const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
-              <img src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" alt="CagioTech" className="h-10 w-auto" />
+              <img src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" alt="CagioTech" className="h-10 w-auto" />
               <p className="text-background/70">
                 A plataforma completa para gestão de ginásios em Portugal.
               </p>
