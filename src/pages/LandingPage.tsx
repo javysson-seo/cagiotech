@@ -49,8 +49,8 @@ export const LandingPage: React.FC = () => {
     {
       id: 1,
       icon: Users,
-      title: 'Gestão de Alunos',
-      description: 'Cadastre, organize e acompanhe todos os seus atletas numa interface intuitiva com fichas completas e histórico de pagamentos.',
+      title: 'Gestão de Membros',
+      description: 'Cadastre, organize e acompanhe todos os seus membros numa interface intuitiva com fichas completas e histórico de pagamentos.',
     },
     {
       id: 2,
@@ -68,13 +68,13 @@ export const LandingPage: React.FC = () => {
       id: 4,
       icon: Dumbbell,
       title: 'Área do Personal Trainer',
-      description: 'Ferramenta completa para trainers criarem WODs, planos personalizados e acompanharem resultados dos alunos.',
+      description: 'Ferramenta completa para trainers criarem WODs, planos personalizados e acompanharem resultados dos membros.',
     },
     {
       id: 5,
       icon: Smartphone,
-      title: 'App para Alunos',
-      description: 'Seus alunos podem reservar aulas, ver treinos, acompanhar evolução e chat com trainer numa app intuitiva.',
+      title: 'App para Membros',
+      description: 'Seus membros podem reservar aulas, ver treinos, acompanhar evolução e chat com trainer numa app intuitiva.',
     },
     {
       id: 6,
@@ -92,8 +92,8 @@ export const LandingPage: React.FC = () => {
       period: '/mês',
       description: 'Perfeito para começar',
       features: [
-        'Até 50 alunos',
-        '2 trainers',
+        'Até 50 membros',
+        '2 profissionais',
         'Funcionalidades básicas',
         'Suporte email',
         'Setup gratuito',
@@ -108,10 +108,10 @@ export const LandingPage: React.FC = () => {
       period: '/mês',
       description: 'Mais popular',
       features: [
-        'Até 150 alunos',
-        '5 trainers',
+        'Até 150 membros',
+        '5 profissionais',
         'Todas as funcionalidades',
-        'App para alunos',
+        'App para membros',
         'Suporte prioritário',
         'Relatórios avançados',
       ],
@@ -123,10 +123,10 @@ export const LandingPage: React.FC = () => {
       title: 'Business',
       price: '€99',
       period: '/mês',
-      description: 'Para BOX estabelecidas',
+      description: 'Para empresas estabelecidas',
       features: [
-        'Até 300 alunos',
-        '10 trainers',
+        'Até 300 membros',
+        '10 profissionais',
         'Gamificação completa',
         'Integrações avançadas',
         'Gestor de conta dedicado',
@@ -142,8 +142,8 @@ export const LandingPage: React.FC = () => {
       period: '',
       description: 'Redes e franchises',
       features: [
-        'Alunos ilimitados',
-        'Trainers ilimitados',
+        'Membros ilimitados',
+        'Profissionais ilimitados',
         'Multi-localização',
         'API personalizada',
         'SLA garantido',
@@ -158,23 +158,23 @@ export const LandingPage: React.FC = () => {
     {
       id: 1,
       name: 'João Silva',
-      role: 'CrossFit Porto',
-      testimonial: 'Desde que mudámos para o CagioTech, poupamos 10 horas por semana em tarefas administrativas. O sistema de pagamentos é fantástico!',
+      role: 'FitnessPro Porto',
+      testimonial: 'Desde que mudámos para o Cagiotech, poupamos 10 horas por semana em tarefas administrativas. O sistema de pagamentos é fantástico!',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
     },
     {
       id: 2,
       name: 'Maria Santos',
-      role: 'FunctionalFit Lisboa',
-      testimonial: 'Os meus alunos adoram a app. As reservas aumentaram 40% e o no-show diminuiu drasticamente.',
+      role: 'WellnessHub Lisboa',
+      testimonial: 'Os meus membros adoram a app. As reservas aumentaram 40% e o no-show diminuiu drasticamente.',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1494790108755-2616b612b601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
     },
     {
       id: 3,
       name: 'Pedro Costa',
-      role: 'StrongBox Braga',
+      role: 'FitCenter Braga',
       testimonial: 'Relatórios incríveis! Finalmente tenho visibilidade total do negócio. Recomendo a 100%.',
       rating: 5,
       image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&q=80',
@@ -184,13 +184,13 @@ export const LandingPage: React.FC = () => {
   const faqs = [
     {
       id: 1,
-      question: 'É difícil migrar os dados da minha BOX?',
+      question: 'É difícil migrar os dados da minha empresa?',
       answer: 'Não! A nossa equipa faz toda a migração gratuitamente. Normalmente fica pronto em 24h.',
     },
     {
       id: 2,
-      question: 'Os meus alunos vão conseguir usar facilmente?',
-      answer: 'Sim! A nossa app é super intuitiva. Disponibilizamos treino gratuito para a sua equipa e alunos.',
+      question: 'Os meus membros vão conseguir usar facilmente?',
+      answer: 'Sim! A nossa app é super intuitiva. Disponibilizamos treino gratuito para a sua equipa e membros.',
     },
     {
       id: 3,
@@ -232,10 +232,10 @@ export const LandingPage: React.FC = () => {
             <div className="flex items-center space-x-3">
               <img 
                 src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
-                alt="CagioTech" 
+                alt="Cagiotech" 
                 className="h-10 w-auto"
               />
-              <span className="text-xl font-bold text-[#2d3748]">CagioTech</span>
+              <span className="text-xl font-bold text-[#2d3748]">Cagiotech</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -296,22 +296,22 @@ export const LandingPage: React.FC = () => {
           <div className="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
             <div className="lg:pr-8">
               <Badge className="mb-6 bg-[#bed700]/10 text-[#bed700] border-[#bed700]/20 font-semibold">
-                ✨ Novo: App para alunos disponível
+                ✨ Novo: App para membros disponível
               </Badge>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-[#2d3748] leading-tight">
-                Revolucione a Gestão da sua BOX com o CagioTech
+                Revolucione a Gestão do seu Negócio de Fitness e Wellness com o Cagiotech
               </h1>
               
               <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                A plataforma completa para ginásios portugueses. 
-                Gerencie alunos, aulas, pagamentos e muito mais numa só ferramenta.
+                A plataforma completa para empresas de fitness e wellness portuguesas. 
+                Gerencie membros, aulas, pagamentos e muito mais numa só ferramenta.
               </p>
 
               <div className="space-y-4 mb-8">
                 <div className="flex items-center space-x-3">
                   <Check className="h-5 w-5 text-[#bed700]" />
-                  <span className="text-gray-700">Gestão completa de membros e trainers</span>
+                  <span className="text-gray-700">Gestão completa de membros e profissionais</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Check className="h-5 w-5 text-[#bed700]" />
@@ -356,20 +356,20 @@ export const LandingPage: React.FC = () => {
                 <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-[#2d3748]">Dashboard CagioTech</h3>
+                      <h3 className="text-lg font-semibold text-[#2d3748]">Dashboard Cagiotech</h3>
                       <Badge variant="secondary" className="bg-[#bed700]/10 text-[#bed700]">Online</Badge>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <Card>
                         <CardContent className="p-4">
                           <div className="text-2xl font-bold text-[#bed700]">150+</div>
-                          <div className="text-sm text-gray-600">BOX Ativas</div>
+                          <div className="text-sm text-gray-600">Empresas Ativas</div>
                         </CardContent>
                       </Card>
                       <Card>
                         <CardContent className="p-4">
                           <div className="text-2xl font-bold text-[#bed700]">15K+</div>
-                          <div className="text-sm text-gray-600">Alunos</div>
+                          <div className="text-sm text-gray-600">Membros</div>
                         </CardContent>
                       </Card>
                     </div>
@@ -391,7 +391,7 @@ export const LandingPage: React.FC = () => {
       <section className="py-16 bg-[#e8e8e8]">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-[#2d3748] mb-4">
-            Já somos a escolha de mais de 150+ BOX em Portugal
+            Já somos a escolha de mais de 150+ empresas de Fitness e Wellness em Portugal
           </h2>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto mt-12">
@@ -399,13 +399,13 @@ export const LandingPage: React.FC = () => {
               <div className="text-4xl font-bold text-[#bed700] mb-2">
                 <AnimatedCounter end={150} suffix="+" />
               </div>
-              <div className="text-gray-600">BOX ativas</div>
+              <div className="text-gray-600">Empresas ativas</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-[#bed700] mb-2">
                 <AnimatedCounter end={15000} suffix="+" />
               </div>
-              <div className="text-gray-600">alunos gerenciados</div>
+              <div className="text-gray-600">membros gerenciados</div>
             </div>
             <div className="text-center">
               <div className="text-4xl font-bold text-[#bed700] mb-2">
@@ -432,11 +432,11 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-6 text-[#2d3748]">
-              Tudo o que precisa para gerir a sua BOX
+              Tudo o que precisa para gerir a sua empresa de Fitness e Wellness
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Descubra como a nossa plataforma pode transformar a gestão da sua BOX, 
-              otimizar o desempenho dos seus atletas e impulsionar o crescimento do seu negócio.
+              Descubra como a nossa plataforma pode transformar a gestão da sua empresa, 
+              otimizar o desempenho dos seus membros e impulsionar o crescimento do seu negócio.
             </p>
           </div>
 
@@ -467,7 +467,7 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Por que escolher o CagioTech?
+              Por que escolher o Cagiotech?
             </h2>
           </div>
 
@@ -477,7 +477,7 @@ export const LandingPage: React.FC = () => {
                 <h3 className="text-xl font-semibold mb-4 opacity-90">Outros Sistemas</h3>
               </div>
               <div className="text-center">
-                <h3 className="text-xl font-semibold mb-4">CagioTech</h3>
+                <h3 className="text-xl font-semibold mb-4">Cagiotech</h3>
               </div>
               <div className="text-center">
                 <h3 className="text-xl font-semibold mb-4 opacity-90">Vantagem</h3>
@@ -597,7 +597,7 @@ export const LandingPage: React.FC = () => {
               O que dizem os nossos clientes
             </h2>
             <p className="text-xl text-gray-600">
-              Descubra como o CagioTech tem ajudado BOX portuguesas a alcançar o sucesso.
+              Descubra como o Cagiotech tem ajudado empresas de Fitness e Wellness portuguesas a alcançar o sucesso.
             </p>
           </div>
 
@@ -685,10 +685,10 @@ export const LandingPage: React.FC = () => {
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
-              Pronto para revolucionar a sua BOX?
+              Pronto para revolucionar a sua empresa de Fitness e Wellness?
             </h2>
             <p className="text-xl mb-8 opacity-90">
-              Junte-se a centenas de ginásios que já crescem com o CagioTech
+              Junte-se a centenas de empresas que já crescem com o Cagiotech
             </p>
 
             <form onSubmit={handleEmailSubmit} className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 max-w-md mx-auto">
@@ -743,13 +743,13 @@ export const LandingPage: React.FC = () => {
               <div className="flex items-center space-x-3 mb-4">
                 <img 
                   src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" 
-                  alt="CagioTech" 
+                  alt="Cagiotech" 
                   className="h-8 w-auto"
                 />
-                <span className="text-lg font-bold">CagioTech</span>
+                <span className="text-lg font-bold">Cagiotech</span>
               </div>
               <p className="text-gray-300 text-sm">
-                A plataforma completa para gestão de ginásios portugueses.
+                A plataforma completa para gestão de empresas de Fitness e Wellness portuguesas.
               </p>
             </div>
 
@@ -795,7 +795,7 @@ export const LandingPage: React.FC = () => {
           <div className="border-t border-gray-600 pt-8">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-gray-300 mb-4 md:mb-0">
-                © 2024 CagioTech. Todos os direitos reservados.
+                © 2024 Cagiotech. Todos os direitos reservados.
               </p>
               <div className="flex space-x-4">
                 <a href="#" className="text-gray-300 hover:text-white transition-colors">
