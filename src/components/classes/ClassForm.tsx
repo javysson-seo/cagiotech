@@ -1,173 +1,212 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { X, Save, Calendar, Clock, Users, MapPin, Euro } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ClassFormProps {
   classData?: any;
-  onSave: () => void;
-  onCancel: () => void;
+  onClose: () => void;
 }
 
 export const ClassForm: React.FC<ClassFormProps> = ({
   classData,
-  onSave,
-  onCancel,
+  onClose,
 }) => {
   const [formData, setFormData] = useState({
-    name: classData?.name || '',
-    modality: classData?.modality || '',
-    trainer: classData?.trainer || '',
-    date: classData?.date || '',
-    startTime: classData?.startTime || '',
-    endTime: classData?.endTime || '',
-    maxCapacity: classData?.maxCapacity || '',
-    room: classData?.room || '',
-    description: classData?.description || '',
-    price: classData?.price || '',
-    recurring: classData?.recurring || false,
-    recurringDays: classData?.recurringDays || [],
-    equipment: classData?.equipment || '',
-    level: classData?.level || '',
-    notes: classData?.notes || ''
+    title: '',
+    description: '',
+    modality: '',
+    trainer: '',
+    date: '',
+    startTime: '',
+    endTime: '',
+    duration: 60,
+    capacity: 20,
+    price: 15,
+    credits: 1,
+    location: '',
+    difficulty: 'Intermediário',
+    recurring: false,
+    recurrenceType: 'weekly',
+    status: 'active'
   });
 
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleRecurringDayChange = (day: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      recurringDays: checked
-        ? [...prev.recurringDays, day]
-        : prev.recurringDays.filter((d: string) => d !== day)
-    }));
-  };
+  useEffect(() => {
+    if (classData) {
+      setFormData({
+        title: classData.title || '',
+        description: classData.description || '',
+        modality: classData.modality || '',
+        trainer: classData.trainer || '',
+        date: classData.startTime ? classData.startTime.split('T')[0] : '',
+        startTime: classData.startTime ? classData.startTime.split('T')[1].substring(0, 5) : '',
+        endTime: classData.endTime ? classData.endTime.split('T')[1].substring(0, 5) : '',
+        duration: classData.duration || 60,
+        capacity: classData.capacity || 20,
+        price: classData.price || 15,
+        credits: classData.credits || 1,
+        location: classData.location || '',
+        difficulty: classData.difficulty || 'Intermediário',
+        recurring: classData.recurring !== 'none',
+        recurrenceType: classData.recurring || 'weekly',
+        status: classData.status || 'active'
+      });
+    }
+  }, [classData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.modality || !formData.trainer || !formData.date || !formData.startTime) {
-      toast.error('Preencha todos os campos obrigatórios');
+    // Validações básicas
+    if (!formData.title || !formData.modality || !formData.trainer) {
+      toast.error('Por favor, preencha todos os campos obrigatórios');
       return;
     }
 
-    toast.success(classData ? 'Aula atualizada!' : 'Aula criada!');
-    onSave();
+    console.log('Dados da aula:', formData);
+    
+    if (classData) {
+      toast.success('Aula atualizada com sucesso!');
+    } else {
+      toast.success('Aula criada com sucesso!');
+    }
+    
+    onClose();
   };
 
-  const daysOfWeek = [
-    { key: 'monday', label: 'Segunda' },
-    { key: 'tuesday', label: 'Terça' },
-    { key: 'wednesday', label: 'Quarta' },
-    { key: 'thursday', label: 'Quinta' },
-    { key: 'friday', label: 'Sexta' },
-    { key: 'saturday', label: 'Sábado' },
-    { key: 'sunday', label: 'Domingo' }
-  ];
+  const updateField = (field: string, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          {classData ? 'Editar Aula' : 'Nova Aula'}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle>
+            {classData ? 'Editar Aula' : 'Nova Aula'}
+          </CardTitle>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </CardHeader>
+      
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Informações Básicas */}
           <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Informações Básicas</h4>
+            <h3 className="font-medium text-lg">Informações Básicas</h3>
             
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome da Aula *</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
-                placeholder="CrossFit Iniciantes"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Título da Aula *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => updateField('title', e.target.value)}
+                  placeholder="Ex: CrossFit Morning"
+                />
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="modality">Modalidade *</Label>
-                <Select value={formData.modality} onValueChange={(value) => handleInputChange('modality', value)}>
+                <Select value={formData.modality} onValueChange={(value) => updateField('modality', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar modalidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="crossfit">CrossFit</SelectItem>
-                    <SelectItem value="functional">Funcional</SelectItem>
-                    <SelectItem value="yoga">Yoga</SelectItem>
-                    <SelectItem value="pilates">Pilates</SelectItem>
-                    <SelectItem value="hiit">HIIT</SelectItem>
-                    <SelectItem value="weightlifting">Musculação</SelectItem>
+                    <SelectItem value="CrossFit">CrossFit</SelectItem>
+                    <SelectItem value="Yoga">Yoga</SelectItem>
+                    <SelectItem value="Pilates">Pilates</SelectItem>
+                    <SelectItem value="Functional">Functional</SelectItem>
+                    <SelectItem value="HIIT">HIIT</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Descrição</Label>
+              <Textarea
+                id="description"
+                value={formData.description}
+                onChange={(e) => updateField('description', e.target.value)}
+                placeholder="Descrição da aula..."
+                rows={3}
+              />
+            </div>
+          </div>
+
+          {/* Trainer e Local */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-lg flex items-center">
+              <Users className="h-4 w-4 mr-2" />
+              Trainer e Local
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="trainer">Trainer *</Label>
+                <Select value={formData.trainer} onValueChange={(value) => updateField('trainer', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecionar trainer" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Carlos Santos">Carlos Santos</SelectItem>
+                    <SelectItem value="Ana Costa">Ana Costa</SelectItem>
+                    <SelectItem value="Pedro Silva">Pedro Silva</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="level">Nível</Label>
-                <Select value={formData.level} onValueChange={(value) => handleInputChange('level', value)}>
+                <Label htmlFor="location">Local</Label>
+                <Select value={formData.location} onValueChange={(value) => updateField('location', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar nível" />
+                    <SelectValue placeholder="Selecionar local" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="beginner">Iniciante</SelectItem>
-                    <SelectItem value="intermediate">Intermédio</SelectItem>
-                    <SelectItem value="advanced">Avançado</SelectItem>
-                    <SelectItem value="all">Todos os Níveis</SelectItem>
+                    <SelectItem value="Sala Principal">Sala Principal</SelectItem>
+                    <SelectItem value="Sala de Yoga">Sala de Yoga</SelectItem>
+                    <SelectItem value="Área Externa">Área Externa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="trainer">Personal Trainer *</Label>
-              <Select value={formData.trainer} onValueChange={(value) => handleInputChange('trainer', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecionar trainer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="carlos">Carlos Santos</SelectItem>
-                  <SelectItem value="ana">Ana Costa</SelectItem>
-                  <SelectItem value="pedro">Pedro Silva</SelectItem>
-                  <SelectItem value="maria">Maria Oliveira</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
-          {/* Data e Horário */}
+          {/* Horário */}
           <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Data e Horário</h4>
+            <h3 className="font-medium text-lg flex items-center">
+              <Clock className="h-4 w-4 mr-2" />
+              Horário
+            </h3>
             
-            <div className="space-y-2">
-              <Label htmlFor="date">Data *</Label>
-              <Input
-                id="date"
-                type="date"
-                value={formData.date}
-                onChange={(e) => handleInputChange('date', e.target.value)}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="startTime">Hora Início *</Label>
+                <Label htmlFor="date">Data</Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => updateField('date', e.target.value)}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="startTime">Hora Início</Label>
                 <Input
                   id="startTime"
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => handleInputChange('startTime', e.target.value)}
+                  onChange={(e) => updateField('startTime', e.target.value)}
                 />
               </div>
               
@@ -177,124 +216,126 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                   id="endTime"
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => handleInputChange('endTime', e.target.value)}
+                  onChange={(e) => updateField('endTime', e.target.value)}
                 />
               </div>
-            </div>
-
-            {/* Aula Recorrente */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  checked={formData.recurring}
-                  onCheckedChange={(checked) => handleInputChange('recurring', checked)}
-                />
-                <Label>Aula recorrente</Label>
-              </div>
-              
-              {formData.recurring && (
-                <div className="space-y-2">
-                  <Label>Dias da semana:</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {daysOfWeek.map((day) => (
-                      <div key={day.key} className="flex items-center space-x-2">
-                        <Checkbox
-                          checked={formData.recurringDays.includes(day.key)}
-                          onCheckedChange={(checked) => handleRecurringDayChange(day.key, !!checked)}
-                        />
-                        <span className="text-sm">{day.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Detalhes da Aula */}
+          {/* Capacidade e Preços */}
           <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Detalhes</h4>
+            <h3 className="font-medium text-lg flex items-center">
+              <Euro className="h-4 w-4 mr-2" />
+              Capacidade e Preços
+            </h3>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="maxCapacity">Capacidade Máxima</Label>
+                <Label htmlFor="capacity">Capacidade</Label>
                 <Input
-                  id="maxCapacity"
+                  id="capacity"
                   type="number"
-                  value={formData.maxCapacity}
-                  onChange={(e) => handleInputChange('maxCapacity', e.target.value)}
-                  placeholder="20"
+                  value={formData.capacity}
+                  onChange={(e) => updateField('capacity', parseInt(e.target.value))}
+                  min="1"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="room">Sala/Espaço</Label>
-                <Select value={formData.room} onValueChange={(value) => handleInputChange('room', value)}>
+                <Label htmlFor="price">Preço (€)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={(e) => updateField('price', parseFloat(e.target.value))}
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="credits">Créditos</Label>
+                <Input
+                  id="credits"
+                  type="number"
+                  value={formData.credits}
+                  onChange={(e) => updateField('credits', parseInt(e.target.value))}
+                  min="1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Configurações Adicionais */}
+          <div className="space-y-4">
+            <h3 className="font-medium text-lg">Configurações Adicionais</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="difficulty">Dificuldade</Label>
+                <Select value={formData.difficulty} onValueChange={(value) => updateField('difficulty', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar sala" />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sala1">Sala 1</SelectItem>
-                    <SelectItem value="sala2">Sala 2</SelectItem>
-                    <SelectItem value="sala3">Sala 3</SelectItem>
-                    <SelectItem value="exterior">Exterior</SelectItem>
+                    <SelectItem value="Iniciante">Iniciante</SelectItem>
+                    <SelectItem value="Intermediário">Intermediário</SelectItem>
+                    <SelectItem value="Avançado">Avançado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <Select value={formData.status} onValueChange={(value) => updateField('status', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Ativa</SelectItem>
+                    <SelectItem value="cancelled">Cancelada</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="price">Preço (€)</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                value={formData.price}
-                onChange={(e) => handleInputChange('price', e.target.value)}
-                placeholder="15.00"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="equipment">Equipamento Necessário</Label>
-              <Input
-                id="equipment"
-                value={formData.equipment}
-                onChange={(e) => handleInputChange('equipment', e.target.value)}
-                placeholder="Tapete de yoga, halteres..."
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description">Descrição</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-                placeholder="Descrição da aula, objetivos, o que esperar..."
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notas Internas</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes}
-                onChange={(e) => handleInputChange('notes', e.target.value)}
-                placeholder="Notas para uso interno..."
-                rows={2}
-              />
+            {/* Recorrência */}
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="recurring"
+                  checked={formData.recurring}
+                  onCheckedChange={(checked) => updateField('recurring', checked)}
+                />
+                <Label htmlFor="recurring">Aula recorrente</Label>
+              </div>
+              
+              {formData.recurring && (
+                <div className="space-y-2">
+                  <Label htmlFor="recurrenceType">Tipo de Recorrência</Label>
+                  <Select value={formData.recurrenceType} onValueChange={(value) => updateField('recurrenceType', value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="daily">Diária</SelectItem>
+                      <SelectItem value="weekly">Semanal</SelectItem>
+                      <SelectItem value="monthly">Mensal</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 pt-4">
-            <Button type="submit" className="flex-1">
-              {classData ? 'Atualizar' : 'Criar'} Aula
-            </Button>
-            <Button type="button" variant="outline" onClick={onCancel}>
+          {/* Botões */}
+          <div className="flex justify-end space-x-2">
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
+            </Button>
+            <Button type="submit" className="bg-cagiogreen-500 hover:bg-cagiogreen-600">
+              <Save className="h-4 w-4 mr-2" />
+              {classData ? 'Atualizar' : 'Criar'} Aula
             </Button>
           </div>
         </form>

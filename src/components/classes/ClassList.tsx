@@ -1,254 +1,279 @@
 
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
-  Edit, 
-  Eye, 
   Clock, 
   Users, 
   MapPin, 
+  Edit, 
+  Trash2,
   Calendar,
   Euro,
-  Repeat
+  Star
 } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { pt } from 'date-fns/locale';
 
 interface ClassListProps {
   searchTerm: string;
   modalityFilter: string;
-  dateFilter: string;
   onEdit: (classData: any) => void;
 }
 
 export const ClassList: React.FC<ClassListProps> = ({
   searchTerm,
   modalityFilter,
-  dateFilter,
   onEdit,
 }) => {
-  // Mock data - will come from API/Supabase
+  // Mock data - em produção virá da API/Supabase
   const classes = [
     {
       id: 1,
-      name: 'CrossFit Morning',
-      modality: 'crossfit',
+      title: 'CrossFit Morning',
+      description: 'Treino funcional de alta intensidade para começar bem o dia',
       trainer: 'Carlos Santos',
       trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=carlos',
-      date: '2024-01-15',
-      startTime: '06:00',
-      endTime: '07:00',
+      trainerRating: 4.8,
+      modality: 'CrossFit',
+      modalityColor: '#3B82F6',
+      startTime: '2024-01-15T06:00:00',
+      endTime: '2024-01-15T07:00:00',
       duration: 60,
-      maxCapacity: 20,
-      enrolled: 16,
-      waitlist: 2,
-      room: 'Sala 1',
-      level: 'Todos os Níveis',
+      capacity: 20,
+      booked: 12,
       price: 15,
-      recurring: true,
-      status: 'scheduled'
+      credits: 1,
+      location: 'Sala Principal',
+      difficulty: 'Intermediário',
+      status: 'active',
+      recurring: 'weekly'
     },
     {
       id: 2,
-      name: 'Yoga Flow',
-      modality: 'yoga',
+      title: 'Yoga Flow',
+      description: 'Sequência fluida de posturas para flexibilidade e relaxamento',
       trainer: 'Ana Costa',
       trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ana',
-      date: '2024-01-15',
-      startTime: '07:30',
-      endTime: '08:30',
+      trainerRating: 4.9,
+      modality: 'Yoga',
+      modalityColor: '#10B981',
+      startTime: '2024-01-15T07:30:00',
+      endTime: '2024-01-15T08:30:00',
       duration: 60,
-      maxCapacity: 15,
-      enrolled: 12,
-      waitlist: 0,
-      room: 'Sala 2',
-      level: 'Iniciante',
+      capacity: 15,
+      booked: 8,
       price: 12,
-      recurring: true,
-      status: 'scheduled'
+      credits: 1,
+      location: 'Sala de Yoga',
+      difficulty: 'Iniciante',
+      status: 'active',
+      recurring: 'daily'
     },
     {
       id: 3,
-      name: 'HIIT Avançado',
-      modality: 'hiit',
+      title: 'Functional Training',
+      description: 'Treino funcional focado em movimentos do dia a dia',
       trainer: 'Pedro Silva',
       trainerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=pedro',
-      date: '2024-01-15',
-      startTime: '18:00',
-      endTime: '18:45',
-      duration: 45,
-      maxCapacity: 25,
-      enrolled: 23,
-      waitlist: 5,
-      room: 'Sala 1',
-      level: 'Avançado',
+      trainerRating: 4.7,
+      modality: 'Functional',
+      modalityColor: '#F59E0B',
+      startTime: '2024-01-15T09:00:00',
+      endTime: '2024-01-15T10:00:00',
+      duration: 60,
+      capacity: 12,
+      booked: 12,
       price: 18,
-      recurring: false,
-      status: 'scheduled'
+      credits: 1,
+      location: 'Área Externa',
+      difficulty: 'Avançado',
+      status: 'cancelled',
+      recurring: 'weekly'
     }
   ];
 
   const filteredClasses = classes.filter(classItem => {
-    const matchesSearch = classItem.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         classItem.trainer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = 
+      classItem.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      classItem.trainer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      classItem.modality.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesModality = modalityFilter === 'all' || classItem.modality === modalityFilter;
+    const matchesModality = modalityFilter === 'all' || 
+      classItem.modality.toLowerCase() === modalityFilter;
     
-    // For date filter, we'd implement actual date logic here
-    const matchesDate = true; // Placeholder
-    
-    return matchesSearch && matchesModality && matchesDate;
+    return matchesSearch && matchesModality;
   });
 
-  const getModalityBadge = (modality: string) => {
-    const config = {
-      crossfit: { label: 'CrossFit', variant: 'default' as const },
-      yoga: { label: 'Yoga', variant: 'secondary' as const },
-      hiit: { label: 'HIIT', variant: 'destructive' as const },
-      functional: { label: 'Funcional', variant: 'outline' as const },
-      pilates: { label: 'Pilates', variant: 'secondary' as const }
-    };
-    return config[modality as keyof typeof config] || { label: modality, variant: 'outline' as const };
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'Iniciante': return 'bg-green-100 text-green-800';
+      case 'Intermediário': return 'bg-orange-100 text-orange-800';
+      case 'Avançado': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const getLevelBadge = (level: string) => {
-    const config = {
-      beginner: { label: 'Iniciante', color: 'bg-green-100 text-green-800' },
-      intermediate: { label: 'Intermédio', color: 'bg-yellow-100 text-yellow-800' },
-      advanced: { label: 'Avançado', color: 'bg-red-100 text-red-800' },
-      all: { label: 'Todos', color: 'bg-blue-100 text-blue-800' }
-    };
-    return config[level as keyof typeof config] || config.all;
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'full': return 'bg-orange-100 text-orange-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
   };
 
-  const getOccupancyColor = (percentage: number) => {
-    if (percentage >= 90) return 'text-red-600';
-    if (percentage >= 75) return 'text-orange-600';
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active': return 'Ativa';
+      case 'cancelled': return 'Cancelada';
+      case 'full': return 'Lotada';
+      default: return status;
+    }
+  };
+
+  const getAvailabilityColor = (booked: number, capacity: number) => {
+    const percentage = (booked / capacity) * 100;
+    if (percentage >= 100) return 'text-red-600';
+    if (percentage >= 80) return 'text-orange-600';
     return 'text-green-600';
+  };
+
+  const handleDeleteClass = (classId: number) => {
+    console.log('Deletar aula:', classId);
+    // Implementar lógica de exclusão
   };
 
   return (
     <div className="space-y-4">
-      {filteredClasses.map((classItem) => {
-        const modalityBadge = getModalityBadge(classItem.modality);
-        const levelBadge = getLevelBadge(classItem.level);
-        const occupancyPercentage = Math.round((classItem.enrolled / classItem.maxCapacity) * 100);
-        
-        return (
-          <Card key={classItem.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <h3 className="text-lg font-semibold text-foreground">
-                      {classItem.name}
-                    </h3>
-                    <Badge variant={modalityBadge.variant}>
-                      {modalityBadge.label}
+      {filteredClasses.map((classItem) => (
+        <Card key={classItem.id} className="hover:shadow-lg transition-all duration-200">
+          <CardContent className="p-6">
+            {/* Header */}
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div 
+                  className="w-4 h-4 rounded-full" 
+                  style={{ backgroundColor: classItem.modalityColor }}
+                />
+                <div>
+                  <h3 className="font-semibold text-lg">{classItem.title}</h3>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge variant="outline" className="text-xs">
+                      {classItem.modality}
                     </Badge>
-                    <Badge className={levelBadge.color}>
-                      {levelBadge.label}
+                    <Badge className={getDifficultyColor(classItem.difficulty)}>
+                      {classItem.difficulty}
                     </Badge>
-                    {classItem.recurring && (
-                      <Badge variant="outline" className="flex items-center">
-                        <Repeat className="h-3 w-3 mr-1" />
-                        Recorrente
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center space-x-1">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={classItem.trainerAvatar} alt={classItem.trainer} />
-                      <AvatarFallback className="text-xs">
-                        {classItem.trainer.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-muted-foreground">
-                      {classItem.trainer}
-                    </span>
+                    <Badge className={getStatusColor(classItem.status)}>
+                      {getStatusLabel(classItem.status)}
+                    </Badge>
                   </div>
                 </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(classItem)}>
-                    <Edit className="h-4 w-4" />
-                  </Button>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onEdit(classItem)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleDeleteClass(classItem.id)}
+                >
+                  <Trash2 className="h-4 w-4 text-red-600" />
+                </Button>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-4">
+              {classItem.description}
+            </p>
+
+            {/* Trainer Info */}
+            <div className="flex items-center space-x-3 mb-4">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={classItem.trainerAvatar} alt={classItem.trainer} />
+                <AvatarFallback className="bg-blue-100 text-blue-600">
+                  {classItem.trainer.split(' ').map(n => n[0]).join('')}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div>
+                <p className="font-medium text-sm">{classItem.trainer}</p>
+                <div className="flex items-center space-x-1">
+                  <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                  <span className="text-xs text-muted-foreground">{classItem.trainerRating}</span>
                 </div>
               </div>
+            </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{new Date(classItem.date).toLocaleDateString('pt-PT')}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>{classItem.startTime} - {classItem.endTime}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span>{classItem.room}</span>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Euro className="h-4 w-4 text-green-600" />
-                  <span className="font-medium text-green-600">€{classItem.price}</span>
+            {/* Class Details */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-4 w-4 text-blue-600" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Data/Hora</p>
+                  <p className="font-medium text-sm">
+                    {format(parseISO(classItem.startTime), 'dd/MM HH:mm', { locale: pt })}
+                  </p>
                 </div>
               </div>
-
-              <div className="flex items-center justify-between mt-4 pt-4 border-t">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className={`text-sm font-medium ${getOccupancyColor(occupancyPercentage)}`}>
-                      {classItem.enrolled}/{classItem.maxCapacity}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      ({occupancyPercentage}%)
-                    </span>
-                  </div>
-                  
-                  {classItem.waitlist > 0 && (
-                    <div className="text-sm">
-                      <span className="text-orange-600 font-medium">
-                        {classItem.waitlist} em lista de espera
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-muted-foreground">
-                    Duração: {classItem.duration}min
-                  </span>
+              
+              <div className="flex items-center space-x-2">
+                <Clock className="h-4 w-4 text-green-600" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Duração</p>
+                  <p className="font-medium text-sm">{classItem.duration} min</p>
                 </div>
               </div>
-
-              {/* Progress Bar */}
-              <div className="mt-3">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-xs text-muted-foreground">Ocupação</span>
-                  <span className="text-xs text-muted-foreground">{occupancyPercentage}%</span>
-                </div>
-                <div className="w-full bg-muted rounded-full h-2">
-                  <div 
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      occupancyPercentage >= 90 ? 'bg-red-500' :
-                      occupancyPercentage >= 75 ? 'bg-orange-500' : 'bg-green-500'
-                    }`}
-                    style={{ width: `${Math.min(occupancyPercentage, 100)}%` }}
-                  />
+              
+              <div className="flex items-center space-x-2">
+                <Users className={`h-4 w-4 ${getAvailabilityColor(classItem.booked, classItem.capacity)}`} />
+                <div>
+                  <p className="text-xs text-muted-foreground">Ocupação</p>
+                  <p className="font-medium text-sm">
+                    {classItem.booked}/{classItem.capacity}
+                  </p>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-      
+              
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4 text-purple-600" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Local</p>
+                  <p className="font-medium text-sm">{classItem.location}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pricing */}
+            <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center space-x-2">
+                <div className="text-sm font-medium flex items-center">
+                  <Euro className="h-3 w-3 mr-1" />
+                  {classItem.price}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  ou {classItem.credits} crédito
+                </div>
+              </div>
+              
+              <div className="text-sm text-muted-foreground">
+                Recorrência: {classItem.recurring === 'daily' ? 'Diária' : 
+                             classItem.recurring === 'weekly' ? 'Semanal' : 'Única'}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+
       {filteredClasses.length === 0 && (
         <Card>
           <CardContent className="text-center py-8">
