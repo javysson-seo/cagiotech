@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { Header } from '@/components/Header';
 import { toast } from 'sonner';
 
 export const BoxRegister: React.FC = () => {
@@ -42,8 +41,8 @@ export const BoxRegister: React.FC = () => {
         boxId: `box_${Date.now()}`
       }, 'box_admin');
       
-      navigate('/box/onboarding');
-      toast.success('Conta criada com sucesso! Complete a configuração da sua BOX.');
+      navigate('/box');
+      toast.success('Conta criada com sucesso!');
     } catch (error) {
       toast.error('Erro ao criar conta. Tente novamente.');
     }
@@ -51,7 +50,16 @@ export const BoxRegister: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      <Header />
+      {/* Simplified Header */}
+      <header className="bg-card/80 backdrop-blur-sm border-b border-border px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/b8bff381-d517-4462-9251-cbc6c9edbf52.png" 
+            alt="CagioTech" 
+            className="h-12 w-auto"
+          />
+        </div>
+      </header>
       
       <div className="container mx-auto px-6 py-20">
         <div className="max-w-md mx-auto">
@@ -155,7 +163,7 @@ export const BoxRegister: React.FC = () => {
                     <Button 
                       variant="link" 
                       className="p-0 h-auto font-normal"
-                      onClick={() => navigate('/auth/box-login')}
+                      onClick={() => navigate('/auth/login')}
                     >
                       {t('auth.login')}
                     </Button>
