@@ -17,8 +17,8 @@ export const Logo: React.FC<LogoProps> = ({ className = '', size = 'md' }) => {
   };
 
   const logoSrc = theme === 'dark' 
-    ? '/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png' // Logo verde para tema escuro
-    : '/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png'; // Novo logo verde para tema claro
+    ? '/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png' // Logo verde para tema escuro
+    : '/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png'; // Logo preto para tema claro
 
   return (
     <img
