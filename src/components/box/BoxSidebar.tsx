@@ -8,25 +8,28 @@ import {
   UserCheck,
   Calendar,
   BarChart3,
-  Settings, 
+  MessageSquare,
+  Settings,
   LogOut,
-  UserCog,
-  Target
+  Dumbbell,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { Logo } from '@/components/ui/logo';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
 
   const navigation = [
     { name: 'Dashboard', href: '/box/dashboard', icon: Home },
-    { name: 'CRM', href: '/box/crm', icon: Target },
     { name: 'Atletas', href: '/box/athletes', icon: Users },
-    { name: 'Personal Trainers', href: '/box/trainers', icon: UserCog },
+    { name: 'Trainers', href: '/box/trainers', icon: UserCheck },
     { name: 'Aulas', href: '/box/classes', icon: Calendar },
     { name: 'Relatórios', href: '/box/reports', icon: BarChart3 },
+    { name: 'CRM', href: '/box/crm', icon: UserPlus },
+    { name: 'Comunicação', href: '/box/communication', icon: MessageSquare },
     { name: 'Configurações', href: '/box/settings', icon: Settings },
   ];
 
@@ -35,25 +38,20 @@ export const BoxSidebar: React.FC = () => {
       {/* Logo */}
       <div className="flex items-center h-16 px-6 border-b border-border">
         <div className="flex items-center space-x-2">
-          <img src="/lovable-uploads/8dbf4355-937c-46a1-b5ed-612c0fa8be8e.png" alt="CagioTech" className="h-8 w-auto" />
-          <Badge className="bg-cagio-green text-white text-xs hover:bg-cagio-green">BOX</Badge>
+          <Logo size="md" />
+          <span className="text-xl font-bold text-foreground">CAGIO</span>
+          <Badge className="bg-blue-100 text-blue-800 text-xs">BOX</Badge>
         </div>
       </div>
 
       {/* User Info */}
       <div className="p-6 border-b border-border">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-cagio-green flex items-center justify-center">
-            <span className="text-white font-medium">
-              {user?.name?.charAt(0)}
-            </span>
-          </div>
-          <div>
-            <p className="font-medium text-foreground">{user?.name}</p>
-            <p className="text-sm text-muted-foreground">
-              {user?.boxName}
-            </p>
-          </div>
+        <div className="space-y-1">
+          <p className="font-medium text-foreground">{user?.boxName}</p>
+          <p className="text-sm text-muted-foreground">{user?.name}</p>
+          <Badge variant="outline" className="text-xs">
+            BOX Administrator
+          </Badge>
         </div>
       </div>
 
@@ -67,7 +65,7 @@ export const BoxSidebar: React.FC = () => {
               cn(
                 'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 isActive
-                  ? 'bg-cagio-green text-white'
+                  ? 'bg-blue-600 text-white'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
@@ -78,16 +76,21 @@ export const BoxSidebar: React.FC = () => {
         ))}
       </nav>
 
-      {/* BOX Status */}
+      {/* Quick Stats */}
       <div className="p-3 border-t border-border">
-        <div className="bg-cagio-green-light p-3 rounded-lg mb-3">
+        <div className="bg-blue-50 p-3 rounded-lg mb-3">
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-cagio-green rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-cagio-green-dark">BOX Ativa</span>
+            <Dumbbell className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-800">Status da BOX</span>
           </div>
-          <p className="text-xs text-cagio-green-dark mt-1">
-            147 atletas ativos
-          </p>
+          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
+            <div>
+              <span className="text-blue-600">47 Atletas</span>
+            </div>
+            <div>
+              <span className="text-blue-600">3 Trainers</span>
+            </div>
+          </div>
         </div>
         
         <Button

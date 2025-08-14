@@ -28,6 +28,7 @@ import { TrainerManagement } from '@/pages/box/TrainerManagement';
 import { ClassManagement } from '@/pages/box/ClassManagement';
 import { Reports as BoxReports } from '@/pages/box/Reports';
 import { BoxCRM } from '@/pages/box/BoxCRM';
+import { BoxSettings } from '@/pages/box/BoxSettings';
 
 // Trainer Pages
 import { TrainerDashboard } from '@/pages/trainer/TrainerDashboard';
@@ -138,6 +139,14 @@ function App() {
                     element={
                       <ProtectedRoute allowedRoles={['box_admin']}>
                         <BoxCRM />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/box/settings" 
+                    element={
+                      <ProtectedRoute allowedRoles={['box_admin']}>
+                        <BoxSettings />
                       </ProtectedRoute>
                     } 
                   />
