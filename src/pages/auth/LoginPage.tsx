@@ -83,8 +83,12 @@ export const LoginPage: React.FC = () => {
         <div className="w-full max-w-md">
           <Card>
             <CardHeader className="text-center">
-              <div className="w-12 h-12 bg-[#bed700] rounded-lg flex items-center justify-center mx-auto mb-4">
-                <span className="text-black font-bold text-xl">C</span>
+              <div className="flex justify-center mb-4">
+                <img 
+                  src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
+                  alt="CagioTech" 
+                  className="h-12 w-auto"
+                />
               </div>
               <CardTitle className="text-2xl">
                 {forgotPasswordSent ? 'Email Enviado!' : 'Redefinir Senha'}
@@ -179,8 +183,12 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-[#bed700] rounded-lg flex items-center justify-center mx-auto mb-4">
-            <span className="text-black font-bold text-xl">C</span>
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
+              alt="CagioTech" 
+              className="h-12 w-auto"
+            />
           </div>
           <h1 className="text-2xl font-bold text-foreground">CagioTech</h1>
           <p className="text-muted-foreground mt-1">
@@ -274,13 +282,9 @@ export const LoginPage: React.FC = () => {
               </form>
 
               <div className="mt-6 text-center text-sm">
-                <span className="text-muted-foreground">Não tem conta? </span>
+                <span className="text-muted-foreground">BOX não registada? </span>
                 <Link to="/auth/box-register" className="text-[#bed700] hover:text-[#a5c400] font-medium">
                   Registar BOX
-                </Link>
-                <span className="text-muted-foreground"> ou </span>
-                <Link to="/auth/student-register" className="text-[#bed700] hover:text-[#a5c400] font-medium">
-                  Registar como Aluno
                 </Link>
               </div>
             </Tabs>
