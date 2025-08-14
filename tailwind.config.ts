@@ -66,10 +66,10 @@ export default {
 				// CagioTech Brand Colors - Professional Green Palette
 				cagio: {
 					green: {
-						DEFAULT: 'hsl(var(--cagio-green))',
-						light: 'hsl(var(--cagio-green-light))',
-						dark: 'hsl(var(--cagio-green-dark))',
-						muted: 'hsl(var(--cagio-green-muted))'
+						DEFAULT: '#bed700', // Verde principal do PRD
+						light: '#d4e84d',   // Verde claro
+						dark: '#a5c400',    // Verde escuro hover
+						muted: '#bed700'    // Verde suave
 					}
 				}
 			},

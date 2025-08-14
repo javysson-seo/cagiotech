@@ -12,7 +12,8 @@ import {
   Settings,
   LogOut,
   Dumbbell,
-  UserPlus
+  UserPlus,
+  Euro
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ export const BoxSidebar: React.FC = () => {
     { name: 'Relatórios', href: '/box/reports', icon: BarChart3 },
     { name: 'CRM', href: '/box/crm', icon: UserPlus },
     { name: 'Comunicação', href: '/box/communication', icon: MessageSquare },
+    { name: 'Financeiro', href: '/box/financial', icon: Euro },
     { name: 'Configurações', href: '/box/settings', icon: Settings },
   ];
 
@@ -40,7 +42,7 @@ export const BoxSidebar: React.FC = () => {
         <div className="flex items-center space-x-2">
           <Logo size="md" />
           <span className="text-xl font-bold text-foreground">CAGIO</span>
-          <Badge className="bg-blue-100 text-blue-800 text-xs">BOX</Badge>
+          <Badge className="bg-[#bed700] text-black text-xs font-medium">BOX</Badge>
         </div>
       </div>
 
@@ -65,7 +67,7 @@ export const BoxSidebar: React.FC = () => {
               cn(
                 'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                 isActive
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-[#bed700] text-black'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
@@ -78,17 +80,17 @@ export const BoxSidebar: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="p-3 border-t border-border">
-        <div className="bg-blue-50 p-3 rounded-lg mb-3">
+        <div className="bg-[#bed700]/10 p-3 rounded-lg mb-3">
           <div className="flex items-center space-x-2">
-            <Dumbbell className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium text-blue-800">Status da BOX</span>
+            <Dumbbell className="h-4 w-4 text-[#bed700]" />
+            <span className="text-sm font-medium text-foreground">Status da BOX</span>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
             <div>
-              <span className="text-blue-600">47 Atletas</span>
+              <span className="text-[#bed700] font-medium">47 Atletas</span>
             </div>
             <div>
-              <span className="text-blue-600">3 Trainers</span>
+              <span className="text-[#bed700] font-medium">3 Trainers</span>
             </div>
           </div>
         </div>
