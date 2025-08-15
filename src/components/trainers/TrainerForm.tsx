@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Eye, EyeOff, RefreshCw, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TrainerFormProps {
@@ -33,7 +33,24 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
     specialties: trainer?.specialties || [],
     certifications: trainer?.certifications || [],
     experience: trainer?.experience || '',
+    
+    // Sistema de Pagamento
+    paymentType: trainer?.paymentType || 'hourly',
     hourlyRate: trainer?.hourlyRate || '',
+    monthlyRate: trainer?.monthlyRate || '',
+    classRate: trainer?.classRate || '',
+    percentageRate: trainer?.percentageRate || '',
+    
+    // Categorias de Exercícios
+    exerciseCategories: trainer?.exerciseCategories || [],
+    
+    // Senha e Acesso
+    password: trainer?.password || '',
+    isPasswordVisible: false,
+    
+    // Atletas Vinculados
+    linkedAthletes: trainer?.linkedAthletes || [],
+    
     availability: trainer?.availability || {
       monday: { available: false, start: '09:00', end: '18:00' },
       tuesday: { available: false, start: '09:00', end: '18:00' },
@@ -49,9 +66,41 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
 
   const [newSpecialty, setNewSpecialty] = useState('');
   const [newCertification, setNewCertification] = useState('');
+  const [newExerciseCategory, setNewExerciseCategory] = useState('');
+
+  // Categorias de exercícios predefinidas
+  const exerciseCategoriesOptions = [
+    'CrossFit', 'Musculação', 'Cardio', 'Functional Training',
+    'Yoga', 'Pilates', 'Boxe', 'MMA', 'Natação', 'Corrida',
+    'Ciclismo', 'Escalada', 'Dança', 'Zumba', 'Spinning',
+    'TRX', 'Kettlebell', 'Calistenia', 'Powerlifting', 'Olympic Lifting'
+  ];
+
+  // Lista de atletas mockada (em produção viria do backend)
+  const availableAthletes = [
+    { id: '1', name: 'Ana Silva', email: 'ana@email.com' },
+    { id: '2', name: 'João Santos', email: 'joao@email.com' },
+    { id: '3', name: 'Maria Costa', email: 'maria@email.com' },
+    { id: '4', name: 'Pedro Oliveira', email: 'pedro@email.com' },
+    { id: '5', name: 'Sofia Ferreira', email: 'sofia@email.com' }
+  ];
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const generateRandomPassword = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+    let password = '';
+    for (let i = 0; i < 12; i++) {
+      password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setFormData(prev => ({ ...prev, password }));
+    toast.success('Password gerada automaticamente!');
+  };
+
+  const togglePasswordVisibility = () => {
+    setFormData(prev => ({ ...prev, isPasswordVisible: !prev.isPasswordVisible }));
   };
 
   const addSpecialty = () => {
@@ -88,6 +137,32 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
     }));
   };
 
+  const addExerciseCategory = () => {
+    if (newExerciseCategory && !formData.exerciseCategories.includes(newExerciseCategory)) {
+      setFormData(prev => ({
+        ...prev,
+        exerciseCategories: [...prev.exerciseCategories, newExerciseCategory]
+      }));
+      setNewExerciseCategory('');
+    }
+  };
+
+  const removeExerciseCategory = (category: string) => {
+    setFormData(prev => ({
+      ...prev,
+      exerciseCategories: prev.exerciseCategories.filter((cat: string) => cat !== category)
+    }));
+  };
+
+  const toggleAthleteLink = (athleteId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      linkedAthletes: prev.linkedAthletes.includes(athleteId)
+        ? prev.linkedAthletes.filter((id: string) => id !== athleteId)
+        : [...prev.linkedAthletes, athleteId]
+    }));
+  };
+
   const handleAvailabilityChange = (day: string, field: string, value: any) => {
     setFormData(prev => ({
       ...prev,
@@ -106,6 +181,11 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
     
     if (!formData.name || !formData.email) {
       toast.error('Nome e email são obrigatórios');
+      return;
+    }
+
+    if (!formData.password) {
+      toast.error('Password é obrigatória');
       return;
     }
 
@@ -205,6 +285,50 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             </div>
           </div>
 
+          {/* Sistema de Acesso */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Sistema de Acesso</h4>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Password *</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="password"
+                    type={formData.isPasswordVisible ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Password de acesso"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {formData.isPasswordVisible ? (
+                      <EyeOff className="h-3 w-3" />
+                    ) : (
+                      <Eye className="h-3 w-3" />
+                    )}
+                  </Button>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={generateRandomPassword}
+                  className="flex-shrink-0"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Esta password será usada pelo trainer para aceder ao sistema
+              </p>
+            </div>
+          </div>
+
           {/* Dados Profissionais */}
           <div className="space-y-4">
             <h4 className="font-medium text-sm text-muted-foreground">Dados Profissionais</h4>
@@ -225,6 +349,39 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
               </div>
               
               <div className="space-y-2">
+                <Label htmlFor="experience">Anos de Experiência</Label>
+                <Input
+                  id="experience"
+                  type="number"
+                  value={formData.experience}
+                  onChange={(e) => handleInputChange('experience', e.target.value)}
+                  placeholder="5"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sistema de Pagamento */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Sistema de Pagamento</h4>
+            
+            <div className="space-y-2">
+              <Label htmlFor="paymentType">Tipo de Pagamento</Label>
+              <Select value={formData.paymentType} onValueChange={(value) => handleInputChange('paymentType', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hourly">Por Hora</SelectItem>
+                  <SelectItem value="monthly">Mensalidade</SelectItem>
+                  <SelectItem value="class">Por Aula</SelectItem>
+                  <SelectItem value="percentage">Percentagem</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.paymentType === 'hourly' && (
+              <div className="space-y-2">
                 <Label htmlFor="hourlyRate">Taxa Horária (€)</Label>
                 <Input
                   id="hourlyRate"
@@ -234,18 +391,116 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
                   placeholder="25"
                 />
               </div>
-            </div>
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="experience">Anos de Experiência</Label>
-              <Input
-                id="experience"
-                type="number"
-                value={formData.experience}
-                onChange={(e) => handleInputChange('experience', e.target.value)}
-                placeholder="5"
-              />
+            {formData.paymentType === 'monthly' && (
+              <div className="space-y-2">
+                <Label htmlFor="monthlyRate">Salário Mensal (€)</Label>
+                <Input
+                  id="monthlyRate"
+                  type="number"
+                  value={formData.monthlyRate}
+                  onChange={(e) => handleInputChange('monthlyRate', e.target.value)}
+                  placeholder="1200"
+                />
+              </div>
+            )}
+
+            {formData.paymentType === 'class' && (
+              <div className="space-y-2">
+                <Label htmlFor="classRate">Valor por Aula (€)</Label>
+                <Input
+                  id="classRate"
+                  type="number"
+                  value={formData.classRate}
+                  onChange={(e) => handleInputChange('classRate', e.target.value)}
+                  placeholder="15"
+                />
+              </div>
+            )}
+
+            {formData.paymentType === 'percentage' && (
+              <div className="space-y-2">
+                <Label htmlFor="percentageRate">Percentagem (%)</Label>
+                <Input
+                  id="percentageRate"
+                  type="number"
+                  value={formData.percentageRate}
+                  onChange={(e) => handleInputChange('percentageRate', e.target.value)}
+                  placeholder="30"
+                  max="100"
+                  min="1"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Percentagem sobre a receita das aulas/treinos deste trainer
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Categorias de Exercícios */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Categorias de Exercícios</h4>
+            
+            <div className="flex gap-2">
+              <Select value={newExerciseCategory} onValueChange={setNewExerciseCategory}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Selecionar categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {exerciseCategoriesOptions.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button type="button" onClick={addExerciseCategory} size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
             </div>
+            
+            {formData.exerciseCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.exerciseCategories.map((category: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    {category}
+                    <X
+                      className="h-3 w-3 cursor-pointer"
+                      onClick={() => removeExerciseCategory(category)}
+                    />
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Atletas Vinculados */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Atletas Vinculados ({formData.linkedAthletes.length})
+            </h4>
+            
+            <div className="border rounded-lg p-4 max-h-48 overflow-y-auto">
+              <div className="space-y-2">
+                {availableAthletes.map((athlete) => (
+                  <div key={athlete.id} className="flex items-center space-x-2">
+                    <Checkbox
+                      checked={formData.linkedAthletes.includes(athlete.id)}
+                      onCheckedChange={() => toggleAthleteLink(athlete.id)}
+                    />
+                    <div className="flex-1">
+                      <span className="text-sm font-medium">{athlete.name}</span>
+                      <span className="text-xs text-muted-foreground ml-2">{athlete.email}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Selecione os atletas que este trainer pode acompanhar
+            </p>
           </div>
 
           {/* Especialidades */}

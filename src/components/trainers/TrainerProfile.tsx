@@ -17,7 +17,12 @@ import {
   Euro,
   Award,
   Target,
-  Users
+  Users,
+  Percent,
+  DollarSign,
+  Calendar1,
+  Timer,
+  Key
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -41,7 +46,48 @@ export const TrainerProfile: React.FC<TrainerProfileProps> = ({
     return config[status as keyof typeof config] || config.active;
   };
 
+  const getPaymentTypeLabel = (type: string) => {
+    const types = {
+      hourly: 'Por Hora',
+      monthly: 'Mensalidade',
+      class: 'Por Aula',
+      percentage: 'Percentagem'
+    };
+    return types[type as keyof typeof types] || 'Não definido';
+  };
+
+  const getPaymentValue = () => {
+    switch (trainer.paymentType) {
+      case 'hourly':
+        return `€${trainer.hourlyRate}/hora`;
+      case 'monthly':
+        return `€${trainer.monthlyRate}/mês`;
+      case 'class':
+        return `€${trainer.classRate}/aula`;
+      case 'percentage':
+        return `${trainer.percentageRate}%`;
+      default:
+        return 'Não definido';
+    }
+  };
+
+  const getPaymentIcon = () => {
+    switch (trainer.paymentType) {
+      case 'hourly':
+        return Timer;
+      case 'monthly':
+        return Calendar1;
+      case 'class':
+        return DollarSign;
+      case 'percentage':
+        return Percent;
+      default:
+        return Euro;
+    }
+  };
+
   const statusBadge = getStatusBadge(trainer.status);
+  const PaymentIcon = getPaymentIcon();
 
   const getAvailableDays = () => {
     if (!trainer.availability) return [];
@@ -57,6 +103,13 @@ export const TrainerProfile: React.FC<TrainerProfileProps> = ({
         end: trainer.availability[key].end
       }));
   };
+
+  // Mock data para atletas vinculados
+  const linkedAthletesData = [
+    { id: '1', name: 'Ana Silva', email: 'ana@email.com' },
+    { id: '2', name: 'João Santos', email: 'joao@email.com' },
+    { id: '3', name: 'Maria Costa', email: 'maria@email.com' }
+  ].filter(athlete => trainer.linkedAthletes?.includes(athlete.id));
 
   return (
     <Card>
@@ -126,34 +179,102 @@ export const TrainerProfile: React.FC<TrainerProfileProps> = ({
 
         <Separator />
 
-        {/* Dados Profissionais */}
+        {/* Sistema de Acesso */}
         <div className="space-y-3">
-          <h4 className="font-medium text-muted-foreground">Dados Profissionais</h4>
-          <div className="space-y-2">
-            {trainer.hourlyRate && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm flex items-center">
-                  <Euro className="h-3 w-3 mr-1" />
-                  Taxa Horária:
-                </span>
-                <span className="text-sm font-medium text-green-600">
-                  €{trainer.hourlyRate}/hora
-                </span>
-              </div>
-            )}
-            {trainer.experience && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Experiência:</span>
-                <span className="text-sm font-medium">{trainer.experience} anos</span>
-              </div>
-            )}
+          <h4 className="font-medium text-muted-foreground flex items-center">
+            <Key className="h-4 w-4 mr-1" />
+            Sistema de Acesso
+          </h4>
+          <div className="bg-muted p-3 rounded-lg">
             <div className="flex items-center justify-between">
-              <span className="text-sm">Trainer desde:</span>
-              <span className="text-sm">
-                {trainer.joinDate ? new Date(trainer.joinDate).toLocaleDateString() : 'Jan 2024'}
+              <span className="text-sm">Status de acesso:</span>
+              <Badge variant="default">Ativo</Badge>
+            </div>
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-sm">Último login:</span>
+              <span className="text-sm text-muted-foreground">
+                {trainer.lastLogin || 'Nunca'}
               </span>
             </div>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Sistema de Pagamento */}
+        <div className="space-y-3">
+          <h4 className="font-medium text-muted-foreground flex items-center">
+            <PaymentIcon className="h-4 w-4 mr-1" />
+            Sistema de Pagamento
+          </h4>
+          <div className="bg-muted p-4 rounded-lg">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm">Tipo de Pagamento:</span>
+              <Badge variant="secondary">{getPaymentTypeLabel(trainer.paymentType)}</Badge>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm">Valor:</span>
+              <span className="text-lg font-semibold text-cagio-green">
+                {getPaymentValue()}
+              </span>
+            </div>
+            {trainer.paymentType === 'percentage' && (
+              <p className="text-xs text-muted-foreground mt-2">
+                Percentagem sobre a receita das aulas/treinos
+              </p>
+            )}
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Categorias de Exercícios */}
+        {trainer.exerciseCategories && trainer.exerciseCategories.length > 0 && (
+          <>
+            <div className="space-y-3">
+              <h4 className="font-medium text-muted-foreground flex items-center">
+                <Target className="h-4 w-4 mr-1" />
+                Categorias de Exercícios
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {trainer.exerciseCategories.map((category: string, index: number) => (
+                  <Badge key={index} variant="default" className="bg-cagio-green hover:bg-cagio-green/90">
+                    {category}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            <Separator />
+          </>
+        )}
+
+        {/* Atletas Vinculados */}
+        <div className="space-y-3">
+          <h4 className="font-medium text-muted-foreground flex items-center">
+            <Users className="h-4 w-4 mr-1" />
+            Atletas Vinculados ({linkedAthletesData.length})
+          </h4>
+          {linkedAthletesData.length > 0 ? (
+            <div className="space-y-2">
+              {linkedAthletesData.map((athlete) => (
+                <div key={athlete.id} className="flex items-center space-x-3 p-2 bg-muted rounded-lg">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-blue-100 text-blue-600 text-xs">
+                      {athlete.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{athlete.name}</p>
+                    <p className="text-xs text-muted-foreground">{athlete.email}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              Nenhum atleta vinculado
+            </p>
+          )}
         </div>
 
         <Separator />
@@ -162,10 +283,7 @@ export const TrainerProfile: React.FC<TrainerProfileProps> = ({
         {trainer.specialties && trainer.specialties.length > 0 && (
           <>
             <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground flex items-center">
-                <Target className="h-4 w-4 mr-1" />
-                Especialidades
-              </h4>
+              <h4 className="font-medium text-muted-foreground">Especialidades</h4>
               <div className="flex flex-wrap gap-2">
                 {trainer.specialties.map((specialty: string, index: number) => (
                   <Badge key={index} variant="secondary">
@@ -240,20 +358,27 @@ export const TrainerProfile: React.FC<TrainerProfileProps> = ({
         {/* Estatísticas */}
         <div className="space-y-3">
           <h4 className="font-medium text-muted-foreground">Atividade</h4>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-muted rounded-lg">
               <div className="flex items-center justify-center mb-1">
                 <Users className="h-4 w-4 text-blue-600" />
               </div>
-              <p className="text-sm font-medium">{trainer.activeClients || 15}</p>
-              <p className="text-xs text-muted-foreground">Clientes ativos</p>
+              <p className="text-sm font-medium">{linkedAthletesData.length}</p>
+              <p className="text-xs text-muted-foreground">Atletas</p>
             </div>
             <div className="text-center p-3 bg-muted rounded-lg">
               <div className="flex items-center justify-center mb-1">
                 <Calendar className="h-4 w-4 text-green-600" />
               </div>
               <p className="text-sm font-medium">{trainer.classesThisMonth || 42}</p>
-              <p className="text-xs text-muted-foreground">Aulas este mês</p>
+              <p className="text-xs text-muted-foreground">Aulas/mês</p>
+            </div>
+            <div className="text-center p-3 bg-muted rounded-lg">
+              <div className="flex items-center justify-center mb-1">
+                <Euro className="h-4 w-4 text-cagio-green" />
+              </div>
+              <p className="text-sm font-medium">€{trainer.monthlyEarnings || 2400}</p>
+              <p className="text-xs text-muted-foreground">Este mês</p>
             </div>
           </div>
         </div>
