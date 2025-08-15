@@ -177,14 +177,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         role,
         boxId: role !== 'cagio_admin' ? userData.boxId || 'pending' : undefined,
-        boxName: role !== 'cagio_admin' ? userData.boxName : undefined,
-        isApproved: role === 'student', // Students are auto-approved
+        boxName: role !== 'cagio_admin' ? userData.boxName || userData.companyName : undefined,
+        isApproved: role === 'student' || role === 'box_admin', // Auto-approve students and box admins
         permissions: getDefaultPermissions(role),
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.email}`
       };
 
-      // For non-students, don't auto-login as they need approval
-      if (role === 'student') {
+      // Auto-login for students and box admins
+      if (role === 'student' || role === 'box_admin') {
         setUser(newUser);
         localStorage.setItem('user', JSON.stringify(newUser));
         toast.success('Conta criada com sucesso!');

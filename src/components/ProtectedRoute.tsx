@@ -36,8 +36,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/auth/login" replace />;
   }
 
-  // Check approval status
-  if (requireApproval && !user.isApproved) {
+  // Check approval status - box_admin doesn't need approval
+  if (requireApproval && !user.isApproved && user.role !== 'box_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
