@@ -41,9 +41,11 @@ export const BoxRegister: React.FC = () => {
         boxId: `company_${Date.now()}`
       }, 'box_admin');
       
-      navigate('/box');
-      toast.success('Conta criada com sucesso!');
+      // Redirecionar automaticamente para /box após registro bem-sucedido
+      navigate('/box', { replace: true });
+      toast.success('Conta criada com sucesso! Bem-vindo ao CagioTech!');
     } catch (error) {
+      console.error('Erro no registro:', error);
       toast.error('Erro ao criar conta. Tente novamente.');
     }
   };
@@ -154,7 +156,7 @@ export const BoxRegister: React.FC = () => {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'A carregar...' : 'Criar conta'}
+                  {isLoading ? 'A criar conta...' : 'Criar conta'}
                 </Button>
                 
                 <div className="text-center">
