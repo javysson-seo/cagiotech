@@ -52,9 +52,9 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
 
   const clearAllFilters = () => {
     setActiveFilters([]);
-    onTrainerChange('');
-    onModalityChange('');
-    onRoomChange('');
+    onTrainerChange('all');
+    onModalityChange('all');
+    onRoomChange('all');
   };
 
   return (
@@ -71,12 +71,12 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           </div>
 
           {/* Trainer Filter */}
-          <Select value={selectedTrainer} onValueChange={onTrainerChange}>
+          <Select value={selectedTrainer || 'all'} onValueChange={onTrainerChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Trainer" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os Trainers</SelectItem>
+              <SelectItem value="all">Todos os Trainers</SelectItem>
               <SelectItem value="joão">João Silva</SelectItem>
               <SelectItem value="maria">Maria Santos</SelectItem>
               <SelectItem value="pedro">Pedro Costa</SelectItem>
@@ -85,12 +85,12 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           </Select>
 
           {/* Modality Filter */}
-          <Select value={selectedModality} onValueChange={onModalityChange}>
+          <Select value={selectedModality || 'all'} onValueChange={onModalityChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Modalidade" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as Modalidades</SelectItem>
+              <SelectItem value="all">Todas as Modalidades</SelectItem>
               <SelectItem value="crossfit">CrossFit</SelectItem>
               <SelectItem value="funcional">Funcional</SelectItem>
               <SelectItem value="yoga">Yoga</SelectItem>
@@ -100,12 +100,12 @@ export const DashboardFilters: React.FC<DashboardFiltersProps> = ({
           </Select>
 
           {/* Room Filter */}
-          <Select value={selectedRoom} onValueChange={onRoomChange}>
+          <Select value={selectedRoom || 'all'} onValueChange={onRoomChange}>
             <SelectTrigger className="w-48">
               <SelectValue placeholder="Sala" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as Salas</SelectItem>
+              <SelectItem value="all">Todas as Salas</SelectItem>
               <SelectItem value="sala1">Sala 1</SelectItem>
               <SelectItem value="sala2">Sala 2</SelectItem>
               <SelectItem value="sala3">Sala 3</SelectItem>
