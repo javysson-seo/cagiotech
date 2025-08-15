@@ -47,10 +47,10 @@ const BoxSettingsContent: React.FC = () => {
     },
     {
       id: 'users',
-      label: 'Usuários & Permissões',
+      label: 'Usuários',
       icon: Users,
       component: UsersPermissionsSettings,
-      description: 'Gestão de utilizadores e funções'
+      description: 'Gestão de utilizadores'
     },
     {
       id: 'modalities',
@@ -61,24 +61,24 @@ const BoxSettingsContent: React.FC = () => {
     },
     {
       id: 'rooms',
-      label: 'Salas & Equipamentos',
+      label: 'Salas',
       icon: MapPin,
       component: RoomsEquipmentSettings,
-      description: 'Gestão de espaços e equipamentos'
+      description: 'Gestão de espaços'
     },
     {
       id: 'schedule',
-      label: 'Horários & Regras',
+      label: 'Horários',
       icon: Clock,
       component: ScheduleRulesSettings,
-      description: 'Grade de horários e políticas'
+      description: 'Grade de horários'
     },
     {
       id: 'financial',
       label: 'Financeiro',
       icon: Euro,
       component: FinancialSettings,
-      description: 'Configurações de pagamento'
+      description: 'Configurações financeiras'
     },
     {
       id: 'reports',
@@ -99,30 +99,34 @@ const BoxSettingsContent: React.FC = () => {
       label: 'Gamificação',
       icon: Trophy,
       component: GamificationSettings,
-      description: 'Sistema de pontos e badges'
+      description: 'Sistema de pontos'
     },
     {
       id: 'visual',
-      label: 'Personalização',
+      label: 'Visual',
       icon: Palette,
       component: VisualCustomizationSettings,
-      description: 'Cores, logos e temas'
+      description: 'Personalização visual'
     },
     {
       id: 'security',
-      label: 'Segurança & Backup',
+      label: 'Segurança',
       icon: Shield,
       component: SecurityBackupSettings,
-      description: 'Proteção de dados e backups'
+      description: 'Proteção de dados'
     }
   ];
 
-  const renderActiveComponent = () => {
+  const getCurrentComponent = () => {
     const activeTabData = settingsTabs.find(tab => tab.id === activeTab);
     if (!activeTabData) return null;
     
     const Component = activeTabData.component;
     return <Component />;
+  };
+
+  const getCurrentTabInfo = () => {
+    return settingsTabs.find(tab => tab.id === activeTab);
   };
 
   return (
@@ -132,8 +136,8 @@ const BoxSettingsContent: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <BoxHeader />
         
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto p-6 space-y-6">
             {/* Header Section */}
             <div className="flex items-center space-x-4">
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -147,59 +151,35 @@ const BoxSettingsContent: React.FC = () => {
               </div>
             </div>
 
-            {/* Settings Overview Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {settingsTabs.slice(0, 4).map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <Card 
-                    key={tab.id} 
-                    className={`cursor-pointer transition-all hover:shadow-md ${
-                      activeTab === tab.id ? 'ring-2 ring-primary' : ''
-                    }`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                          <Icon className="h-5 w-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-medium text-sm">{tab.label}</h3>
-                          <p className="text-xs text-muted-foreground">{tab.description}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-
-            {/* Main Settings Interface */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-              <div className="border-b">
-                <TabsList className="grid grid-cols-3 md:grid-cols-6 lg:grid-cols-11 h-auto p-1 bg-muted/50">
+            {/* Tabs Navigation */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <div className="border-b border-border mb-6">
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 lg:grid-cols-11 h-auto p-1 bg-muted/50 rounded-lg">
                   {settingsTabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
                       <TabsTrigger 
                         key={tab.id} 
                         value={tab.id} 
-                        className="flex flex-col items-center p-3 text-xs data-[state=active]:bg-background"
+                        className="flex flex-col items-center justify-center p-3 text-xs min-h-[60px] data-[state=active]:bg-background data-[state=active]:shadow-sm"
                       >
                         <Icon className="h-4 w-4 mb-1" />
-                        <span className="hidden sm:block">{tab.label}</span>
+                        <span className="text-center leading-tight">{tab.label}</span>
                       </TabsTrigger>
                     );
                   })}
                 </TabsList>
               </div>
 
-              {/* Dynamic Content Area */}
-              <div className="min-h-[600px]">
+              {/* Active Tab Content */}
+              <div className="w-full">
                 {settingsTabs.map((tab) => (
-                  <TabsContent key={tab.id} value={tab.id} className="mt-0">
-                    <Card>
+                  <TabsContent 
+                    key={tab.id} 
+                    value={tab.id} 
+                    className="mt-0 focus-visible:outline-none focus-visible:ring-0"
+                  >
+                    <Card className="w-full">
                       <CardHeader className="pb-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-3">
@@ -208,7 +188,7 @@ const BoxSettingsContent: React.FC = () => {
                             </div>
                             <div>
                               <CardTitle className="text-xl">{tab.label}</CardTitle>
-                              <p className="text-sm text-muted-foreground">{tab.description}</p>
+                              <p className="text-sm text-muted-foreground mt-1">{tab.description}</p>
                             </div>
                           </div>
                           <Badge variant="outline" className="text-xs">
@@ -216,8 +196,8 @@ const BoxSettingsContent: React.FC = () => {
                           </Badge>
                         </div>
                       </CardHeader>
-                      <CardContent>
-                        {renderActiveComponent()}
+                      <CardContent className="pt-0">
+                        {getCurrentComponent()}
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -226,10 +206,10 @@ const BoxSettingsContent: React.FC = () => {
             </Tabs>
 
             {/* Help Section */}
-            <Card className="bg-muted/30">
+            <Card className="bg-muted/30 mt-8">
               <CardContent className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
                     <Settings className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1">
@@ -237,7 +217,7 @@ const BoxSettingsContent: React.FC = () => {
                     <p className="text-sm text-muted-foreground mb-3">
                       Se tiver dúvidas sobre alguma configuração, consulte o nosso guia ou contacte o suporte.
                     </p>
-                    <div className="flex space-x-2">
+                    <div className="flex flex-wrap gap-2">
                       <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
                         📖 Guia de Configurações
                       </Badge>
