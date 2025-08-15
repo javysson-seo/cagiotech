@@ -2,49 +2,32 @@
 import React, { useState } from 'react';
 import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
-import { DashboardFilters } from '@/components/box/DashboardFilters';
-import { AdvancedKPIs } from '@/components/box/AdvancedKPIs';
-import { InteractiveCharts } from '@/components/box/InteractiveCharts';
-import { QuickActions } from '@/components/box/QuickActions';
+import { DashboardKPIs } from '@/components/box/dashboard/DashboardKPIs';
+import { DashboardCharts } from '@/components/box/dashboard/DashboardCharts';
+import { DashboardFilters } from '@/components/box/dashboard/DashboardFilters';
 import { RecentActivities } from '@/components/box/RecentActivities';
+import { QuickActions } from '@/components/box/QuickActions';
 import { Footer } from '@/components/Footer';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { 
   BarChart3, 
   TrendingUp, 
   Activity, 
-  Settings,
-  Download,
-  RefreshCw
+  Users
 } from 'lucide-react';
 
 const BoxDashboardContent: React.FC = () => {
   const [dateRange, setDateRange] = useState<any>(null);
-  const [selectedTrainer, setSelectedTrainer] = useState('');
-  const [selectedModality, setSelectedModality] = useState('');
-  const [selectedRoom, setSelectedRoom] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState('all');
+  const [selectedModality, setSelectedModality] = useState('all');
+  const [selectedRoom, setSelectedRoom] = useState('all');
 
   const filters = {
     dateRange,
     trainer: selectedTrainer,
     modality: selectedModality,
     room: selectedRoom
-  };
-
-  const handleRefresh = () => {
-    setIsLoading(true);
-    // Simular refresh
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-  };
-
-  const handleExport = () => {
-    // Implementar exportação de dados
-    console.log('Exportando dados...', filters);
   };
 
   return (
@@ -59,24 +42,10 @@ const BoxDashboardContent: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Dashboard Completo</h1>
+                <h1 className="text-3xl font-bold text-foreground">Dashboard da Empresa</h1>
                 <p className="text-muted-foreground mt-1">
-                  Análise completa e interativa da sua BOX
+                  Visão geral completa da sua empresa
                 </p>
-              </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  onClick={handleRefresh}
-                  disabled={isLoading}
-                >
-                  <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                  {isLoading ? 'Atualizando...' : 'Atualizar'}
-                </Button>
-                <Button variant="outline">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configurar
-                </Button>
               </div>
             </div>
 
@@ -90,8 +59,6 @@ const BoxDashboardContent: React.FC = () => {
               onModalityChange={setSelectedModality}
               selectedRoom={selectedRoom}
               onRoomChange={setSelectedRoom}
-              onRefresh={handleRefresh}
-              onExport={handleExport}
             />
 
             {/* Main Content Tabs */}
@@ -103,41 +70,50 @@ const BoxDashboardContent: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
-                  Análise Detalhada
+                  Análises
                 </TabsTrigger>
                 <TabsTrigger value="operations" className="flex items-center gap-2">
                   <Activity className="h-4 w-4" />
                   Operações
                 </TabsTrigger>
-                <TabsTrigger value="actions" className="flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  Ações Rápidas
+                <TabsTrigger value="members" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Membros
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
-                <AdvancedKPIs filters={filters} />
-              </TabsContent>
-
-              <TabsContent value="analytics" className="space-y-6">
-                <InteractiveCharts filters={filters} />
-              </TabsContent>
-
-              <TabsContent value="operations" className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                  <div className="lg:col-span-8">
-                    <InteractiveCharts filters={filters} />
+                <DashboardKPIs filters={filters} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <DashboardCharts />
                   </div>
-                  <div className="lg:col-span-4">
+                  <div className="space-y-6">
+                    <QuickActions />
                     <RecentActivities />
                   </div>
                 </div>
               </TabsContent>
 
-              <TabsContent value="actions" className="space-y-6">
+              <TabsContent value="analytics" className="space-y-6">
+                <DashboardCharts />
+              </TabsContent>
+
+              <TabsContent value="operations" className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <QuickActions />
                   <RecentActivities />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="members" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <RecentActivities />
+                  </div>
+                  <div>
+                    <QuickActions />
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
