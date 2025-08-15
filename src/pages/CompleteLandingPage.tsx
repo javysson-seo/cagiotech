@@ -38,7 +38,7 @@ export const CompleteLandingPage: React.FC = () => {
 
   // Animated counters
   useEffect(() => {
-    const targets = { boxes: 200, members: 25000, satisfaction: 98, revenue: 50 };
+    const targets = { boxes: 150, members: 15000, satisfaction: 98, revenue: 45 };
     const duration = 2000;
     const steps = 60;
     const increment = duration / steps;
@@ -88,39 +88,39 @@ export const CompleteLandingPage: React.FC = () => {
   const features = [
     {
       icon: <Users className="h-8 w-8" />,
-      title: "Gestão de Membros",
-      description: "Cadastre, organize e acompanhe todos os seus alunos numa interface intuitiva",
-      details: ["Fichas completas de membros", "Histórico de pagamentos", "Documentos e contratos digitais"]
+      title: "Gestão de Alunos",
+      description: "Cadastre, organize e acompanhe todos os seus atletas numa interface intuitiva",
+      details: ["Fichas completas", "Histórico de pagamentos", "Documentos digitais"]
     },
     {
       icon: <Calendar className="h-8 w-8" />,
-      title: "Sistema de Reservas",
-      description: "Agendamento automático com lista de espera e notificações",
-      details: ["Mapa de aulas visual", "Reservas online 24/7", "Check-in QR Code"]
+      title: "Agendamento Inteligente",
+      description: "Sistema de reservas automático com lista de espera e notificações",
+      details: ["Mapa de aulas visual", "Reservas online", "Check-in QR Code"]
     },
     {
       icon: <CreditCard className="h-8 w-8" />,
-      title: "Pagamentos Integrados",
-      description: "Multibanco, MB Way e débito direto. Tudo automático",
-      details: ["Cobranças automáticas", "Relatórios fiscais AT", "Zero trabalho manual"]
+      title: "Pagamentos Simplificados",
+      description: "Multibanco, MB Way e débito direto. Tudo integrado e automático",
+      details: ["Cobranças automáticas", "Relatórios fiscais", "Zero trabalho manual"]
     },
     {
       icon: <Dumbbell className="h-8 w-8" />,
-      title: "Área dos Instrutores",
-      description: "Ferramenta completa para personal trainers e instrutores",
-      details: ["Biblioteca de exercícios", "Planos personalizados", "Acompanhamento de resultados"]
+      title: "Área do Personal Trainer",
+      description: "Ferramenta completa para trainers criarem WODs e acompanharem alunos",
+      details: ["Biblioteca de exercícios", "Planos personalizados", "Tracking de resultados"]
     },
     {
       icon: <Smartphone className="h-8 w-8" />,
       title: "App para Alunos",
-      description: "Aplicação móvel para seus alunos reservarem e acompanharem evolução",
-      details: ["Reservas mobile", "Histórico de treinos", "Chat com instrutor"]
+      description: "Seus alunos podem reservar aulas, ver treinos e acompanhar evolução",
+      details: ["Reservas mobile", "Recordes pessoais", "Chat com trainer"]
     },
     {
       icon: <BarChart3 className="h-8 w-8" />,
-      title: "Analytics Completos",
-      description: "Relatórios e dashboards para decisões baseadas em dados",
-      details: ["Dashboard executivo", "Previsões de receita", "Análise de ocupação e rentabilidade"]
+      title: "Relatórios Poderosos",
+      description: "Analytics completos para tomar decisões baseadas em dados",
+      details: ["Dashboard executivo", "Previsões de receita", "Análise de ocupação"]
     }
   ];
 
@@ -130,7 +130,7 @@ export const CompleteLandingPage: React.FC = () => {
       price: "€29",
       period: "/mês",
       description: "Perfeito para começar",
-      features: ["Até 50 alunos", "2 instrutores", "Funcionalidades básicas", "Suporte email", "Setup gratuito"],
+      features: ["Até 50 alunos", "2 trainers", "Funcionalidades básicas", "Suporte email", "Setup gratuito"],
       cta: "Começar Grátis",
       popular: false
     },
@@ -139,7 +139,7 @@ export const CompleteLandingPage: React.FC = () => {
       price: "€59",
       period: "/mês",
       description: "Mais popular",
-      features: ["Até 150 alunos", "5 instrutores", "Todas as funcionalidades", "App para alunos", "Suporte prioritário", "Relatórios avançados"],
+      features: ["Até 150 alunos", "5 trainers", "Todas as funcionalidades", "App para alunos", "Suporte prioritário", "Relatórios avançados"],
       cta: "Escolher Plano",
       popular: true
     },
@@ -147,8 +147,8 @@ export const CompleteLandingPage: React.FC = () => {
       name: "BUSINESS",
       price: "€99",
       period: "/mês",
-      description: "Para empresas estabelecidas",
-      features: ["Até 300 alunos", "10 instrutores", "Funcionalidades premium", "Integrações avançadas", "Gestor de conta dedicado", "Onboarding personalizado"],
+      description: "Para BOX estabelecidas",
+      features: ["Até 300 alunos", "10 trainers", "Gamificação completa", "Integrações avançadas", "Gestor de conta dedicado", "Treino e onboarding"],
       cta: "Falar com Vendas",
       popular: false
     },
@@ -157,7 +157,7 @@ export const CompleteLandingPage: React.FC = () => {
       price: "Sob consulta",
       period: "",
       description: "Redes e franchises",
-      features: ["Alunos ilimitados", "Instrutores ilimitados", "Multi-localização", "API personalizada", "SLA garantido", "Desenvolvimento custom"],
+      features: ["Alunos ilimitados", "Trainers ilimitados", "Multi-localização", "API personalizada", "SLA garantido", "Desenvolvimento custom"],
       cta: "Contactar",
       popular: false
     }
@@ -166,27 +166,30 @@ export const CompleteLandingPage: React.FC = () => {
   const testimonials = [
     {
       name: "João Silva",
-      company: "FitLife Academia",
-      text: "Desde que mudámos para o CagioTech, poupamos 12 horas por semana em gestão. O sistema de pagamentos é fantástico!",
-      rating: 5
+      company: "CrossFit Porto",
+      text: "Desde que mudámos para o CagioTech, poupamos 10 horas por semana em tarefas administrativas. O sistema de pagamentos é fantástico!",
+      rating: 5,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=joao"
     },
     {
       name: "Maria Santos",
-      company: "YogaFlow Studio",
-      text: "Os meus alunos adoram a app. As reservas aumentaram 45% e as faltas diminuíram drasticamente.",
-      rating: 5
+      company: "FunctionalFit Lisboa",
+      text: "Os meus alunos adoram a app. As reservas aumentaram 40% e o no-show diminuiu drasticamente.",
+      rating: 5,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=maria"
     },
     {
       name: "Pedro Costa",
-      company: "PowerGym Braga",
-      text: "Relatórios incríveis! Finalmente tenho controlo total do negócio. Recomendo a 100%.",
-      rating: 5
+      company: "StrongBox Braga",
+      text: "Relatórios incríveis! Finalmente tenho visibilidade total do negócio. Recomendo a 100%.",
+      rating: 5,
+      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=pedro"
     }
   ];
 
   const faqs = [
     {
-      question: "É difícil migrar os dados da minha academia?",
+      question: "É difícil migrar os dados da minha BOX?",
       answer: "Não! A nossa equipa faz toda a migração gratuitamente. Normalmente fica pronto em 24h."
     },
     {
@@ -218,9 +221,7 @@ export const CompleteLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-[#bed700] to-[#a5c400] bg-clip-text text-transparent">
-                <h1 className="text-2xl font-bold">CagioTech</h1>
-              </div>
+              <img src="/lovable-uploads/8dbf4355-937c-46a1-b5ed-612c0fa8be8e.png" alt="CagioTech" className="h-10 w-auto" />
             </div>
             
             {/* Desktop Navigation */}
@@ -292,10 +293,10 @@ export const CompleteLandingPage: React.FC = () => {
             <div className="space-y-8">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-                  Revolucione a Gestão do seu <span className="text-[#bed700]">Negócio Fitness</span> com o CagioTech
+                  Revolucione a Gestão da sua <span className="text-[#bed700]">BOX</span> com o CagioTech
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl">
-                  A plataforma completa para empresas fitness e wellness portuguesas. Gerencie alunos, aulas, pagamentos e muito mais numa só ferramenta.
+                  A plataforma completa para ginásios portugueses. Gerencie alunos, aulas, pagamentos e muito mais numa só ferramenta.
                 </p>
               </div>
 
@@ -318,7 +319,7 @@ export const CompleteLandingPage: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-[#bed700] flex-shrink-0" />
-                  <span className="text-foreground">100% adaptado para academias portuguesas</span>
+                  <span className="text-foreground">100% adaptado à realidade portuguesa</span>
                 </div>
               </div>
 
@@ -353,14 +354,14 @@ export const CompleteLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-foreground mb-4">
-              Já somos a escolha de mais de 200+ empresas fitness em Portugal
+              Já somos a escolha de mais de 150+ BOX em Portugal
             </h2>
           </div>
 
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div className="space-y-2">
               <div className="text-4xl font-bold text-[#bed700]">{counters.boxes}+</div>
-              <div className="text-muted-foreground">academias e estúdios ativos</div>
+              <div className="text-muted-foreground">BOX ativas</div>
             </div>
             <div className="space-y-2">
               <div className="text-4xl font-bold text-[#bed700]">{counters.members.toLocaleString()}+</div>
@@ -383,7 +384,7 @@ export const CompleteLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-foreground mb-4">
-              Tudo o que precisa para gerir o seu negócio fitness
+              Tudo o que precisa para gerir a sua BOX
             </h2>
           </div>
 
@@ -426,7 +427,7 @@ export const CompleteLandingPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-8 text-center">
             <div className="space-y-4">
-              <div className="text-2xl font-bold">40% mais barato</div>
+              <div className="text-2xl font-bold">50% mais barato</div>
               <div className="opacity-90">vs outros sistemas complexos</div>
             </div>
             <div className="space-y-4">
@@ -540,9 +541,11 @@ export const CompleteLandingPage: React.FC = () => {
                   </div>
                   <p className="text-muted-foreground mb-6">"{testimonial.text}"</p>
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-[#bed700] rounded-full flex items-center justify-center text-white font-bold">
-                      {testimonial.name.charAt(0)}
-                    </div>
+                    <img 
+                      src={testimonial.avatar} 
+                      alt={testimonial.name}
+                      className="w-10 h-10 rounded-full"
+                    />
                     <div>
                       <div className="font-semibold">{testimonial.name}</div>
                       <div className="text-sm text-muted-foreground">{testimonial.company}</div>
@@ -595,10 +598,10 @@ export const CompleteLandingPage: React.FC = () => {
       <section className="py-20 bg-gradient-to-r from-[#bed700] to-[#a5c400] text-white">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold mb-4">
-            Pronto para revolucionar o seu negócio fitness?
+            Pronto para revolucionar a sua BOX?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Junte-se a centenas de empresas que já crescem com o CagioTech
+            Junte-se a centenas de ginásios que já crescem com o CagioTech
           </p>
 
           <form onSubmit={handleEmailSubmit} className="max-w-md mx-auto mb-8">
@@ -621,7 +624,7 @@ export const CompleteLandingPage: React.FC = () => {
             <p className="mb-4 opacity-90">🎮 Quer testar antes? Experimente nossa DEMO:</p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button variant="outline" className="border-white text-white hover:bg-white/10" onClick={() => setDemoModalOpen(true)}>
-                Login Demo Academia
+                Login Demo BOX
               </Button>
               <Button variant="outline" className="border-white text-white hover:bg-white/10" onClick={() => setDemoModalOpen(true)}>
                 Login Demo Personal Trainer
@@ -662,11 +665,9 @@ export const CompleteLandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-[#bed700] to-[#a5c400] bg-clip-text text-transparent">
-                <h1 className="text-2xl font-bold">CagioTech</h1>
-              </div>
+              <img src="/lovable-uploads/8dbf4355-937c-46a1-b5ed-612c0fa8be8e.png" alt="CagioTech" className="h-10 w-auto" />
               <p className="text-background/70">
-                A plataforma completa para gestão de empresas fitness e wellness em Portugal.
+                A plataforma completa para gestão de ginásios em Portugal.
               </p>
             </div>
             
