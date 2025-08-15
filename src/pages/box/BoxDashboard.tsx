@@ -4,6 +4,7 @@ import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { DashboardCharts } from '@/components/box/DashboardCharts';
 import { QuickActions } from '@/components/box/QuickActions';
+import { RecentActivities } from '@/components/box/RecentActivities';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Users, TrendingUp, Euro, ArrowUp } from 'lucide-react';
 import { Footer } from '@/components/Footer';
@@ -77,7 +78,7 @@ const BoxDashboardContent: React.FC = () => {
                       {stat.value}
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="flex items-center space-x-1 text-sm text-[#bed700]">
+                      <div className="flex items-center space-x-1 text-sm text-cagio-green">
                         <ArrowUp className="h-3 w-3" />
                         <span className="font-medium">{stat.change}</span>
                       </div>
@@ -87,14 +88,14 @@ const BoxDashboardContent: React.FC = () => {
                     </div>
                   </CardContent>
                   {/* Accent bar */}
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-[#bed700]"></div>
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-cagio-green"></div>
                 </Card>
               ))}
             </div>
 
-            {/* Seção Principal - Split 70/30 conforme PRD */}
-            <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-              {/* Esquerda - Gráficos Performance (70%) */}
+            {/* Seção Principal - Split conforme PRD */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Esquerda - Gráficos Performance (60%) */}
               <Card className="lg:col-span-7">
                 <CardHeader>
                   <CardTitle className="text-xl font-semibold">Gráficos de Performance</CardTitle>
@@ -103,22 +104,28 @@ const BoxDashboardContent: React.FC = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-4">
-                  <DashboardCharts />
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <DashboardCharts />
+                  </div>
                 </CardContent>
               </Card>
 
-              {/* Direita - Ações Rápidas (30%) */}
-              <Card className="lg:col-span-3">
-                <CardHeader>
-                  <CardTitle className="text-xl font-semibold">Ações Rápidas</CardTitle>
-                  <CardDescription>
-                    Funcionalidades mais utilizadas
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <QuickActions />
-                </CardContent>
-              </Card>
+              {/* Direita - Ações Rápidas e Atividades (40%) */}
+              <div className="lg:col-span-5 space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl font-semibold">Ações Rápidas</CardTitle>
+                    <CardDescription>
+                      Funcionalidades mais utilizadas
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <QuickActions />
+                  </CardContent>
+                </Card>
+
+                <RecentActivities />
+              </div>
             </div>
           </div>
         </main>
