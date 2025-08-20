@@ -252,17 +252,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
+      // Register without email confirmation
       const { data, error } = await supabase.auth.signUp({
         email: userData.email.trim(),
         password: userData.password,
         options: {
           data: {
-            name: userData.name,
+            name: userData.companyName,
             role: role,
-            company_name: userData.companyName,
-            phone: userData.phone
+            company_name: userData.companyName
           },
-          emailRedirectTo: `${window.location.origin}/auth/login`
+          emailRedirectTo: undefined // Remove email confirmation
         }
       });
 
@@ -271,7 +271,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        toast.success('Conta criada com sucesso! Verifique seu email para confirmar.');
+        // Since we're not requiring email confirmation, we can sign in immediately
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email: userData.email.trim(),
+          password: userData.password,
+        });
+
+        if (signInError) {
+          throw new Error(getAuthErrorMessage(signInError));
+        }
+
+        toast.success('Conta criada com sucesso! Redirecionando...');
+        
+        // Redirect to box dashboard after successful registration
+        setTimeout(() => {
+          window.location.href = '/box';
+        }, 1000);
       }
 
     } catch (err) {

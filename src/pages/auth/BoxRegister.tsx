@@ -16,12 +16,10 @@ export const BoxRegister: React.FC = () => {
   const [formData, setFormData] = useState({
     companyName: '',
     email: '',
-    password: '',
-    confirmPassword: ''
+    password: ''
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -30,11 +28,6 @@ export const BoxRegister: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      toast.error('As palavras-passe não coincidem');
-      return;
-    }
-
     if (formData.password.length < 6) {
       toast.error('A palavra-passe deve ter pelo menos 6 caracteres');
       return;
@@ -52,13 +45,10 @@ export const BoxRegister: React.FC = () => {
 
     try {
       await register({
-        name: formData.companyName, // Using company name as the user name initially
+        companyName: formData.companyName,
         email: formData.email,
-        password: formData.password,
-        companyName: formData.companyName
+        password: formData.password
       }, 'box_admin');
-      
-      toast.success('Conta criada com sucesso! Verifique seu email para confirmar a conta.');
       
     } catch (error) {
       console.error('Registration error:', error);
@@ -138,30 +128,6 @@ export const BoxRegister: React.FC = () => {
                       onClick={() => setShowPassword(!showPassword)}
                     >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar palavra-passe *</Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={formData.confirmPassword}
-                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                      required
-                      minLength={6}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
                 </div>
