@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +27,7 @@ import {
   Plus,
   Trash2
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -45,6 +45,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   onDelete,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [documents, setDocuments] = useState([
+    { id: 1, name: 'Contrato.pdf', size: '2.1 MB', uploaded: '2024-01-15', uploadedBy: 'Admin' },
+    { id: 2, name: 'Atestado_Medico.jpg', size: '1.8 MB', uploaded: '2024-01-20', uploadedBy: 'Carlos Santos' }
+  ]);
 
   if (!athlete) return null;
 
@@ -61,17 +65,32 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      // Verificar se algum arquivo excede 5MB
       for (let i = 0; i < files.length; i++) {
         if (files[i].size > 5 * 1024 * 1024) {
-          alert(`O arquivo ${files[i].name} excede o limite de 5MB`);
+          toast.error(`O arquivo ${files[i].name} excede o limite de 5MB`);
           return;
         }
       }
       setSelectedFiles(files);
-      // Aqui seria implementado o upload real
+      // Simular upload
+      Array.from(files).forEach(file => {
+        const newDoc = {
+          id: Date.now() + Math.random(),
+          name: file.name,
+          size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
+          uploaded: new Date().toLocaleDateString('pt-PT'),
+          uploadedBy: 'Utilizador Atual'
+        };
+        setDocuments(prev => [...prev, newDoc]);
+      });
+      toast.success('Documentos enviados com sucesso!');
       console.log('Uploading files:', files);
     }
+  };
+
+  const handleDeleteDocument = (docId: number) => {
+    setDocuments(prev => prev.filter(doc => doc.id !== docId));
+    toast.success('Documento excluído com sucesso');
   };
 
   const handleDelete = () => {
@@ -81,25 +100,78 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
     }
   };
 
+  const handleCreateNutritionalPlan = () => {
+    toast.success('Redirecionando para criação de plano nutricional...');
+    // Aqui implementaria a navegação para criação de plano nutricional
+  };
+
   const statusBadge = getStatusBadge(athlete.status);
 
-  // Mock data para histórico e pagamentos
+  // Histórico de atividades do atleta (expandido)
   const athleteHistory = [
-    { date: '2024-01-15', action: 'Cadastro realizado', user: 'Admin' },
-    { date: '2024-01-20', action: 'Plano atualizado para Premium', user: 'Carlos Santos' },
-    { date: '2024-02-01', action: 'Dados atualizados', user: 'Admin' }
+    { date: '2024-01-15', action: 'Cadastro realizado', user: 'Admin', details: 'Atleta registrado no sistema' },
+    { date: '2024-01-20', action: 'Plano atualizado para Premium', user: 'Carlos Santos', details: 'Mudança de Básico para Premium' },
+    { date: '2024-02-01', action: 'Dados pessoais atualizados', user: 'Admin', details: 'Telefone e endereço alterados' },
+    { date: '2024-02-15', action: 'Documento anexado', user: 'Ana Silva', details: 'Contrato de adesão enviado' },
+    { date: '2024-03-01', action: 'Pagamento realizado', user: 'Sistema', details: 'Mensalidade de Março paga' }
   ];
 
+  // Histórico de pagamentos baseado no plano (com parcelas)
   const paymentHistory = [
-    { date: '2024-01-01', amount: 80, status: 'Pago', method: 'Cartão' },
-    { date: '2024-02-01', amount: 80, status: 'Pago', method: 'Transferência' },
-    { date: '2024-03-01', amount: 80, status: 'Pendente', method: 'Cartão' }
+    { 
+      id: 1,
+      date: '2024-03-01', 
+      amount: 80, 
+      status: 'Pago', 
+      method: 'Cartão',
+      planName: 'Premium',
+      installment: '3/12',
+      dueDate: '2024-03-01'
+    },
+    { 
+      id: 2,
+      date: '2024-02-01', 
+      amount: 80, 
+      status: 'Pago', 
+      method: 'Transferência',
+      planName: 'Premium',
+      installment: '2/12',
+      dueDate: '2024-02-01'
+    },
+    { 
+      id: 3,
+      date: '2024-01-01', 
+      amount: 80, 
+      status: 'Pago', 
+      method: 'Cartão',
+      planName: 'Premium',
+      installment: '1/12',
+      dueDate: '2024-01-01'
+    },
+    { 
+      id: 4,
+      date: '', 
+      amount: 80, 
+      status: 'Pendente', 
+      method: 'Cartão',
+      planName: 'Premium',
+      installment: '4/12',
+      dueDate: '2024-04-01'
+    },
+    { 
+      id: 5,
+      date: '', 
+      amount: 80, 
+      status: 'Pendente', 
+      method: 'Cartão',
+      planName: 'Premium',
+      installment: '5/12',
+      dueDate: '2024-05-01'
+    }
   ];
 
-  const documents = [
-    { name: 'Contrato.pdf', size: '2.1 MB', uploaded: '2024-01-15' },
-    { name: 'Atestado_Medico.jpg', size: '1.8 MB', uploaded: '2024-01-20' }
-  ];
+  const totalPaid = paymentHistory.filter(p => p.status === 'Pago').reduce((sum, p) => sum + p.amount, 0);
+  const pendingPayments = paymentHistory.filter(p => p.status === 'Pendente');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -269,7 +341,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                 <Card>
                   <CardContent className="p-4 text-center">
                     <Euro className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">€240</p>
+                    <p className="text-2xl font-bold">€{totalPaid}</p>
                     <p className="text-sm text-muted-foreground">Total pago</p>
                   </CardContent>
                 </Card>
@@ -345,21 +417,47 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {documents.map((doc, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    {documents.map((doc) => (
+                      <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center space-x-3">
                           <FileText className="h-8 w-8 text-blue-600" />
                           <div>
                             <p className="font-medium">{doc.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {doc.size} • Enviado em {doc.uploaded}
+                              {doc.size} • Enviado em {doc.uploaded} por {doc.uploadedBy}
                             </p>
                           </div>
                         </div>
-                        <Button variant="outline" size="sm">
-                          <Download className="h-4 w-4 mr-2" />
-                          Baixar
-                        </Button>
+                        <div className="flex items-center space-x-2">
+                          <Button variant="outline" size="sm">
+                            <Download className="h-4 w-4 mr-2" />
+                            Baixar
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir o documento <strong>{doc.name}</strong>?
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleDeleteDocument(doc.id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Excluir
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -382,6 +480,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                         <div className="flex-1">
                           <p className="font-medium">{entry.action}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{entry.details}</p>
                           <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
                             <span>{new Date(entry.date).toLocaleDateString('pt-PT')}</span>
                             <span>•</span>
@@ -404,15 +503,37 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
+                  {/* Resumo de pagamentos pendentes */}
+                  {pendingPayments.length > 0 && (
+                    <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                      <h4 className="font-medium text-orange-800 mb-2">
+                        Parcelas Pendentes ({pendingPayments.length})
+                      </h4>
+                      <div className="space-y-2">
+                        {pendingPayments.map((payment) => (
+                          <div key={payment.id} className="flex justify-between items-center text-sm">
+                            <span>Parcela {payment.installment} - {payment.planName}</span>
+                            <div className="flex items-center space-x-2">
+                              <span>Vencimento: {new Date(payment.dueDate).toLocaleDateString('pt-PT')}</span>
+                              <Badge variant="destructive">€{payment.amount}</Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-3">
-                    {paymentHistory.map((payment, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    {paymentHistory.map((payment) => (
+                      <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center space-x-3">
                           <Euro className="h-8 w-8 text-green-600" />
                           <div>
-                            <p className="font-medium">€{payment.amount}</p>
+                            <p className="font-medium">
+                              €{payment.amount} - {payment.planName} (Parcela {payment.installment})
+                            </p>
                             <p className="text-sm text-muted-foreground">
-                              {new Date(payment.date).toLocaleDateString('pt-PT')} • {payment.method}
+                              {payment.date ? new Date(payment.date).toLocaleDateString('pt-PT') : `Vencimento: ${new Date(payment.dueDate).toLocaleDateString('pt-PT')}`} • {payment.method}
                             </p>
                           </div>
                         </div>
@@ -422,12 +543,19 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       </div>
                     ))}
                   </div>
+                  
                   <div className="mt-4 p-4 bg-muted rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Total Pago:</span>
-                      <span className="text-xl font-bold text-green-600">
-                        €{paymentHistory.filter(p => p.status === 'Pago').reduce((sum, p) => sum + p.amount, 0)}
-                      </span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Total Pago:</span>
+                        <span className="text-xl font-bold text-green-600">€{totalPaid}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">Pendente:</span>
+                        <span className="text-xl font-bold text-orange-600">
+                          €{pendingPayments.reduce((sum, p) => sum + p.amount, 0)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -445,17 +573,26 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       <div className="p-4 bg-muted rounded-lg">
                         <p className="text-sm">{athlete.nutritionPreview}</p>
                       </div>
-                      <Button variant="outline" className="w-full">
-                        <FileText className="h-4 w-4 mr-2" />
-                        Ver Plano Completo
-                      </Button>
+                      <div className="flex space-x-2">
+                        <Button variant="outline" className="flex-1">
+                          <FileText className="h-4 w-4 mr-2" />
+                          Ver Plano Completo
+                        </Button>
+                        <Button variant="outline" className="flex-1">
+                          <Edit className="h-4 w-4 mr-2" />
+                          Editar Plano
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-muted-foreground mb-4">
                         Este atleta ainda não possui um plano nutricional
                       </p>
-                      <Button className="bg-green-600 hover:bg-green-700">
+                      <Button 
+                        onClick={handleCreateNutritionalPlan}
+                        className="bg-green-600 hover:bg-green-700"
+                      >
                         <Plus className="h-4 w-4 mr-2" />
                         Criar Plano Nutricional
                       </Button>
