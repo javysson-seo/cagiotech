@@ -47,9 +47,7 @@ export const BoxRegister: React.FC = () => {
         companyName: formData.companyName
       }, 'box_admin');
       
-      // Redirect to email verification page
-      toast.success('Conta criada! Verifique seu email para confirmar.');
-      navigate('/auth/email-verification');
+      // The redirect is now handled in the AuthContext
       
     } catch (error) {
       console.error('Registration error:', error);

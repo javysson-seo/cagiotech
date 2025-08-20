@@ -71,23 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session?.user) {
         setIsLoading(true);
         await fetchUserProfile(session.user);
-        
-        // If user just confirmed their email, redirect to /box
-        if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('role')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (profile?.role === 'box_admin') {
-              window.location.href = '/box';
-            }
-          } catch (error) {
-            console.error('Error checking profile role:', error);
-          }
-        }
       } else {
         setUser(null);
         setIsLoading(false);
@@ -194,13 +177,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         password: userData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/box`,
           data: {
             name: userData.name,
             role: role,
             company_name: userData.companyName || userData.boxName,
             phone: userData.phone
-          }
+          },
+          emailRedirectTo: undefined // Remove email verification
         }
       });
 
@@ -209,7 +192,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        toast.success('Conta criada com sucesso! Verifique seu email para confirmar.');
+        // Since we disabled email confirmation, the user should be automatically signed in
+        toast.success('Conta criada com sucesso!');
+        
+        // Redirect based on role
+        if (role === 'box_admin') {
+          window.location.href = '/box';
+        }
       }
 
     } catch (err) {
