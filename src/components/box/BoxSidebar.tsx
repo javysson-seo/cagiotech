@@ -24,7 +24,7 @@ export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
 
   const navigation = [
-    { name: 'Dashboard', href: '/box/dashboard', icon: Home },
+    { name: 'Dashboard', href: '/box', icon: Home },
     { name: 'Atletas', href: '/box/athletes', icon: Users },
     { name: 'Trainers', href: '/box/trainers', icon: UserCheck },
     { name: 'Aulas', href: '/box/classes', icon: Calendar },
@@ -49,7 +49,7 @@ export const BoxSidebar: React.FC = () => {
       {/* User Info */}
       <div className="p-6 border-b border-border">
         <div className="space-y-1">
-          <p className="font-medium text-foreground">{user?.boxName}</p>
+          <p className="font-medium text-foreground">{user?.boxName || 'Minha Empresa'}</p>
           <p className="text-sm text-muted-foreground">{user?.name}</p>
           <Badge variant="outline" className="text-xs">
             BOX Administrator

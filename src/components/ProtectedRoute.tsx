@@ -22,6 +22,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, isLoading, logout } = useAuth();
 
+  console.log('ProtectedRoute - isLoading:', isLoading, 'user:', user);
+
   // Loading state
   if (isLoading) {
     return (
@@ -33,10 +35,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Not authenticated
   if (!user) {
+    console.log('No user found, redirecting to login');
     return <Navigate to="/auth/login" replace />;
   }
 
-  // Check approval status - box_admin doesn't need approval
+  console.log('User found:', user.email, 'Role:', user.role, 'Approved:', user.isApproved);
+
+  // Check approval status - box_admin doesn't need approval OR if explicitly not required
   if (requireApproval && !user.isApproved && user.role !== 'box_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -108,5 +113,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
+  console.log('All checks passed, rendering children');
   return <>{children}</>;
 };

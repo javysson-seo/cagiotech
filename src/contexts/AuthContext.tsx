@@ -44,32 +44,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        fetchUserProfile(session.user);
-      } else {
-        setIsLoading(false);
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && isMounted) {
+          await fetchUserProfile(session.user);
+        }
+      } catch (error) {
+        console.error('Error getting session:', error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
-    });
+    };
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+
       console.log('Auth event:', event, session?.user?.email);
       
       if (session?.user) {
+        setIsLoading(true);
         await fetchUserProfile(session.user);
         
         // If user just confirmed their email, redirect to /box
         if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
-          const profile = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profile.data?.role === 'box_admin') {
-            window.location.href = '/box';
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+              
+            if (profile?.role === 'box_admin') {
+              window.location.href = '/box';
+            }
+          } catch (error) {
+            console.error('Error checking profile role:', error);
           }
         }
       } else {
@@ -78,11 +94,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    return () => subscription.unsubscribe();
+    initializeAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
+      console.log('Fetching profile for user:', supabaseUser.id);
+      
       const { data: profile, error } = await supabase
         .from('profiles')
         .select(`
@@ -101,8 +124,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      if (!profile) {
+        console.error('No profile found for user');
+        setIsLoading(false);
+        return;
+      }
+
       // Handle the company relationship correctly
-      const company = Array.isArray(profile.companies) ? profile.companies[0] : profile.companies;
+      const companies = profile.companies;
+      const company = Array.isArray(companies) ? companies[0] : companies;
 
       const authUser: User = {
         id: profile.id,
@@ -116,6 +146,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.email}`
       };
 
+      console.log('Setting user:', authUser);
       setUser(authUser);
     } catch (err) {
       console.error('Error in fetchUserProfile:', err);
@@ -149,9 +180,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const errorMessage = err instanceof Error ? err.message : 'Erro no login';
       setError(errorMessage);
       toast.error(errorMessage);
-      throw err;
-    } finally {
       setIsLoading(false);
+      throw err;
     }
   };
 
