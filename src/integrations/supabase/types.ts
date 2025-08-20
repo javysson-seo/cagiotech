@@ -427,6 +427,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_company_data: {
+        Args: { target_company_id: string }
+        Returns: boolean
+      }
       check_birthday_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined
