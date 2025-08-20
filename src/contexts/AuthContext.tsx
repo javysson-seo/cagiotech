@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -126,7 +125,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: supabaseUser.id,
             name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
             email: supabaseUser.email!,
-            role: 'student' as UserRole,
+            role: (supabaseUser.user_metadata?.role as UserRole) || 'box_admin',
+            company_name: supabaseUser.user_metadata?.company_name,
+            phone: supabaseUser.user_metadata?.phone,
             is_approved: true
           };
 
@@ -140,6 +141,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             console.error('Error creating profile:', createError);
             setIsLoading(false);
             return;
+          }
+
+          // Create company if user is box_admin and has company_name
+          if (newProfile.role === 'box_admin' && newProfile.company_name) {
+            const { data: company, error: companyError } = await supabase
+              .from('companies')
+              .insert({
+                name: newProfile.company_name,
+                owner_id: supabaseUser.id
+              })
+              .select()
+              .single();
+
+            if (companyError) {
+              console.error('Error creating company:', companyError);
+            } else {
+              console.log('Company created:', company);
+            }
           }
 
           const authUser: User = {
@@ -240,7 +259,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: {
             name: userData.name,
             role: role,
-            company_name: userData.companyName || userData.boxName,
+            company_name: userData.companyName,
             phone: userData.phone
           },
           emailRedirectTo: `${window.location.origin}/auth/login`
@@ -252,7 +271,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        toast.success('Conta criada com sucesso!');
+        toast.success('Conta criada com sucesso! Verifique seu email para confirmar.');
       }
 
     } catch (err) {
@@ -301,13 +320,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAuthErrorMessage = (error: any): string => {
     switch (error.message) {
       case 'Invalid login credentials':
-        return 'Email ou password incorretos';
+        return 'Email ou palavra-passe incorretos';
       case 'Email not confirmed':
         return 'Por favor, confirme seu email antes de fazer login';
       case 'User already registered':
         return 'Este email já está registrado';
       case 'Password should be at least 6 characters':
-        return 'A password deve ter pelo menos 6 caracteres';
+        return 'A palavra-passe deve ter pelo menos 6 caracteres';
       case 'Unable to validate email address: invalid format':
         return 'Formato de email inválido';
       default:

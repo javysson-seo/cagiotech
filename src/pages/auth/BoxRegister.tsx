@@ -7,19 +7,21 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { Eye, EyeOff } from 'lucide-react';
 
 export const BoxRegister: React.FC = () => {
   const navigate = useNavigate();
   const { register, isLoading } = useAuth();
   
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
     companyName: '',
+    email: '',
     password: '',
     confirmPassword: ''
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -38,16 +40,25 @@ export const BoxRegister: React.FC = () => {
       return;
     }
 
+    if (!formData.companyName.trim()) {
+      toast.error('Nome da empresa é obrigatório');
+      return;
+    }
+
+    if (!formData.email.trim()) {
+      toast.error('Email é obrigatório');
+      return;
+    }
+
     try {
       await register({
-        name: formData.name,
+        name: formData.companyName, // Using company name as the user name initially
         email: formData.email,
         password: formData.password,
-        phone: formData.phone,
         companyName: formData.companyName
       }, 'box_admin');
       
-      // The redirect is now handled in the AuthContext
+      toast.success('Conta criada com sucesso! Verifique seu email para confirmar a conta.');
       
     } catch (error) {
       console.error('Registration error:', error);
@@ -75,41 +86,17 @@ export const BoxRegister: React.FC = () => {
                 <div className="text-white text-2xl font-bold">🏢</div>
               </div>
               <CardTitle className="text-2xl">
-                Criar conta da empresa
+                Registrar Empresa
               </CardTitle>
               <CardDescription>
-                Registre a sua empresa no CagioTech
+                Crie sua conta empresarial no CagioTech
               </CardDescription>
             </CardHeader>
             
             <CardContent>
               <form onSubmit={handleRegister} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Nome completo</Label>
-                    <Input
-                      id="name"
-                      placeholder="João Silva"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <Input
-                      id="phone"
-                      placeholder="+351 912 345 678"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                
                 <div className="space-y-2">
-                  <Label htmlFor="companyName">Nome da empresa</Label>
+                  <Label htmlFor="companyName">Nome da empresa *</Label>
                   <Input
                     id="companyName"
                     placeholder="Fitness Premium"
@@ -120,7 +107,7 @@ export const BoxRegister: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email">Email *</Label>
                   <Input
                     id="email"
                     type="email"
@@ -132,29 +119,51 @@ export const BoxRegister: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Palavra-passe</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    required
-                    minLength={6}
-                  />
+                  <Label htmlFor="password">Palavra-passe *</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar palavra-passe</Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    required
-                    minLength={6}
-                  />
+                  <Label htmlFor="confirmPassword">Confirmar palavra-passe *</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={formData.confirmPassword}
+                      onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                      required
+                      minLength={6}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
                 
                 <Button
