@@ -55,8 +55,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth event:', event, session?.user?.email);
+      
       if (session?.user) {
         await fetchUserProfile(session.user);
+        
+        // If user just confirmed their email, redirect to /box
+        if (event === 'SIGNED_IN' && session.user.email_confirmed_at) {
+          const profile = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+            
+          if (profile.data?.role === 'box_admin') {
+            window.location.href = '/box';
+          }
+        }
       } else {
         setUser(null);
         setIsLoading(false);
@@ -149,6 +164,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: userData.email,
         password: userData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/box`,
           data: {
             name: userData.name,
             role: role,

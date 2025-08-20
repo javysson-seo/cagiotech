@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -17,6 +16,7 @@ import { Login } from "./pages/auth/Login";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
+import { EmailVerification } from "./pages/auth/EmailVerification";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -65,6 +65,7 @@ function App() {
                   <Route path="/auth/login" element={<LoginPage />} />
                   <Route path="/auth/box-register" element={<BoxRegister />} />
                   <Route path="/auth/student-register" element={<StudentRegister />} />
+                  <Route path="/auth/email-verification" element={<EmailVerification />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />
