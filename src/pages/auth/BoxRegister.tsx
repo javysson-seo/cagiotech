@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export const BoxRegister: React.FC = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { register, isLoading } = useAuth();
   
@@ -35,22 +33,32 @@ export const BoxRegister: React.FC = () => {
       return;
     }
 
+    if (formData.password.length < 6) {
+      toast.error('A palavra-passe deve ter pelo menos 6 caracteres');
+      return;
+    }
+
     try {
       await register({
-        ...formData,
-        boxId: `company_${Date.now()}`
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        companyName: formData.companyName
       }, 'box_admin');
       
-      navigate('/box');
-      toast.success('Conta criada com sucesso!');
+      // Navigate to login or show confirmation message
+      toast.success('Conta criada! Verifique seu email para confirmar.');
+      navigate('/auth/login');
+      
     } catch (error) {
-      toast.error('Erro ao criar conta. Tente novamente.');
+      console.error('Registration error:', error);
+      // Error is already handled in the AuthContext
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
-      {/* Simplified Header */}
       <header className="bg-card/80 backdrop-blur-sm border-b border-border px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-center">
           <img 
@@ -134,6 +142,7 @@ export const BoxRegister: React.FC = () => {
                     value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     required
+                    minLength={6}
                   />
                 </div>
                 
@@ -146,6 +155,7 @@ export const BoxRegister: React.FC = () => {
                     value={formData.confirmPassword}
                     onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                     required
+                    minLength={6}
                   />
                 </div>
                 
@@ -154,7 +164,7 @@ export const BoxRegister: React.FC = () => {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'A carregar...' : 'Criar conta'}
+                  {isLoading ? 'A criar conta...' : 'Criar conta'}
                 </Button>
                 
                 <div className="text-center">
