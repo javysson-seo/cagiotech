@@ -9,7 +9,6 @@ import { Separator } from '@/components/ui/separator';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { 
   Edit, 
-  X, 
   Phone, 
   Mail, 
   MapPin, 
@@ -28,13 +27,14 @@ import {
   Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { type Athlete } from '@/hooks/useAthletes';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  athlete: any;
+  athlete: Athlete | null;
   onEdit: () => void;
-  onDelete?: (athlete: any) => void;
+  onDelete?: (athlete: Athlete) => void;
 }
 
 export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
@@ -105,7 +105,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
     // Aqui implementaria a navegação para criação de plano nutricional
   };
 
-  const statusBadge = getStatusBadge(athlete.status);
+  const statusBadge = getStatusBadge(athlete.status || 'active');
 
   // Histórico de atividades do atleta (expandido)
   const athleteHistory = [
@@ -179,9 +179,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">Detalhes do Atleta</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </DialogHeader>
 
@@ -189,8 +186,8 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
           {/* Header do Atleta */}
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
-              <AvatarFallback className="bg-green-100 text-green-600 text-xl">
+              <AvatarImage src={athlete.profile_photo} alt={athlete.name} />
+              <AvatarFallback className="bg-emerald-100 text-emerald-600 text-xl">
                 {athlete.name.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
@@ -203,22 +200,26 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                 <Badge variant={statusBadge.variant}>
                   {statusBadge.label}
                 </Badge>
-                <Badge variant="outline">{athlete.plan}</Badge>
+                {athlete.plan && <Badge variant="outline">{athlete.plan}</Badge>}
               </div>
               <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center">
-                  <Mail className="h-4 w-4 mr-1" />
-                  {athlete.email}
-                </span>
-                <span className="flex items-center">
-                  <Phone className="h-4 w-4 mr-1" />
-                  {athlete.phone}
-                </span>
+                {athlete.email && (
+                  <span className="flex items-center">
+                    <Mail className="h-4 w-4 mr-1" />
+                    {athlete.email}
+                  </span>
+                )}
+                {athlete.phone && (
+                  <span className="flex items-center">
+                    <Phone className="h-4 w-4 mr-1" />
+                    {athlete.phone}
+                  </span>
+                )}
               </div>
             </div>
             
             <div className="flex items-center space-x-2">
-              <Button onClick={onEdit} className="bg-green-600 hover:bg-green-700">
+              <Button onClick={onEdit} className="bg-emerald-600 hover:bg-emerald-700">
                 <Edit className="h-4 w-4 mr-2" />
                 Editar
               </Button>
@@ -269,10 +270,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     <CardTitle className="text-lg">Informações Pessoais</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {athlete.birthDate && (
+                    {athlete.birth_date && (
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{new Date(athlete.birthDate).toLocaleDateString('pt-PT')}</span>
+                        <span>{new Date(athlete.birth_date).toLocaleDateString('pt-PT')}</span>
                       </div>
                     )}
                     {athlete.gender && (
@@ -314,8 +315,8 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                         <Euro className="h-3 w-3 mr-1" />
                         Mensalidade:
                       </span>
-                      <span className="font-semibold text-green-600">
-                        €{athlete.monthlyFee}/mês
+                      <span className="font-semibold text-emerald-600">
+                        €{athlete.monthly_fee}/mês
                       </span>
                     </div>
                   </CardContent>
@@ -333,7 +334,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
-                    <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
+                    <Clock className="h-8 w-8 text-emerald-600 mx-auto mb-2" />
                     <p className="text-2xl font-bold">92%</p>
                     <p className="text-sm text-muted-foreground">Taxa presença</p>
                   </CardContent>
@@ -348,7 +349,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </div>
 
               {/* Informações Médicas e Objetivos */}
-              {athlete.medicalConditions && (
+              {athlete.medical_notes && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center">
@@ -357,7 +358,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{athlete.medicalConditions}</p>
+                    <p className="text-sm">{athlete.medical_notes}</p>
                   </CardContent>
                 </Card>
               )}
@@ -568,10 +569,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   <CardTitle>Plano Nutricional</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {athlete.nutritionPreview ? (
+                  {athlete.nutrition_preview ? (
                     <div className="space-y-4">
                       <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">{athlete.nutritionPreview}</p>
+                        <p className="text-sm">{athlete.nutrition_preview}</p>
                       </div>
                       <div className="flex space-x-2">
                         <Button variant="outline" className="flex-1">
@@ -591,7 +592,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       </p>
                       <Button 
                         onClick={handleCreateNutritionalPlan}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-emerald-600 hover:bg-emerald-700"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Criar Plano Nutricional
