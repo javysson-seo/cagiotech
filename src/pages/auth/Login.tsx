@@ -18,7 +18,6 @@ import { Loading } from '@/components/ui/loading';
 const loginSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(3, 'Password deve ter pelo menos 3 caracteres'),
-  role: z.enum(['cagio_admin', 'box_admin', 'trainer', 'student']).optional()
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -27,7 +26,7 @@ export const Login: React.FC = () => {
   const navigate = useNavigate();
   const { login, isLoading, error, clearError, user } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<UserRole | ''>('');
+  const [selectedRole, setSelectedRole] = useState<UserRole>('box_admin');
 
   const {
     register: registerForm,
@@ -63,7 +62,7 @@ export const Login: React.FC = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearError();
-      await login(data.email, data.password, selectedRole || undefined);
+      await login(data.email, data.password, selectedRole);
     } catch (err) {
       // Error is handled in AuthContext
     }
@@ -168,10 +167,10 @@ export const Login: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Função (Opcional)</Label>
+                    <Label>Tipo de Usuário</Label>
                     <Select value={selectedRole} onValueChange={(value) => setSelectedRole(value as UserRole)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecionar função" />
+                        <SelectValue placeholder="Selecionar tipo" />
                       </SelectTrigger>
                       <SelectContent>
                         {roleOptions.map((option) => (
@@ -192,10 +191,6 @@ export const Login: React.FC = () => {
                   <span className="text-muted-foreground">Não tem conta? </span>
                   <Link to="/auth/box-register" className="text-blue-600 hover:underline font-medium">
                     Registrar BOX
-                  </Link>
-                  <span className="text-muted-foreground"> ou </span>
-                  <Link to="/auth/student-register" className="text-blue-600 hover:underline font-medium">
-                    Registrar como Aluno
                   </Link>
                 </div>
               </CardContent>

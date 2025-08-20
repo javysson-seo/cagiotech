@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
@@ -217,28 +218,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      // Clean up any existing sessions
-      try {
-        await supabase.auth.signOut({ scope: 'global' });
-      } catch (err) {
-        // Ignore errors during cleanup
-      }
-
+      console.log('Attempting login for:', email, 'role:', role);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
       if (error) {
+        console.error('Login error:', error);
         throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
+        console.log('Login successful for user:', data.user.email);
         toast.success('Login realizado com sucesso!');
         // Don't manually fetch profile here - let onAuthStateChange handle it
       }
       
     } catch (err) {
+      console.error('Login catch error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erro no login';
       setError(errorMessage);
       toast.error(errorMessage);
@@ -252,6 +251,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
+      console.log('Attempting registration for:', userData.email, 'role:', role);
+      
       // Register without email confirmation
       const { data, error } = await supabase.auth.signUp({
         email: userData.email.trim(),
@@ -267,10 +268,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        console.error('Registration error:', error);
         throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
+        console.log('Registration successful, signing in user:', data.user.email);
+        
         // Since we're not requiring email confirmation, we can sign in immediately
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: userData.email.trim(),
@@ -278,6 +282,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (signInError) {
+          console.error('Auto sign-in error:', signInError);
           throw new Error(getAuthErrorMessage(signInError));
         }
 
@@ -290,6 +295,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
     } catch (err) {
+      console.error('Registration catch error:', err);
       const errorMessage = err instanceof Error ? err.message : 'Erro no registro';
       setError(errorMessage);
       toast.error(errorMessage);
@@ -335,13 +341,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const getAuthErrorMessage = (error: any): string => {
     switch (error.message) {
       case 'Invalid login credentials':
-        return 'Email ou palavra-passe incorretos';
+        return 'Email ou senha incorretos';
       case 'Email not confirmed':
         return 'Por favor, confirme seu email antes de fazer login';
       case 'User already registered':
         return 'Este email já está registrado';
       case 'Password should be at least 6 characters':
-        return 'A palavra-passe deve ter pelo menos 6 caracteres';
+        return 'A senha deve ter pelo menos 6 caracteres';
       case 'Unable to validate email address: invalid format':
         return 'Formato de email inválido';
       default:
