@@ -1,40 +1,37 @@
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { 
   Edit, 
-  X, 
-  Phone, 
+  Trash2, 
   Mail, 
-  MapPin, 
+  Phone, 
   Calendar, 
   User, 
-  Heart,
-  Euro,
-  Clock,
-  Activity,
-  Upload,
+  AlertCircle,
   FileText,
-  Download,
-  History,
   CreditCard,
+  Activity,
   Plus,
-  Trash2
+  Download,
+  X,
+  Heart
 } from 'lucide-react';
+import { format, parseISO } from 'date-fns';
+import { pt } from 'date-fns/locale';
+import { type Athlete } from '@/hooks/useAthletes';
 import { toast } from 'sonner';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  athlete: any;
+  athlete: Athlete | null;
   onEdit: () => void;
-  onDelete?: (athlete: any) => void;
+  onDelete: (athlete: Athlete) => void;
 }
 
 export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
@@ -42,192 +39,100 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   onClose,
   athlete,
   onEdit,
-  onDelete,
+  onDelete
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [documents, setDocuments] = useState([
-    { id: 1, name: 'Contrato.pdf', size: '2.1 MB', uploaded: '2024-01-15', uploadedBy: 'Admin' },
-    { id: 2, name: 'Atestado_Medico.jpg', size: '1.8 MB', uploaded: '2024-01-20', uploadedBy: 'Carlos Santos' }
-  ]);
+  const [activeTab, setActiveTab] = useState('profile');
 
   if (!athlete) return null;
 
+  
   const getStatusBadge = (status: string) => {
-    const config = {
-      active: { label: 'Ativo', variant: 'default' as const },
-      inactive: { label: 'Inativo', variant: 'secondary' as const },
-      frozen: { label: 'Congelado', variant: 'outline' as const },
-      pending: { label: 'Pendente', variant: 'destructive' as const }
-    };
-    return config[status as keyof typeof config] || config.pending;
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].size > 5 * 1024 * 1024) {
-          toast.error(`O arquivo ${files[i].name} excede o limite de 5MB`);
-          return;
-        }
-      }
-      setSelectedFiles(files);
-      // Simular upload
-      Array.from(files).forEach(file => {
-        const newDoc = {
-          id: Date.now() + Math.random(),
-          name: file.name,
-          size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
-          uploaded: new Date().toLocaleDateString('pt-PT'),
-          uploadedBy: 'Utilizador Atual'
-        };
-        setDocuments(prev => [...prev, newDoc]);
-      });
-      toast.success('Documentos enviados com sucesso!');
-      console.log('Uploading files:', files);
+    switch (status) {
+      case 'active':
+        return <Badge className="bg-green-100 text-green-800">Ativo</Badge>;
+      case 'inactive':
+        return <Badge variant="destructive">Inativo</Badge>;
+      case 'frozen':
+        return <Badge className="bg-orange-100 text-orange-800">Congelado</Badge>;
+      case 'pending':
+        return <Badge className="bg-blue-100 text-blue-800">Pendente</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
   };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word.charAt(0))
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
+  // Mock data para demonstração
+  const mockDocuments = [
+    { id: 1, name: 'Atestado Médico.pdf', type: 'medical', uploadDate: '2024-01-15', size: '2.3 MB' },
+    { id: 2, name: 'Termo de Responsabilidade.pdf', type: 'legal', uploadDate: '2024-01-10', size: '1.8 MB' },
+    { id: 3, name: 'Foto de Identificação.jpg', type: 'photo', uploadDate: '2024-01-05', size: '856 KB' }
+  ];
+
+  const mockPaymentHistory = [
+    { id: 1, date: '2024-01-15', amount: 80, status: 'paid', plan: 'Premium', method: 'Cartão', installment: '1/12' },
+    { id: 2, date: '2024-02-15', amount: 80, status: 'pending', plan: 'Premium', method: 'Cartão', installment: '2/12' },
+    { id: 3, date: '2024-03-15', amount: 80, status: 'pending', plan: 'Premium', method: 'Cartão', installment: '3/12' }
+  ];
+
+  const mockActivityHistory = [
+    { id: 1, date: '2024-01-20T10:30:00', action: 'Dados atualizados', user: 'João Admin', details: 'Telefone alterado' },
+    { id: 2, date: '2024-01-15T14:15:00', action: 'Plano alterado', user: 'Maria Gestora', details: 'De Básico para Premium' },
+    { id: 3, date: '2024-01-10T09:00:00', action: 'Atleta cadastrado', user: 'João Admin', details: 'Cadastro inicial' }
+  ];
 
   const handleDeleteDocument = (docId: number) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== docId));
     toast.success('Documento excluído com sucesso');
-  };
-
-  const handleDelete = () => {
-    if (onDelete) {
-      onDelete(athlete);
-      onClose();
-    }
   };
 
   const handleCreateNutritionalPlan = () => {
     toast.success('Redirecionando para criação de plano nutricional...');
-    // Aqui implementaria a navegação para criação de plano nutricional
   };
-
-  const statusBadge = getStatusBadge(athlete.status);
-
-  // Histórico de atividades do atleta (expandido)
-  const athleteHistory = [
-    { date: '2024-01-15', action: 'Cadastro realizado', user: 'Admin', details: 'Atleta registrado no sistema' },
-    { date: '2024-01-20', action: 'Plano atualizado para Premium', user: 'Carlos Santos', details: 'Mudança de Básico para Premium' },
-    { date: '2024-02-01', action: 'Dados pessoais atualizados', user: 'Admin', details: 'Telefone e endereço alterados' },
-    { date: '2024-02-15', action: 'Documento anexado', user: 'Ana Silva', details: 'Contrato de adesão enviado' },
-    { date: '2024-03-01', action: 'Pagamento realizado', user: 'Sistema', details: 'Mensalidade de Março paga' }
-  ];
-
-  // Histórico de pagamentos baseado no plano (com parcelas)
-  const paymentHistory = [
-    { 
-      id: 1,
-      date: '2024-03-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '3/12',
-      dueDate: '2024-03-01'
-    },
-    { 
-      id: 2,
-      date: '2024-02-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Transferência',
-      planName: 'Premium',
-      installment: '2/12',
-      dueDate: '2024-02-01'
-    },
-    { 
-      id: 3,
-      date: '2024-01-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '1/12',
-      dueDate: '2024-01-01'
-    },
-    { 
-      id: 4,
-      date: '', 
-      amount: 80, 
-      status: 'Pendente', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '4/12',
-      dueDate: '2024-04-01'
-    },
-    { 
-      id: 5,
-      date: '', 
-      amount: 80, 
-      status: 'Pendente', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '5/12',
-      dueDate: '2024-05-01'
-    }
-  ];
-
-  const totalPaid = paymentHistory.filter(p => p.status === 'Pago').reduce((sum, p) => sum + p.amount, 0);
-  const pendingPayments = paymentHistory.filter(p => p.status === 'Pendente');
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-hidden">
+        <DialogHeader className="border-b pb-4">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl">Detalhes do Atleta</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Header do Atleta */}
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20">
-              <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
-              <AvatarFallback className="bg-green-100 text-green-600 text-xl">
-                {athlete.name.split(' ').map((n: string) => n[0]).join('')}
-              </AvatarFallback>
-            </Avatar>
-            
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-foreground">
-                {athlete.name}
-              </h2>
-              <div className="flex items-center space-x-2 mt-1">
-                <Badge variant={statusBadge.variant}>
-                  {statusBadge.label}
-                </Badge>
-                <Badge variant="outline">{athlete.plan}</Badge>
-              </div>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center">
-                  <Mail className="h-4 w-4 mr-1" />
-                  {athlete.email}
-                </span>
-                <span className="flex items-center">
-                  <Phone className="h-4 w-4 mr-1" />
-                  {athlete.phone}
-                </span>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${athlete.name}`} />
+                <AvatarFallback className="bg-[#bed700]/10 text-[#bed700] font-semibold text-lg">
+                  {getInitials(athlete.name)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <DialogTitle className="text-2xl">{athlete.name}</DialogTitle>
+                <div className="flex items-center space-x-3 mt-2">
+                  {getStatusBadge(athlete.status)}
+                  <span className="text-sm text-muted-foreground">
+                    Membro desde {athlete.created_at ? format(parseISO(athlete.created_at), 'MMMM yyyy', { locale: pt }) : 'N/A'}
+                  </span>
+                </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-2">
-              <Button onClick={onEdit} className="bg-green-600 hover:bg-green-700">
+              <Button 
+                onClick={onEdit}
+                className="bg-[#bed700] hover:bg-[#a5c400] text-white"
+              >
                 <Edit className="h-4 w-4 mr-2" />
                 Editar
               </Button>
               
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Excluir
+                  <Button variant="destructive" size="sm">
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
@@ -235,373 +140,268 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
                     <AlertDialogDescription>
                       Tem certeza que deseja excluir o atleta <strong>{athlete.name}</strong>? 
-                      Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
+                      Esta ação não pode ser desfeita.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                      Excluir Atleta
+                    <AlertDialogAction 
+                      onClick={() => onDelete(athlete)}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      Excluir
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </div>
           </div>
+        </DialogHeader>
 
-          <Separator />
+        {/* Tabs */}
+        <div className="flex border-b">
+          {[
+            { id: 'profile', label: 'Perfil', icon: User },
+            { id: 'documents', label: 'Documentos', icon: FileText },
+            { id: 'payments', label: 'Pagamentos', icon: CreditCard },
+            { id: 'history', label: 'Histórico', icon: Activity }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 px-4 py-3 border-b-2 transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-[#bed700] text-[#bed700]'
+                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-          {/* Tabs de Conteúdo */}
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="overview">Resumo</TabsTrigger>
-              <TabsTrigger value="documents">Documentos</TabsTrigger>
-              <TabsTrigger value="history">Histórico</TabsTrigger>
-              <TabsTrigger value="payments">Pagamentos</TabsTrigger>
-              <TabsTrigger value="nutrition">Nutrição</TabsTrigger>
-            </TabsList>
+        {/* Tab Content */}
+        <div className="flex-1 overflow-y-auto p-6">
+          {activeTab === 'profile' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Informações Pessoais */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <User className="h-5 w-5 mr-2" />
+                    Informações Pessoais
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {athlete.email && (
+                    <div className="flex items-center space-x-3">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <span>{athlete.email}</span>
+                    </div>
+                  )}
+                  
+                  {athlete.phone && (
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <span>{athlete.phone}</span>
+                    </div>
+                  )}
+                  
+                  {athlete.birth_date && (
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>{format(parseISO(athlete.birth_date), 'dd/MM/yyyy', { locale: pt })}</span>
+                    </div>
+                  )}
 
-            {/* Tab Resumo */}
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Informações Pessoais</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {athlete.birthDate && (
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{new Date(athlete.birthDate).toLocaleDateString('pt-PT')}</span>
-                      </div>
-                    )}
-                    {athlete.gender && (
-                      <div className="flex items-center space-x-2">
+                  {athlete.gender && (
+                    <div className="flex items-center space-x-3">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <span>{athlete.gender === 'male' ? 'Masculino' : athlete.gender === 'female' ? 'Feminino' : 'Outro'}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Contatos de Emergência */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <AlertCircle className="h-5 w-5 mr-2" />
+                    Contato de Emergência
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {athlete.emergency_contact_name ? (
+                    <>
+                      <div className="flex items-center space-x-3">
                         <User className="h-4 w-4 text-muted-foreground" />
-                        <span>{athlete.gender === 'male' ? 'Masculino' : athlete.gender === 'female' ? 'Feminino' : 'Outro'}</span>
+                        <span>{athlete.emergency_contact_name}</span>
                       </div>
-                    )}
-                    {athlete.address && (
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{athlete.address}</span>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                      {athlete.emergency_contact_phone && (
+                        <div className="flex items-center space-x-3">
+                          <Phone className="h-4 w-4 text-muted-foreground" />
+                          <span>{athlete.emergency_contact_phone}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">Nenhum contato de emergência cadastrado</p>
+                  )}
+                </CardContent>
+              </Card>
 
-                <Card>
+              {/* Observações Médicas */}
+              {athlete.medical_notes && (
+                <Card className="md:col-span-2">
                   <CardHeader>
-                    <CardTitle className="text-lg">Plano e Treinamento</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span>Plano:</span>
-                      <Badge variant="outline">{athlete.plan}</Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span>Personal Trainer:</span>
-                      <span className="font-medium">{athlete.trainer}</span>
-                    </div>
-                    {athlete.group && (
-                      <div className="flex items-center justify-between">
-                        <span>Grupo:</span>
-                        <span className="font-medium">{athlete.group}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="flex items-center">
-                        <Euro className="h-3 w-3 mr-1" />
-                        Mensalidade:
-                      </span>
-                      <span className="font-semibold text-green-600">
-                        €{athlete.monthlyFee}/mês
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Estatísticas */}
-              <div className="grid grid-cols-3 gap-4">
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Activity className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">28</p>
-                    <p className="text-sm text-muted-foreground">Aulas este mês</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">92%</p>
-                    <p className="text-sm text-muted-foreground">Taxa presença</p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 text-center">
-                    <Euro className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">€{totalPaid}</p>
-                    <p className="text-sm text-muted-foreground">Total pago</p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Informações Médicas e Objetivos */}
-              {athlete.medicalConditions && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center">
+                    <CardTitle className="flex items-center">
                       <Heart className="h-5 w-5 mr-2" />
-                      Informações de Saúde
+                      Observações Médicas
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{athlete.medicalConditions}</p>
+                    <p>{athlete.medical_notes}</p>
                   </CardContent>
                 </Card>
               )}
 
-              {athlete.goals && athlete.goals.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-lg">Objetivos</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {athlete.goals.map((goal: string, index: number) => (
-                        <Badge key={index} variant="secondary">{goal}</Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Tab Documentos */}
-            <TabsContent value="documents" className="space-y-4">
-              <Card>
+              {/* Plano Nutricional */}
+              <Card className="md:col-span-2">
                 <CardHeader>
-                  <CardTitle>Upload de Documentos</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                    <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <div className="space-y-2">
-                      <p className="text-sm font-medium">
-                        Clique para selecionar ou arraste arquivos aqui
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Máximo 5MB por arquivo (PDF, JPG, PNG, DOC)
-                      </p>
-                      <label className="cursor-pointer">
-                        <input
-                          type="file"
-                          multiple
-                          accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <Button variant="outline" size="sm" asChild>
-                          <span>Selecionar Arquivos</span>
-                        </Button>
-                      </label>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Documentos Anexados</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {documents.map((doc) => (
-                      <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <FileText className="h-8 w-8 text-blue-600" />
-                          <div>
-                            <p className="font-medium">{doc.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {doc.size} • Enviado em {doc.uploaded} por {doc.uploadedBy}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">
-                            <Download className="h-4 w-4 mr-2" />
-                            Baixar
-                          </Button>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="destructive" size="sm">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  Tem certeza que deseja excluir o documento <strong>{doc.name}</strong>?
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction 
-                                  onClick={() => handleDeleteDocument(doc.id)}
-                                  className="bg-red-600 hover:bg-red-700"
-                                >
-                                  Excluir
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="history" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <History className="h-5 w-5 mr-2" />
-                    Histórico de Atividades
+                  <CardTitle className="flex items-center justify-between">
+                    <span className="flex items-center">
+                      <Heart className="h-5 w-5 mr-2" />
+                      Plano Nutricional
+                    </span>
+                    <Button 
+                      onClick={handleCreateNutritionalPlan}
+                      className="bg-[#bed700] hover:bg-[#a5c400] text-white"
+                      size="sm"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Criar Plano
+                    </Button>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {athleteHistory.map((entry, index) => (
-                      <div key={index} className="flex items-start space-x-4 pb-4 border-b last:border-b-0">
-                        <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
-                        <div className="flex-1">
-                          <p className="font-medium">{entry.action}</p>
-                          <p className="text-sm text-muted-foreground mt-1">{entry.details}</p>
-                          <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                            <span>{new Date(entry.date).toLocaleDateString('pt-PT')}</span>
-                            <span>•</span>
-                            <span>por {entry.user}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-muted-foreground">Nenhum plano nutricional ativo</p>
                 </CardContent>
               </Card>
-            </TabsContent>
+            </div>
+          )}
 
-            <TabsContent value="payments" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <CreditCard className="h-5 w-5 mr-2" />
-                    Histórico de Pagamentos
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {/* Resumo de pagamentos pendentes */}
-                  {pendingPayments.length > 0 && (
-                    <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                      <h4 className="font-medium text-orange-800 mb-2">
-                        Parcelas Pendentes ({pendingPayments.length})
-                      </h4>
-                      <div className="space-y-2">
-                        {pendingPayments.map((payment) => (
-                          <div key={payment.id} className="flex justify-between items-center text-sm">
-                            <span>Parcela {payment.installment} - {payment.planName}</span>
-                            <div className="flex items-center space-x-2">
-                              <span>Vencimento: {new Date(payment.dueDate).toLocaleDateString('pt-PT')}</span>
-                              <Badge variant="destructive">€{payment.amount}</Badge>
-                            </div>
-                          </div>
-                        ))}
+          {activeTab === 'documents' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Documentos Anexados</h3>
+                <Button className="bg-[#bed700] hover:bg-[#a5c400] text-white">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Adicionar Documento
+                </Button>
+              </div>
+
+              {mockDocuments.map((doc) => (
+                <Card key={doc.id}>
+                  <CardContent className="flex items-center justify-between p-4">
+                    <div className="flex items-center space-x-3">
+                      <FileText className="h-8 w-8 text-blue-600" />
+                      <div>
+                        <h4 className="font-medium">{doc.name}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {doc.size} • Enviado em {format(parseISO(doc.uploadDate), 'dd/MM/yyyy', { locale: pt })}
+                        </p>
                       </div>
                     </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {paymentHistory.map((payment) => (
-                      <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <Euro className="h-8 w-8 text-green-600" />
-                          <div>
-                            <p className="font-medium">
-                              €{payment.amount} - {payment.planName} (Parcela {payment.installment})
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {payment.date ? new Date(payment.date).toLocaleDateString('pt-PT') : `Vencimento: ${new Date(payment.dueDate).toLocaleDateString('pt-PT')}`} • {payment.method}
-                            </p>
-                          </div>
-                        </div>
-                        <Badge variant={payment.status === 'Pago' ? 'default' : 'destructive'}>
-                          {payment.status}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-muted rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Total Pago:</span>
-                        <span className="text-xl font-bold text-green-600">€{totalPaid}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Pendente:</span>
-                        <span className="text-xl font-bold text-orange-600">
-                          €{pendingPayments.reduce((sum, p) => sum + p.amount, 0)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="nutrition" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Plano Nutricional</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {athlete.nutritionPreview ? (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">{athlete.nutritionPreview}</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" className="flex-1">
-                          <FileText className="h-4 w-4 mr-2" />
-                          Ver Plano Completo
-                        </Button>
-                        <Button variant="outline" className="flex-1">
-                          <Edit className="h-4 w-4 mr-2" />
-                          Editar Plano
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-4">
-                        Este atleta ainda não possui um plano nutricional
-                      </p>
-                      <Button 
-                        onClick={handleCreateNutritionalPlan}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Criar Plano Nutricional
+                    
+                    <div className="flex items-center space-x-2">
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4" />
                       </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="destructive" size="sm">
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir Documento</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Tem certeza que deseja excluir o documento "{doc.name}"?
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction 
+                              onClick={() => handleDeleteDocument(doc.id)}
+                              className="bg-red-600 hover:bg-red-700"
+                            >
+                              Excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'payments' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Histórico de Pagamentos</h3>
+              
+              {mockPaymentHistory.map((payment) => (
+                <Card key={payment.id}>
+                  <CardContent className="flex items-center justify-between p-4">
+                    <div>
+                      <h4 className="font-medium">{payment.plan} - {payment.installment}</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {format(parseISO(payment.date), 'dd/MM/yyyy', { locale: pt })} • {payment.method}
+                      </p>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="font-semibold">€{payment.amount}</p>
+                      <Badge 
+                        className={payment.status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-orange-100 text-orange-800'}
+                      >
+                        {payment.status === 'paid' ? 'Pago' : 'Pendente'}
+                      </Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {activeTab === 'history' && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Histórico de Atividades</h3>
+              
+              {mockActivityHistory.map((activity) => (
+                <Card key={activity.id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">{activity.action}</h4>
+                      <span className="text-sm text-muted-foreground">
+                        {format(parseISO(activity.date), 'dd/MM/yyyy HH:mm', { locale: pt })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Por: {activity.user} • {activity.details}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
