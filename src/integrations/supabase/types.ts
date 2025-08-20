@@ -431,6 +431,10 @@ export type Database = {
         Args: { target_company_id: string }
         Returns: boolean
       }
+      can_access_profile: {
+        Args: { target_profile_id: string }
+        Returns: boolean
+      }
       check_birthday_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined
