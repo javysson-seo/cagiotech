@@ -14,108 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      athlete_activities: {
-        Row: {
-          athlete_id: string
-          company_id: string
-          created_at: string | null
-          description: string
-          id: string
-          metadata: Json | null
-          performed_by: string | null
-          performed_by_name: string | null
-          type: string
-        }
-        Insert: {
-          athlete_id: string
-          company_id: string
-          created_at?: string | null
-          description: string
-          id?: string
-          metadata?: Json | null
-          performed_by?: string | null
-          performed_by_name?: string | null
-          type: string
-        }
-        Update: {
-          athlete_id?: string
-          company_id?: string
-          created_at?: string | null
-          description?: string
-          id?: string
-          metadata?: Json | null
-          performed_by?: string | null
-          performed_by_name?: string | null
-          type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "athlete_activities_athlete_id_fkey"
-            columns: ["athlete_id"]
-            isOneToOne: false
-            referencedRelation: "athletes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "athlete_activities_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      athlete_documents: {
-        Row: {
-          athlete_id: string
-          company_id: string
-          created_at: string | null
-          file_size: number | null
-          file_url: string
-          id: string
-          name: string
-          type: string
-          uploaded_by: string | null
-        }
-        Insert: {
-          athlete_id: string
-          company_id: string
-          created_at?: string | null
-          file_size?: number | null
-          file_url: string
-          id?: string
-          name: string
-          type: string
-          uploaded_by?: string | null
-        }
-        Update: {
-          athlete_id?: string
-          company_id?: string
-          created_at?: string | null
-          file_size?: number | null
-          file_url?: string
-          id?: string
-          name?: string
-          type?: string
-          uploaded_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "athlete_documents_athlete_id_fkey"
-            columns: ["athlete_id"]
-            isOneToOne: false
-            referencedRelation: "athletes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "athlete_documents_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       athlete_groups: {
         Row: {
           athlete_id: string
@@ -152,75 +50,8 @@ export type Database = {
           },
         ]
       }
-      athlete_payments: {
-        Row: {
-          amount: number
-          athlete_id: string
-          company_id: string
-          created_at: string | null
-          due_date: string
-          id: string
-          installment_number: number | null
-          notes: string | null
-          paid_date: string | null
-          payment_method: string | null
-          plan_name: string | null
-          status: string
-          total_installments: number | null
-          updated_at: string | null
-        }
-        Insert: {
-          amount: number
-          athlete_id: string
-          company_id: string
-          created_at?: string | null
-          due_date: string
-          id?: string
-          installment_number?: number | null
-          notes?: string | null
-          paid_date?: string | null
-          payment_method?: string | null
-          plan_name?: string | null
-          status?: string
-          total_installments?: number | null
-          updated_at?: string | null
-        }
-        Update: {
-          amount?: number
-          athlete_id?: string
-          company_id?: string
-          created_at?: string | null
-          due_date?: string
-          id?: string
-          installment_number?: number | null
-          notes?: string | null
-          paid_date?: string | null
-          payment_method?: string | null
-          plan_name?: string | null
-          status?: string
-          total_installments?: number | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "athlete_payments_athlete_id_fkey"
-            columns: ["athlete_id"]
-            isOneToOne: false
-            referencedRelation: "athletes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "athlete_payments_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       athletes: {
         Row: {
-          address: string | null
           birth_date: string | null
           company_id: string
           created_at: string | null
@@ -228,24 +59,14 @@ export type Database = {
           emergency_contact_name: string | null
           emergency_contact_phone: string | null
           gender: string | null
-          goals: string[] | null
-          group: string | null
           id: string
-          join_date: string | null
           medical_notes: string | null
-          monthly_fee: number | null
           name: string
-          notes: string | null
-          nutrition_preview: string | null
           phone: string | null
-          plan: string | null
-          profile_photo: string | null
           status: string | null
-          trainer: string | null
           updated_at: string | null
         }
         Insert: {
-          address?: string | null
           birth_date?: string | null
           company_id: string
           created_at?: string | null
@@ -253,24 +74,14 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           gender?: string | null
-          goals?: string[] | null
-          group?: string | null
           id?: string
-          join_date?: string | null
           medical_notes?: string | null
-          monthly_fee?: number | null
           name: string
-          notes?: string | null
-          nutrition_preview?: string | null
           phone?: string | null
-          plan?: string | null
-          profile_photo?: string | null
           status?: string | null
-          trainer?: string | null
           updated_at?: string | null
         }
         Update: {
-          address?: string | null
           birth_date?: string | null
           company_id?: string
           created_at?: string | null
@@ -278,20 +89,11 @@ export type Database = {
           emergency_contact_name?: string | null
           emergency_contact_phone?: string | null
           gender?: string | null
-          goals?: string[] | null
-          group?: string | null
           id?: string
-          join_date?: string | null
           medical_notes?: string | null
-          monthly_fee?: number | null
           name?: string
-          notes?: string | null
-          nutrition_preview?: string | null
           phone?: string | null
-          plan?: string | null
-          profile_photo?: string | null
           status?: string | null
-          trainer?: string | null
           updated_at?: string | null
         }
         Relationships: [

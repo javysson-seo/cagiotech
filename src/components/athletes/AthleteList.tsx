@@ -1,166 +1,133 @@
 
 import React from 'react';
-import { Eye, Edit, Trash2, Phone, Mail, Euro } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { type Athlete } from '@/hooks/useAthletes';
+import { Edit, Eye, Phone, Mail, Euro } from 'lucide-react';
 
 interface AthleteListProps {
-  athletes: Athlete[];
-  loading?: boolean;
+  athletes: any[];
   searchTerm: string;
   statusFilter: string;
-  onEdit: (athlete: Athlete) => void;
-  onView: (athlete: Athlete) => void;
+  onEdit: (athlete: any) => void;
+  onView: (athlete: any) => void;
 }
 
 export const AthleteList: React.FC<AthleteListProps> = ({
   athletes,
-  loading,
   searchTerm,
   statusFilter,
   onEdit,
   onView,
 }) => {
-  const getStatusBadge = (status: string) => {
-    const config = {
-      active: { label: 'Ativo', variant: 'default' as const },
-      inactive: { label: 'Inativo', variant: 'secondary' as const },
-      frozen: { label: 'Congelado', variant: 'outline' as const },
-      pending: { label: 'Pendente', variant: 'destructive' as const }
-    };
-    return config[status as keyof typeof config] || config.active;
-  };
-
   const filteredAthletes = athletes.filter(athlete => {
-    const matchesSearch = !searchTerm || 
-      athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      athlete.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      athlete.phone?.includes(searchTerm);
+    const matchesSearch = athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         athlete.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         athlete.phone.includes(searchTerm);
     
     const matchesStatus = statusFilter === 'all' || athlete.status === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
 
-  if (loading) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">Carregando atletas...</p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (filteredAthletes.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-2">
-              {searchTerm || statusFilter !== 'all' ? 'Nenhum atleta encontrado com os filtros aplicados' : 'Nenhum atleta cadastrado'}
-            </p>
-            {!searchTerm && statusFilter === 'all' && (
-              <p className="text-sm text-muted-foreground">
-                Clique em "Novo Atleta" para começar
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      active: { label: 'Ativo', variant: 'default' as const },
+      inactive: { label: 'Inativo', variant: 'secondary' as const },
+      frozen: { label: 'Congelado', variant: 'outline' as const },
+      pending: { label: 'Pendente', variant: 'destructive' as const }
+    };
+    
+    return statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
+  };
 
   return (
-    <div className="space-y-4">
-      {filteredAthletes.map((athlete) => {
-        const statusBadge = getStatusBadge(athlete.status || 'active');
-        
-        return (
-          <Card key={athlete.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+    <Card>
+      <CardContent className="p-0">
+        <div className="divide-y divide-border">
+          {filteredAthletes.map((athlete) => {
+            const statusBadge = getStatusBadge(athlete.status);
+            
+            return (
+              <div key={athlete.id} className="p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={athlete.profile_photo} alt={athlete.name} />
-                    <AvatarFallback className="bg-emerald-100 text-emerald-600">
-                      {athlete.name.split(' ').map(n => n[0]).join('')}
+                    <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
+                    <AvatarFallback className="bg-green-100 text-green-600">
+                      {athlete.name.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   
-                  <div>
-                    <h3 className="font-semibold text-lg text-foreground">
-                      {athlete.name}
-                    </h3>
-                    <div className="flex items-center space-x-4 mt-1 text-sm text-muted-foreground">
-                      {athlete.email && (
-                        <span className="flex items-center">
-                          <Mail className="h-3 w-3 mr-1" />
-                          {athlete.email}
-                        </span>
-                      )}
-                      {athlete.phone && (
-                        <span className="flex items-center">
-                          <Phone className="h-3 w-3 mr-1" />
-                          {athlete.phone}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  <div className="text-right">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-medium text-foreground truncate">
+                        {athlete.name}
+                      </h3>
                       <Badge variant={statusBadge.variant}>
                         {statusBadge.label}
                       </Badge>
-                      {athlete.plan && (
-                        <Badge variant="outline">{athlete.plan}</Badge>
-                      )}
                     </div>
+                    
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      {athlete.trainer && (
-                        <span>Trainer: {athlete.trainer}</span>
-                      )}
-                      {athlete.monthly_fee && (
-                        <span className="flex items-center font-medium text-emerald-600">
-                          <Euro className="h-3 w-3 mr-1" />
-                          {athlete.monthly_fee}/mês
-                        </span>
-                      )}
+                      <div className="flex items-center">
+                        <Mail className="h-3 w-3 mr-1" />
+                        {athlete.email}
+                      </div>
+                      <div className="flex items-center">
+                        <Phone className="h-3 w-3 mr-1" />
+                        {athlete.phone}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Plano:</span>
+                        <span className="ml-1 font-medium">{athlete.plan}</span>
+                        <span className="mx-2">•</span>
+                        <span className="text-muted-foreground">Trainer:</span>
+                        <span className="ml-1 font-medium">{athlete.trainer}</span>
+                      </div>
+                      
+                      <div className="flex items-center text-sm">
+                        <Euro className="h-3 w-3 mr-1 text-green-600" />
+                        <span className="font-medium">€{athlete.monthlyFee}/mês</span>
+                      </div>
                     </div>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => onView(athlete)}
+                      className="hover:bg-green-50 hover:text-green-600"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => onEdit(athlete)}
-                      className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                      className="hover:bg-green-50 hover:text-green-600"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        );
-      })}
-    </div>
+            );
+          })}
+        </div>
+        
+        {filteredAthletes.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">
+              Nenhum atleta encontrado com os filtros aplicados.
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
