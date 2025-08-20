@@ -23,7 +23,8 @@ import {
   FileText,
   Download,
   History,
-  CreditCard
+  CreditCard,
+  Plus
 } from 'lucide-react';
 
 interface AthleteDetailsModalProps {
