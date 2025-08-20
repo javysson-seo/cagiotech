@@ -435,6 +435,10 @@ export type Database = {
         Args: { target_profile_id: string }
         Returns: boolean
       }
+      can_update_profile: {
+        Args: { target_profile_id: string }
+        Returns: boolean
+      }
       check_birthday_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined

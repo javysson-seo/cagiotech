@@ -39,6 +39,17 @@ export const useAuth = () => {
   return context;
 };
 
+// Utility function to hash email for avatar generation (privacy improvement)
+const hashEmail = (email: string): string => {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    const char = email.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString();
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -52,7 +63,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
-      console.log('Auth event:', event, session?.user?.email);
+      // Reduced logging for security - no sensitive data
+      console.log('Auth event:', event, session?.user ? 'User authenticated' : 'No user');
       
       setSession(session);
       
@@ -74,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error('Error getting session:', error);
+          console.error('Error getting session:', error.message); // Don't log full error object
           setIsLoading(false);
           return;
         }
@@ -86,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsLoading(false);
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error('Error initializing auth:', error instanceof Error ? error.message : 'Unknown error');
         if (isMounted) {
           setIsLoading(false);
         }
@@ -103,7 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
-      console.log('Fetching profile for user:', supabaseUser.id);
+      console.log('Fetching profile for user ID:', supabaseUser.id.substring(0, 8) + '...'); // Partial ID only
       
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -118,7 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
+        console.error('Error fetching profile:', error.message);
         // Create profile if it doesn't exist
         if (error.code === 'PGRST116') {
           console.log('Profile not found, creating one...');
@@ -139,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .single();
 
           if (createError) {
-            console.error('Error creating profile:', createError);
+            console.error('Error creating profile:', createError.message);
             setIsLoading(false);
             return;
           }
@@ -156,9 +168,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
 
             if (companyError) {
-              console.error('Error creating company:', companyError);
+              console.error('Error creating company:', companyError.message);
             } else {
-              console.log('Company created:', company);
+              console.log('Company created successfully');
             }
           }
 
@@ -169,7 +181,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             role: createdProfile.role as UserRole,
             isApproved: createdProfile.is_approved,
             permissions: getDefaultPermissions(createdProfile.role as UserRole),
-            avatar: createdProfile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${createdProfile.email}`
+            avatar: createdProfile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(createdProfile.email)}`
           };
 
           setUser(authUser);
@@ -199,13 +211,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         boxName: company?.name,
         isApproved: profile.is_approved,
         permissions: getDefaultPermissions(profile.role as UserRole),
-        avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.email}`
+        avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`
       };
 
-      console.log('Setting user:', authUser);
+      console.log('User profile loaded successfully');
       setUser(authUser);
     } catch (err) {
-      console.error('Error in fetchUserProfile:', err);
+      console.error('Error in fetchUserProfile:', err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setIsLoading(false);
     }
@@ -218,7 +230,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      console.log('Attempting login for:', email, 'role:', role);
+      console.log('Attempting login for user'); // No email logging for security
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -226,18 +238,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        console.error('Login error:', error);
+        console.error('Login error:', error.message);
         throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
-        console.log('Login successful for user:', data.user.email);
+        console.log('Login successful');
         toast.success('Login realizado com sucesso!');
         // Don't manually fetch profile here - let onAuthStateChange handle it
       }
       
     } catch (err) {
-      console.error('Login catch error:', err);
+      console.error('Login catch error:', err instanceof Error ? err.message : 'Unknown error');
       const errorMessage = err instanceof Error ? err.message : 'Erro no login';
       setError(errorMessage);
       toast.error(errorMessage);
@@ -251,7 +263,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      console.log('Attempting registration for:', userData.email, 'role:', role);
+      console.log('Attempting registration'); // No email logging for security
       
       // Register without email confirmation
       const { data, error } = await supabase.auth.signUp({
@@ -268,12 +280,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
-        console.error('Registration error:', error);
+        console.error('Registration error:', error.message);
         throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
-        console.log('Registration successful, signing in user:', data.user.email);
+        console.log('Registration successful, signing in user');
         
         // Since we're not requiring email confirmation, we can sign in immediately
         const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -282,7 +294,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         if (signInError) {
-          console.error('Auto sign-in error:', signInError);
+          console.error('Auto sign-in error:', signInError.message);
           throw new Error(getAuthErrorMessage(signInError));
         }
 
@@ -295,7 +307,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
     } catch (err) {
-      console.error('Registration catch error:', err);
+      console.error('Registration catch error:', err instanceof Error ? err.message : 'Unknown error');
       const errorMessage = err instanceof Error ? err.message : 'Erro no registro';
       setError(errorMessage);
       toast.error(errorMessage);
@@ -308,16 +320,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       setIsLoading(true);
-      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Clear state immediately for better UX
       setUser(null);
       setSession(null);
       setError(null);
-      toast.info('Logout realizado com sucesso');
-      // Force a clean redirect
-      window.location.href = '/auth/login';
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
+      
+      if (error) {
+        console.error('Logout error:', error.message);
+        toast.error('Erro ao fazer logout');
+      } else {
+        toast.info('Logout realizado com sucesso');
+      }
+      
+      // Force a clean redirect regardless of logout result
+      setTimeout(() => {
+        window.location.href = '/auth/login';
+      }, 500);
+      
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error('Error logging out:', error instanceof Error ? error.message : 'Unknown error');
       toast.error('Erro ao fazer logout');
+      // Still redirect even if logout fails
+      setTimeout(() => {
+        window.location.href = '/auth/login';
+      }, 500);
     } finally {
       setIsLoading(false);
     }

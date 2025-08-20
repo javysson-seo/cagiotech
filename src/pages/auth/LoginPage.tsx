@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,14 +22,57 @@ export const LoginPage: React.FC = () => {
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
   const [forgotPasswordSent, setForgotPasswordSent] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [validationErrors, setValidationErrors] = useState<{email?: string, password?: string}>({});
+
+  // Input validation
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string): boolean => {
+    return password.length >= 6;
+  };
+
+  const handleInputChange = (field: 'email' | 'password', value: string) => {
+    setCredentials(prev => ({ ...prev, [field]: value }));
+    
+    // Clear validation errors when user starts typing
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: undefined }));
+    }
+    
+    // Clear auth errors when user starts typing
+    if (error) {
+      clearError();
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    clearError();
-
-    if (!credentials.email || !credentials.password) {
+    
+    // Client-side validation
+    const errors: {email?: string, password?: string} = {};
+    
+    if (!credentials.email.trim()) {
+      errors.email = 'Email é obrigatório';
+    } else if (!validateEmail(credentials.email)) {
+      errors.email = 'Email inválido';
+    }
+    
+    if (!credentials.password) {
+      errors.password = 'Senha é obrigatória';
+    } else if (!validatePassword(credentials.password)) {
+      errors.password = 'Senha deve ter pelo menos 6 caracteres';
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
     }
+
+    clearError();
+    setValidationErrors({});
 
     try {
       // Convert selectedUserType to the correct role format
@@ -50,12 +94,16 @@ export const LoginPage: React.FC = () => {
       navigate(redirectPaths[selectedUserType]);
     } catch (err) {
       // Error is handled by the AuthContext
-      console.error('Login error:', err);
+      console.error('Login error occurred');
     }
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateEmail(forgotPasswordEmail)) {
+      return;
+    }
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -219,9 +267,13 @@ export const LoginPage: React.FC = () => {
                     type="email"
                     placeholder="seu@email.com"
                     value={credentials.email}
-                    onChange={(e) => setCredentials(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     disabled={isLoading}
+                    className={validationErrors.email ? 'border-red-500' : ''}
                   />
+                  {validationErrors.email && (
+                    <p className="text-sm text-red-500">{validationErrors.email}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -232,8 +284,9 @@ export const LoginPage: React.FC = () => {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Sua senha"
                       value={credentials.password}
-                      onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                      onChange={(e) => handleInputChange('password', e.target.value)}
                       disabled={isLoading}
+                      className={validationErrors.password ? 'border-red-500' : ''}
                     />
                     <Button
                       type="button"
@@ -246,6 +299,9 @@ export const LoginPage: React.FC = () => {
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </Button>
                   </div>
+                  {validationErrors.password && (
+                    <p className="text-sm text-red-500">{validationErrors.password}</p>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between">
