@@ -16,7 +16,8 @@ import {
   Target,
   Euro,
   Clock,
-  Activity
+  Activity,
+  Eye
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -24,12 +25,14 @@ interface AthleteProfileProps {
   athlete: any;
   onEdit: () => void;
   onClose: () => void;
+  onViewDetails: () => void;
 }
 
 export const AthleteProfile: React.FC<AthleteProfileProps> = ({
   athlete,
   onEdit,
   onClose,
+  onViewDetails,
 }) => {
   const getStatusBadge = (status: string) => {
     const config = {
@@ -58,7 +61,7 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
         {/* Header do Atleta */}
         <div className="flex items-center space-x-4">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={athlete.avatar} alt={athlete.name} />
+            <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
             <AvatarFallback className="bg-blue-100 text-blue-600 text-lg">
               {athlete.name.split(' ').map((n: string) => n[0]).join('')}
             </AvatarFallback>
@@ -78,6 +81,19 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
         </div>
 
         <Separator />
+
+        {/* Preview Nutricional */}
+        {athlete.nutritionPreview && (
+          <>
+            <div className="space-y-3">
+              <h4 className="font-medium text-muted-foreground">Preview Nutricional</h4>
+              <div className="bg-muted p-3 rounded-md">
+                <p className="text-sm">{athlete.nutritionPreview}</p>
+              </div>
+            </div>
+            <Separator />
+          </>
+        )}
 
         {/* Informações de Contacto */}
         <div className="space-y-3">
@@ -106,10 +122,10 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
         <div className="space-y-3">
           <h4 className="font-medium text-muted-foreground">Dados Pessoais</h4>
           <div className="grid grid-cols-2 gap-3 text-sm">
-            {athlete.dateOfBirth && (
+            {athlete.birthDate && (
               <div className="flex items-center space-x-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                <span>{new Date(athlete.dateOfBirth).toLocaleDateString()}</span>
+                <span>{new Date(athlete.birthDate).toLocaleDateString('pt-PT')}</span>
               </div>
             )}
             {athlete.gender && (
@@ -135,6 +151,12 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
               <span className="text-sm">Personal Trainer:</span>
               <span className="text-sm font-medium">{athlete.trainer}</span>
             </div>
+            {athlete.group && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm">Grupo:</span>
+                <span className="text-sm font-medium">{athlete.group}</span>
+              </div>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-sm flex items-center">
                 <Euro className="h-3 w-3 mr-1" />
@@ -147,49 +169,13 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
             <div className="flex items-center justify-between">
               <span className="text-sm">Membro desde:</span>
               <span className="text-sm">
-                {new Date(athlete.joinDate).toLocaleDateString()}
+                {new Date(athlete.joinDate).toLocaleDateString('pt-PT')}
               </span>
             </div>
           </div>
         </div>
 
         <Separator />
-
-        {/* Contacto de Emergência */}
-        {athlete.emergencyContact && (
-          <>
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground">Emergência</h4>
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2 text-sm">
-                  <User className="h-4 w-4 text-muted-foreground" />
-                  <span>{athlete.emergencyContact}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{athlete.emergencyPhone}</span>
-                </div>
-              </div>
-            </div>
-            <Separator />
-          </>
-        )}
-
-        {/* Informações de Saúde */}
-        {athlete.medicalConditions && (
-          <>
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground">Saúde</h4>
-              <div className="text-sm bg-muted p-3 rounded-md">
-                <div className="flex items-start space-x-2">
-                  <Heart className="h-4 w-4 text-muted-foreground mt-0.5" />
-                  <span>{athlete.medicalConditions}</span>
-                </div>
-              </div>
-            </div>
-            <Separator />
-          </>
-        )}
 
         {/* Objetivos */}
         {athlete.goals && athlete.goals.length > 0 && (
@@ -230,24 +216,18 @@ export const AthleteProfile: React.FC<AthleteProfileProps> = ({
           </div>
         </div>
 
-        {/* Notas */}
-        {athlete.notes && (
-          <>
-            <Separator />
-            <div className="space-y-3">
-              <h4 className="font-medium text-muted-foreground">Notas</h4>
-              <p className="text-sm text-muted-foreground bg-muted p-3 rounded-md">
-                {athlete.notes}
-              </p>
-            </div>
-          </>
-        )}
-
-        {/* Botão Editar */}
-        <Button onClick={onEdit} className="w-full">
-          <Edit className="h-4 w-4 mr-2" />
-          Editar Atleta
-        </Button>
+        {/* Botões de Ação */}
+        <div className="space-y-3">
+          <Button onClick={onViewDetails} className="w-full" variant="outline">
+            <Eye className="h-4 w-4 mr-2" />
+            Ver Detalhes Completos
+          </Button>
+          
+          <Button onClick={onEdit} className="w-full">
+            <Edit className="h-4 w-4 mr-2" />
+            Editar Atleta
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

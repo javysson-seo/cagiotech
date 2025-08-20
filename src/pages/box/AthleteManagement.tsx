@@ -1,35 +1,137 @@
+
 import React, { useState } from 'react';
-import { Plus, Search, Filter, Download, Upload } from 'lucide-react';
+import { Plus, Search, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { AthleteList } from '@/components/athletes/AthleteList';
-import { AthleteForm } from '@/components/athletes/AthleteForm';
-import { AthleteProfile } from '@/components/athletes/AthleteProfile';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { AthleteFormModal } from '@/components/athletes/AthleteFormModal';
+import { AthleteDetailsModal } from '@/components/athletes/AthleteDetailsModal';
+import { AthleteExportDialog } from '@/components/athletes/AthleteExportDialog';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
+import { toast } from 'sonner';
 
 const AthleteManagementContent: React.FC = () => {
   const [selectedAthlete, setSelectedAthlete] = useState<any>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [editingAthlete, setEditingAthlete] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Mock data dos atletas
+  const [athletes] = useState([
+    {
+      id: 1,
+      name: 'Maria Silva',
+      email: 'maria@email.com',
+      phone: '+351 912 345 678',
+      birthDate: '1990-03-15',
+      gender: 'female',
+      address: 'Rua das Flores, 123, Lisboa',
+      plan: 'Premium',
+      trainer: 'Carlos Santos',
+      group: 'Crossfit Iniciantes',
+      status: 'active',
+      joinDate: '2023-06-15',
+      monthlyFee: 80,
+      emergencyContact: 'João Silva',
+      emergencyPhone: '+351 913 456 789',
+      medicalConditions: 'Alergia a frutos secos',
+      goals: ['Perder 5kg', 'Aumentar força'],
+      notes: 'Aluna muito dedicada',
+      nutritionPreview: 'Dieta mediterrânica com foco em proteínas magras',
+      profilePhoto: 'https://api.dicebear.com/7.x/avataaars/svg?seed=maria'
+    },
+    {
+      id: 2,
+      name: 'João Santos',
+      email: 'joao@email.com',
+      phone: '+351 913 456 789',
+      birthDate: '1985-07-22',
+      gender: 'male',
+      address: 'Avenida da Liberdade, 456, Porto',
+      plan: 'Básico',
+      trainer: 'Ana Costa',
+      group: 'Musculação Avançada',
+      status: 'active',
+      joinDate: '2023-08-20',
+      monthlyFee: 50,
+      medicalConditions: '',
+      goals: ['Ganhar massa muscular'],
+      notes: 'Precisa de mais foco na dieta',
+      nutritionPreview: '',
+      profilePhoto: 'https://api.dicebear.com/7.x/avataaars/svg?seed=joao'
+    },
+    {
+      id: 3,
+      name: 'Ana Costa',
+      email: 'ana@email.com',
+      phone: '+351 914 567 890',
+      birthDate: '1992-12-05',
+      gender: 'female',
+      address: 'Rua do Comércio, 789, Braga',
+      plan: 'VIP',
+      trainer: 'Pedro Silva',
+      group: 'Funcional',
+      status: 'frozen',
+      joinDate: '2023-04-10',
+      monthlyFee: 120,
+      emergencyContact: 'Manuel Costa',
+      emergencyPhone: '+351 915 678 901',
+      medicalConditions: 'Lesão no joelho direito',
+      goals: ['Reabilitação', 'Manter forma física'],
+      notes: 'Em período de recuperação',
+      nutritionPreview: 'Plano anti-inflamatório para recuperação',
+      profilePhoto: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ana'
+    }
+  ]);
+
   const handleNewAthlete = () => {
-    setSelectedAthlete(null);
-    setShowForm(true);
+    setEditingAthlete(null);
+    setShowFormModal(true);
   };
 
   const handleEditAthlete = (athlete: any) => {
-    setSelectedAthlete(athlete);
-    setShowForm(true);
+    setEditingAthlete(athlete);
+    setShowFormModal(true);
+    setShowDetailsModal(false);
   };
 
   const handleViewProfile = (athlete: any) => {
     setSelectedAthlete(athlete);
-    setShowForm(false);
+    setShowDetailsModal(true);
+  };
+
+  const handleSaveAthlete = (athleteData: any) => {
+    console.log('Saving athlete:', athleteData);
+    
+    // Aqui seria implementada a lógica real de salvamento
+    // Para demonstração, apenas mostramos toast de sucesso
+    
+    // Se há data de nascimento, verificar se é hoje para criar notificação
+    if (athleteData.birthDate) {
+      const today = new Date();
+      const birthDate = new Date(athleteData.birthDate);
+      
+      if (
+        today.getMonth() === birthDate.getMonth() && 
+        today.getDate() === birthDate.getDate()
+      ) {
+        const age = today.getFullYear() - birthDate.getFullYear();
+        toast.success(`🎉 ${athleteData.name} está fazendo ${age} anos hoje!`);
+      }
+    }
+    
+    setShowFormModal(false);
+    setEditingAthlete(null);
+  };
+
+  const handleExport = () => {
+    setShowExportDialog(true);
   };
 
   return (
@@ -53,13 +155,9 @@ const AthleteManagementContent: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-3">
-                <Button variant="outline" className="hidden md:flex">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Importar Excel
-                </Button>
-                <Button variant="outline" className="hidden md:flex">
+                <Button variant="outline" onClick={handleExport} className="hidden md:flex">
                   <Download className="h-4 w-4 mr-2" />
-                  Exportar
+                  Exportar XLSX
                 </Button>
                 <Button onClick={handleNewAthlete} className="bg-blue-600 hover:bg-blue-700">
                   <Plus className="h-4 w-4 mr-2" />
@@ -68,7 +166,7 @@ const AthleteManagementContent: React.FC = () => {
               </div>
             </div>
 
-            {/* Filters */}
+            {/* Filtros */}
             <Card>
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row gap-4">
@@ -104,55 +202,43 @@ const AthleteManagementContent: React.FC = () => {
               </CardContent>
             </Card>
 
-            {/* Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Athletes List */}
-              <div className="lg:col-span-2">
-                <AthleteList
-                  searchTerm={searchTerm}
-                  statusFilter={statusFilter}
-                  onEdit={handleEditAthlete}
-                  onView={handleViewProfile}
-                />
-              </div>
-
-              {/* Side Panel */}
-              <div className="lg:col-span-1">
-                {selectedAthlete && !showForm ? (
-                  <AthleteProfile
-                    athlete={selectedAthlete}
-                    onEdit={() => handleEditAthlete(selectedAthlete)}
-                    onClose={() => setSelectedAthlete(null)}
-                  />
-                ) : showForm ? (
-                  <AthleteForm
-                    athlete={selectedAthlete}
-                    onSave={() => {
-                      setShowForm(false);
-                      setSelectedAthlete(null);
-                    }}
-                    onCancel={() => {
-                      setShowForm(false);
-                      setSelectedAthlete(null);
-                    }}
-                  />
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Seleção de Atleta</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center py-8">
-                      <p className="text-muted-foreground">
-                        Selecione um atleta da lista para ver detalhes ou clique em "Novo Atleta" para cadastrar.
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
+            {/* Lista de Atletas */}
+            <AthleteList
+              searchTerm={searchTerm}
+              statusFilter={statusFilter}
+              onEdit={handleEditAthlete}
+              onView={handleViewProfile}
+            />
           </div>
         </main>
       </div>
+
+      {/* Modais */}
+      <AthleteFormModal
+        isOpen={showFormModal}
+        onClose={() => {
+          setShowFormModal(false);
+          setEditingAthlete(null);
+        }}
+        athlete={editingAthlete}
+        onSave={handleSaveAthlete}
+      />
+
+      <AthleteDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => {
+          setShowDetailsModal(false);
+          setSelectedAthlete(null);
+        }}
+        athlete={selectedAthlete}
+        onEdit={() => handleEditAthlete(selectedAthlete)}
+      />
+
+      <AthleteExportDialog
+        isOpen={showExportDialog}
+        onClose={() => setShowExportDialog(false)}
+        athletes={athletes}
+      />
     </div>
   );
 };
