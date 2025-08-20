@@ -86,13 +86,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      // Handle the company relationship correctly
+      const company = Array.isArray(profile.companies) ? profile.companies[0] : profile.companies;
+
       const authUser: User = {
         id: profile.id,
         name: profile.name,
         email: profile.email,
         role: profile.role as UserRole,
-        boxId: profile.companies?.id,
-        boxName: profile.companies?.name,
+        boxId: company?.id,
+        boxName: company?.name,
         isApproved: profile.is_approved,
         permissions: getDefaultPermissions(profile.role as UserRole),
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile.email}`
