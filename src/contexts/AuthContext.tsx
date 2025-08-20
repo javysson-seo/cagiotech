@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import type { User as SupabaseUser } from '@supabase/supabase-js';
+import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'cagio_admin' | 'box_admin' | 'trainer' | 'student';
 
@@ -20,9 +20,10 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
+  session: Session | null;
   login: (email: string, password: string, role?: UserRole) => Promise<void>;
   register: (userData: any, role: UserRole) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
   clearError: () => void;
@@ -40,42 +41,57 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user && isMounted) {
-          await fetchUserProfile(session.user);
-        }
-      } catch (error) {
-        console.error('Error getting session:', error);
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    // Listen for auth changes
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
       console.log('Auth event:', event, session?.user?.email);
       
+      setSession(session);
+      
       if (session?.user) {
-        setIsLoading(true);
-        await fetchUserProfile(session.user);
+        // Defer profile fetching to prevent deadlocks
+        setTimeout(() => {
+          if (isMounted) {
+            fetchUserProfile(session.user);
+          }
+        }, 0);
       } else {
         setUser(null);
         setIsLoading(false);
       }
     });
+
+    // THEN check for existing session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error getting session:', error);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (session?.user && isMounted) {
+          setSession(session);
+          await fetchUserProfile(session.user);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
 
     initializeAuth();
 
@@ -103,6 +119,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         console.error('Error fetching profile:', error);
+        // Create profile if it doesn't exist
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating one...');
+          const newProfile = {
+            id: supabaseUser.id,
+            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
+            email: supabaseUser.email!,
+            role: 'student' as UserRole,
+            is_approved: true
+          };
+
+          const { data: createdProfile, error: createError } = await supabase
+            .from('profiles')
+            .insert(newProfile)
+            .select()
+            .single();
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+            setIsLoading(false);
+            return;
+          }
+
+          const authUser: User = {
+            id: createdProfile.id,
+            name: createdProfile.name,
+            email: createdProfile.email,
+            role: createdProfile.role as UserRole,
+            isApproved: createdProfile.is_approved,
+            permissions: getDefaultPermissions(createdProfile.role as UserRole),
+            avatar: createdProfile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${createdProfile.email}`
+          };
+
+          setUser(authUser);
+          setIsLoading(false);
+          return;
+        }
         setIsLoading(false);
         return;
       }
@@ -145,18 +198,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
+      // Clean up any existing sessions
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Ignore errors during cleanup
+      }
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: email.trim(),
         password,
       });
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
-        await fetchUserProfile(data.user);
         toast.success('Login realizado com sucesso!');
+        // Don't manually fetch profile here - let onAuthStateChange handle it
       }
       
     } catch (err) {
@@ -174,7 +234,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: userData.email,
+        email: userData.email.trim(),
         password: userData.password,
         options: {
           data: {
@@ -183,22 +243,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             company_name: userData.companyName || userData.boxName,
             phone: userData.phone
           },
-          emailRedirectTo: undefined // Remove email verification
+          emailRedirectTo: `${window.location.origin}/auth/login`
         }
       });
 
       if (error) {
-        throw new Error(error.message);
+        throw new Error(getAuthErrorMessage(error));
       }
 
       if (data.user) {
-        // Since we disabled email confirmation, the user should be automatically signed in
         toast.success('Conta criada com sucesso!');
-        
-        // Redirect based on role
-        if (role === 'box_admin') {
-          window.location.href = '/box';
-        }
       }
 
     } catch (err) {
@@ -213,12 +267,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      setIsLoading(true);
+      await supabase.auth.signOut({ scope: 'global' });
       setUser(null);
+      setSession(null);
       setError(null);
       toast.info('Logout realizado com sucesso');
+      // Force a clean redirect
+      window.location.href = '/auth/login';
     } catch (error) {
       console.error('Error logging out:', error);
+      toast.error('Erro ao fazer logout');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -237,9 +298,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const getAuthErrorMessage = (error: any): string => {
+    switch (error.message) {
+      case 'Invalid login credentials':
+        return 'Email ou password incorretos';
+      case 'Email not confirmed':
+        return 'Por favor, confirme seu email antes de fazer login';
+      case 'User already registered':
+        return 'Este email já está registrado';
+      case 'Password should be at least 6 characters':
+        return 'A password deve ter pelo menos 6 caracteres';
+      case 'Unable to validate email address: invalid format':
+        return 'Formato de email inválido';
+      default:
+        return error.message || 'Erro de autenticação';
+    }
+  };
+
   return (
     <AuthContext.Provider value={{ 
       user, 
+      session,
       login, 
       register, 
       logout, 

@@ -17,7 +17,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   allowedRoles = [],
-  redirectTo = '/',
+  redirectTo = '/auth/login',
   requireApproval = true
 }) => {
   const { user, isLoading, logout } = useAuth();
@@ -28,7 +28,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loading size="lg" text="Carregando..." />
+        <Loading size="lg" text="Verificando autenticação..." />
       </div>
     );
   }
@@ -42,7 +42,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   console.log('User found:', user.email, 'Role:', user.role, 'Approved:', user.isApproved);
 
   // Check approval status - box_admin doesn't need approval OR if explicitly not required
-  if (requireApproval && !user.isApproved && user.role !== 'box_admin') {
+  if (requireApproval && !user.isApproved && user.role !== 'box_admin' && user.role !== 'cagio_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">
