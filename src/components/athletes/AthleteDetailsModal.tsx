@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { 
   Edit, 
   X, 
@@ -24,7 +25,8 @@ import {
   Download,
   History,
   CreditCard,
-  Plus
+  Plus,
+  Trash2
 } from 'lucide-react';
 
 interface AthleteDetailsModalProps {
@@ -32,6 +34,7 @@ interface AthleteDetailsModalProps {
   onClose: () => void;
   athlete: any;
   onEdit: () => void;
+  onDelete?: (athlete: any) => void;
 }
 
 export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
@@ -39,6 +42,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   onClose,
   athlete,
   onEdit,
+  onDelete,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
 
@@ -67,6 +71,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
       setSelectedFiles(files);
       // Aqui seria implementado o upload real
       console.log('Uploading files:', files);
+    }
+  };
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(athlete);
+      onClose();
     }
   };
 
@@ -107,7 +118,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
               <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
-              <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
+              <AvatarFallback className="bg-green-100 text-green-600 text-xl">
                 {athlete.name.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
@@ -134,10 +145,36 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </div>
             </div>
             
-            <Button onClick={onEdit} className="bg-blue-600 hover:bg-blue-700">
-              <Edit className="h-4 w-4 mr-2" />
-              Editar
-            </Button>
+            <div className="flex items-center space-x-2">
+              <Button onClick={onEdit} className="bg-green-600 hover:bg-green-700">
+                <Edit className="h-4 w-4 mr-2" />
+                Editar
+              </Button>
+              
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive">
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Excluir
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Tem certeza que deseja excluir o atleta <strong>{athlete.name}</strong>? 
+                      Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                      Excluir Atleta
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </div>
 
           <Separator />
@@ -330,7 +367,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </Card>
             </TabsContent>
 
-            {/* Tab Histórico */}
             <TabsContent value="history" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -359,7 +395,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </Card>
             </TabsContent>
 
-            {/* Tab Pagamentos */}
             <TabsContent value="payments" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -399,7 +434,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </Card>
             </TabsContent>
 
-            {/* Tab Nutrição */}
             <TabsContent value="nutrition" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -421,7 +455,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       <p className="text-muted-foreground mb-4">
                         Este atleta ainda não possui um plano nutricional
                       </p>
-                      <Button>
+                      <Button className="bg-green-600 hover:bg-green-700">
                         <Plus className="h-4 w-4 mr-2" />
                         Criar Plano Nutricional
                       </Button>

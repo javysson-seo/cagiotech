@@ -23,7 +23,7 @@ const AthleteManagementContent: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
 
   // Mock data dos atletas
-  const [athletes] = useState([
+  const [athletes, setAthletes] = useState([
     {
       id: 1,
       name: 'Maria Silva',
@@ -106,13 +106,31 @@ const AthleteManagementContent: React.FC = () => {
     setShowDetailsModal(true);
   };
 
+  const handleDeleteAthlete = (athlete: any) => {
+    setAthletes(prev => prev.filter(a => a.id !== athlete.id));
+    toast.success(`Atleta ${athlete.name} foi excluído com sucesso.`);
+  };
+
   const handleSaveAthlete = (athleteData: any) => {
     console.log('Saving athlete:', athleteData);
     
-    // Aqui seria implementada a lógica real de salvamento
-    // Para demonstração, apenas mostramos toast de sucesso
+    if (editingAthlete) {
+      // Editando atleta existente
+      setAthletes(prev => prev.map(a => 
+        a.id === editingAthlete.id ? { ...a, ...athleteData } : a
+      ));
+      toast.success(`Dados do atleta ${athleteData.name} atualizados com sucesso!`);
+    } else {
+      // Criando novo atleta
+      const newAthlete = {
+        ...athleteData,
+        id: Date.now(), // ID temporário
+      };
+      setAthletes(prev => [...prev, newAthlete]);
+      toast.success(`Atleta ${athleteData.name} cadastrado com sucesso!`);
+    }
     
-    // Se há data de nascimento, verificar se é hoje para criar notificação
+    // Verificar aniversário
     if (athleteData.birthDate) {
       const today = new Date();
       const birthDate = new Date(athleteData.birthDate);
@@ -159,7 +177,7 @@ const AthleteManagementContent: React.FC = () => {
                   <Download className="h-4 w-4 mr-2" />
                   Exportar XLSX
                 </Button>
-                <Button onClick={handleNewAthlete} className="bg-blue-600 hover:bg-blue-700">
+                <Button onClick={handleNewAthlete} className="bg-green-600 hover:bg-green-700">
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Atleta
                 </Button>
@@ -204,6 +222,7 @@ const AthleteManagementContent: React.FC = () => {
 
             {/* Lista de Atletas */}
             <AthleteList
+              athletes={athletes}
               searchTerm={searchTerm}
               statusFilter={statusFilter}
               onEdit={handleEditAthlete}
@@ -232,6 +251,7 @@ const AthleteManagementContent: React.FC = () => {
         }}
         athlete={selectedAthlete}
         onEdit={() => handleEditAthlete(selectedAthlete)}
+        onDelete={handleDeleteAthlete}
       />
 
       <AthleteExportDialog

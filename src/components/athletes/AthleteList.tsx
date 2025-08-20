@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Edit, Eye, Phone, Mail, Euro } from 'lucide-react';
 
 interface AthleteListProps {
+  athletes: any[];
   searchTerm: string;
   statusFilter: string;
   onEdit: (athlete: any) => void;
@@ -14,54 +15,12 @@ interface AthleteListProps {
 }
 
 export const AthleteList: React.FC<AthleteListProps> = ({
+  athletes,
   searchTerm,
   statusFilter,
   onEdit,
   onView,
 }) => {
-  // Mock data - will come from API/Supabase
-  const athletes = [
-    {
-      id: 1,
-      name: 'João Silva',
-      email: 'joao.silva@email.com',
-      phone: '+351 912 345 678',
-      plan: 'Ilimitado',
-      status: 'active',
-      paymentStatus: 'paid',
-      joinDate: '2024-01-15',
-      trainer: 'Carlos Santos',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=joao',
-      monthlyFee: 75
-    },
-    {
-      id: 2,
-      name: 'Maria Santos',
-      email: 'maria.santos@email.com',
-      phone: '+351 913 456 789',
-      plan: '8x Semana',
-      status: 'active',
-      paymentStatus: 'pending',
-      joinDate: '2024-02-01',
-      trainer: 'Ana Costa',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=maria',
-      monthlyFee: 50
-    },
-    {
-      id: 3,
-      name: 'Pedro Oliveira',
-      email: 'pedro.oliveira@email.com',
-      phone: '+351 914 567 890',
-      plan: '4x Semana',
-      status: 'frozen',
-      paymentStatus: 'paid',
-      joinDate: '2023-11-10',
-      trainer: 'Carlos Santos',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=pedro',
-      monthlyFee: 35
-    }
-  ];
-
   const filteredAthletes = athletes.filter(athlete => {
     const matchesSearch = athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          athlete.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -83,27 +42,20 @@ export const AthleteList: React.FC<AthleteListProps> = ({
     return statusConfig[status as keyof typeof statusConfig] || statusConfig.pending;
   };
 
-  const getPaymentBadge = (status: string) => {
-    return status === 'paid' ? 
-      { label: 'Pago', variant: 'default' as const } : 
-      { label: 'Pendente', variant: 'destructive' as const };
-  };
-
   return (
     <Card>
       <CardContent className="p-0">
         <div className="divide-y divide-border">
           {filteredAthletes.map((athlete) => {
             const statusBadge = getStatusBadge(athlete.status);
-            const paymentBadge = getPaymentBadge(athlete.paymentStatus);
             
             return (
               <div key={athlete.id} className="p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={athlete.avatar} alt={athlete.name} />
-                    <AvatarFallback className="bg-blue-100 text-blue-600">
-                      {athlete.name.split(' ').map(n => n[0]).join('')}
+                    <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
+                    <AvatarFallback className="bg-green-100 text-green-600">
+                      {athlete.name.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
                   
@@ -114,9 +66,6 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       </h3>
                       <Badge variant={statusBadge.variant}>
                         {statusBadge.label}
-                      </Badge>
-                      <Badge variant={paymentBadge.variant}>
-                        {paymentBadge.label}
                       </Badge>
                     </div>
                     
@@ -142,7 +91,7 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       
                       <div className="flex items-center text-sm">
                         <Euro className="h-3 w-3 mr-1 text-green-600" />
-                        <span className="font-medium">{athlete.monthlyFee}/mês</span>
+                        <span className="font-medium">€{athlete.monthlyFee}/mês</span>
                       </div>
                     </div>
                   </div>
@@ -152,6 +101,7 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => onView(athlete)}
+                      className="hover:bg-green-50 hover:text-green-600"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -159,6 +109,7 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(athlete)}
+                      className="hover:bg-green-50 hover:text-green-600"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
