@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +11,7 @@ import { toast } from 'sonner';
 
 interface AthleteFormProps {
   athlete?: any;
-  onSave: () => void;
+  onSave: (data: any) => void;
   onCancel: () => void;
 }
 
@@ -25,17 +24,16 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
     name: athlete?.name || '',
     email: athlete?.email || '',
     phone: athlete?.phone || '',
-    dateOfBirth: athlete?.dateOfBirth || '',
+    birth_date: athlete?.birth_date || '',
     gender: athlete?.gender || '',
     address: athlete?.address || '',
-    emergencyContact: athlete?.emergencyContact || '',
-    emergencyPhone: athlete?.emergencyPhone || '',
+    emergency_contact_name: athlete?.emergency_contact_name || '',
+    emergency_contact_phone: athlete?.emergency_contact_phone || '',
     plan: athlete?.plan || '',
     trainer: athlete?.trainer || '',
     status: athlete?.status || 'active',
-    monthlyFee: athlete?.monthlyFee || '',
-    paymentMethod: athlete?.paymentMethod || '',
-    medicalConditions: athlete?.medicalConditions || '',
+    monthly_fee: athlete?.monthly_fee || '',
+    medical_conditions: athlete?.medical_conditions || '',
     goals: athlete?.goals || [],
     notes: athlete?.notes || ''
   });
@@ -71,8 +69,12 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
       return;
     }
 
-    toast.success(athlete ? 'Atleta atualizado!' : 'Atleta criado!');
-    onSave();
+    // Include the ID if editing
+    const dataToSave = athlete?.id 
+      ? { ...formData, id: athlete.id }
+      : formData;
+
+    onSave(dataToSave);
   };
 
   return (
@@ -121,12 +123,12 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="dateOfBirth">Data Nascimento</Label>
+                <Label htmlFor="birth_date">Data Nascimento</Label>
                 <Input
-                  id="dateOfBirth"
+                  id="birth_date"
                   type="date"
-                  value={formData.dateOfBirth}
-                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  value={formData.birth_date}
+                  onChange={(e) => handleInputChange('birth_date', e.target.value)}
                 />
               </div>
             </div>
@@ -163,21 +165,21 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
             
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="emergencyContact">Nome</Label>
+                <Label htmlFor="emergency_contact_name">Nome</Label>
                 <Input
-                  id="emergencyContact"
-                  value={formData.emergencyContact}
-                  onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
+                  id="emergency_contact_name"
+                  value={formData.emergency_contact_name}
+                  onChange={(e) => handleInputChange('emergency_contact_name', e.target.value)}
                   placeholder="Nome do contacto"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="emergencyPhone">Telefone</Label>
+                <Label htmlFor="emergency_contact_phone">Telefone</Label>
                 <Input
-                  id="emergencyPhone"
-                  value={formData.emergencyPhone}
-                  onChange={(e) => handleInputChange('emergencyPhone', e.target.value)}
+                  id="emergency_contact_phone"
+                  value={formData.emergency_contact_phone}
+                  onChange={(e) => handleInputChange('emergency_contact_phone', e.target.value)}
                   placeholder="+351 912 345 678"
                 />
               </div>
@@ -223,12 +225,12 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label htmlFor="monthlyFee">Mensalidade (€)</Label>
+                <Label htmlFor="monthly_fee">Mensalidade (€)</Label>
                 <Input
-                  id="monthlyFee"
+                  id="monthly_fee"
                   type="number"
-                  value={formData.monthlyFee}
-                  onChange={(e) => handleInputChange('monthlyFee', e.target.value)}
+                  value={formData.monthly_fee}
+                  onChange={(e) => handleInputChange('monthly_fee', e.target.value)}
                   placeholder="75"
                 />
               </div>
@@ -255,11 +257,11 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
             <h4 className="font-medium text-sm text-muted-foreground">Informações de Saúde</h4>
             
             <div className="space-y-2">
-              <Label htmlFor="medicalConditions">Condições Médicas</Label>
+              <Label htmlFor="medical_conditions">Condições Médicas</Label>
               <Textarea
-                id="medicalConditions"
-                value={formData.medicalConditions}
-                onChange={(e) => handleInputChange('medicalConditions', e.target.value)}
+                id="medical_conditions"
+                value={formData.medical_conditions}
+                onChange={(e) => handleInputChange('medical_conditions', e.target.value)}
                 placeholder="Lesões, alergias, medicamentos..."
                 rows={2}
               />
