@@ -20,25 +20,31 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompany } from '@/contexts/CompanyContext';
 import { Logo } from '@/components/ui/logo';
+import { useAthletes } from '@/hooks/useAthletes';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
   const { companySlug } = useParams<{ companySlug: string }>();
   const { currentCompany } = useCompany();
+  const { athletes } = useAthletes();
 
   if (!companySlug || !currentCompany) {
     return null;
   }
 
+  const activeAthletes = athletes.filter(athlete => athlete.status === 'active').length;
+
   const navigation = [
     { name: 'Dashboard', href: `/${companySlug}`, icon: Home },
     { name: 'Atletas', href: `/${companySlug}/athletes`, icon: Users },
-    { name: 'Trainers', href: `/${companySlug}/trainers`, icon: UserCheck },
-    { name: 'Aulas', href: `/${companySlug}/classes`, icon: Calendar },
-    { name: 'Relatórios', href: `/${companySlug}/reports`, icon: BarChart3 },
+    { name: 'Recursos humanos', href: `/${companySlug}/trainers`, icon: UserCheck },
+    { name: 'Aulas / Serviços', href: `/${companySlug}/classes`, icon: Calendar },
     { name: 'CRM', href: `/${companySlug}/crm`, icon: UserPlus },
     { name: 'Comunicação', href: `/${companySlug}/communication`, icon: MessageSquare },
     { name: 'Financeiro', href: `/${companySlug}/financial`, icon: Euro },
+    { name: 'Material deportivo', href: `/${companySlug}/equipment`, icon: Dumbbell },
+    { name: 'Observatorio', href: `/${companySlug}/observatory`, icon: BarChart3 },
+    { name: 'KPIS', href: `/${companySlug}/kpis`, icon: BarChart3 },
     { name: 'Configurações', href: `/${companySlug}/settings`, icon: Settings },
   ];
 
@@ -49,7 +55,7 @@ export const BoxSidebar: React.FC = () => {
         <div className="flex items-center space-x-2">
           <Logo size="md" />
           <span className="text-xl font-bold text-foreground">CAGIO</span>
-          <Badge className="bg-[#bed700] text-black text-xs font-medium">BOX</Badge>
+          <Badge className="bg-[#bed700] text-black text-xs font-medium">{currentCompany.name}</Badge>
         </div>
       </div>
 
@@ -90,15 +96,10 @@ export const BoxSidebar: React.FC = () => {
         <div className="bg-[#bed700]/10 p-3 rounded-lg mb-3">
           <div className="flex items-center space-x-2">
             <Dumbbell className="h-4 w-4 text-[#bed700]" />
-            <span className="text-sm font-medium text-foreground">Status da BOX</span>
+            <span className="text-sm font-medium text-foreground">Status - {currentCompany.name}</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-2 text-xs">
-            <div>
-              <span className="text-[#bed700] font-medium">47 Atletas</span>
-            </div>
-            <div>
-              <span className="text-[#bed700] font-medium">3 Trainers</span>
-            </div>
+          <div className="mt-2 text-xs">
+            <span className="text-[#bed700] font-medium">{activeAthletes} Atletas Ativos</span>
           </div>
         </div>
         
