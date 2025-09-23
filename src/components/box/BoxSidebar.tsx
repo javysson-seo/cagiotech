@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { 
   Home, 
@@ -18,21 +18,28 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from '@/contexts/CompanyContext';
 import { Logo } from '@/components/ui/logo';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
+  const { companySlug } = useParams<{ companySlug: string }>();
+  const { currentCompany } = useCompany();
+
+  if (!companySlug || !currentCompany) {
+    return null;
+  }
 
   const navigation = [
-    { name: 'Dashboard', href: '/box', icon: Home },
-    { name: 'Atletas', href: '/box/athletes', icon: Users },
-    { name: 'Trainers', href: '/box/trainers', icon: UserCheck },
-    { name: 'Aulas', href: '/box/classes', icon: Calendar },
-    { name: 'Relatórios', href: '/box/reports', icon: BarChart3 },
-    { name: 'CRM', href: '/box/crm', icon: UserPlus },
-    { name: 'Comunicação', href: '/box/communication', icon: MessageSquare },
-    { name: 'Financeiro', href: '/box/financial', icon: Euro },
-    { name: 'Configurações', href: '/box/settings', icon: Settings },
+    { name: 'Dashboard', href: `/${companySlug}`, icon: Home },
+    { name: 'Atletas', href: `/${companySlug}/athletes`, icon: Users },
+    { name: 'Trainers', href: `/${companySlug}/trainers`, icon: UserCheck },
+    { name: 'Aulas', href: `/${companySlug}/classes`, icon: Calendar },
+    { name: 'Relatórios', href: `/${companySlug}/reports`, icon: BarChart3 },
+    { name: 'CRM', href: `/${companySlug}/crm`, icon: UserPlus },
+    { name: 'Comunicação', href: `/${companySlug}/communication`, icon: MessageSquare },
+    { name: 'Financeiro', href: `/${companySlug}/financial`, icon: Euro },
+    { name: 'Configurações', href: `/${companySlug}/settings`, icon: Settings },
   ];
 
   return (
@@ -49,7 +56,7 @@ export const BoxSidebar: React.FC = () => {
       {/* User Info */}
       <div className="p-6 border-b border-border">
         <div className="space-y-1">
-          <p className="font-medium text-foreground">{user?.boxName || 'Minha Empresa'}</p>
+          <p className="font-medium text-foreground">{currentCompany.name}</p>
           <p className="text-sm text-muted-foreground">{user?.name}</p>
           <Badge variant="outline" className="text-xs">
             BOX Administrator

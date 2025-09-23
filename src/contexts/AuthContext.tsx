@@ -300,9 +300,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         toast.success('Conta criada com sucesso! Redirecionando...');
         
-        // Redirect to box dashboard after successful registration
+        // Redirect to company dashboard after successful registration
+        // Convert company name to URL-friendly slug
+        const companySlug = userData.companyName.toLowerCase().replace(/\s+/g, '-');
         setTimeout(() => {
-          window.location.href = '/box';
+          window.location.href = `/${companySlug}`;
         }, 1000);
       }
 

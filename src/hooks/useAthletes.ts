@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from '@/contexts/CompanyContext';
 import { toast } from 'sonner';
 
 interface Athlete {
@@ -30,35 +32,21 @@ interface Athlete {
 export const useAthletes = () => {
   const [athletes, setAthletes] = useState<Athlete[]>([]);
   const [loading, setLoading] = useState(true);
+  const { currentCompany } = useCompany();
 
   const fetchAthletes = async () => {
+    if (!currentCompany?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      
-      // Get user's company first
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log('No user found');
-        return;
-      }
-
-      const { data: companies, error: companiesError } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('owner_id', user.id)
-        .limit(1);
-
-      if (companiesError || !companies || companies.length === 0) {
-        console.log('No company found for user');
-        return;
-      }
-
-      const companyId = companies[0].id;
       
       const { data, error } = await supabase
         .from('athletes')
         .select('*')
-        .eq('company_id', companyId)
+        .eq('company_id', currentCompany.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -77,30 +65,15 @@ export const useAthletes = () => {
   };
 
   const saveAthlete = async (athleteData: Athlete): Promise<boolean> => {
+    if (!currentCompany?.id) {
+      toast.error('Empresa não identificada');
+      return false;
+    }
+
     try {
-      // Get user's company
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast.error('Usuário não autenticado');
-        return false;
-      }
-
-      const { data: companies, error: companiesError } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('owner_id', user.id)
-        .limit(1);
-
-      if (companiesError || !companies || companies.length === 0) {
-        toast.error('Empresa não encontrada');
-        return false;
-      }
-
-      const companyId = companies[0].id;
-
       const athleteToSave = {
         ...athleteData,
-        company_id: companyId,
+        company_id: currentCompany.id,
         monthly_fee: athleteData.monthly_fee ? Number(athleteData.monthly_fee) : 0,
       };
 
@@ -113,7 +86,7 @@ export const useAthletes = () => {
           .from('athletes')
           .update(updateData)
           .eq('id', athleteData.id)
-          .eq('company_id', companyId)
+          .eq('company_id', currentCompany.id)
           .select()
           .single();
       } else {
@@ -188,7 +161,7 @@ export const useAthletes = () => {
 
   useEffect(() => {
     fetchAthletes();
-  }, []);
+  }, [currentCompany?.id]);
 
   return {
     athletes,

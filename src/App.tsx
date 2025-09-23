@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CompanyProvider } from "@/contexts/CompanyContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 
@@ -74,14 +75,56 @@ function App() {
                   <Route path="/admin/boxes/onboard" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><BoxOnboarding /></MobileAdminRedirect></ProtectedRoute>} />
                   <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><AdminReports /></MobileAdminRedirect></ProtectedRoute>} />
 
-                  {/* Box Admin Routes */}
-                  <Route path="/box" element={<ProtectedRoute allowedRoles={["box_admin"]}><BoxDashboard /></ProtectedRoute>} />
-                  <Route path="/box/athletes" element={<ProtectedRoute allowedRoles={["box_admin"]}><AthleteManagement /></ProtectedRoute>} />
-                  <Route path="/box/trainers" element={<ProtectedRoute allowedRoles={["box_admin"]}><TrainerManagement /></ProtectedRoute>} />
-                  <Route path="/box/classes" element={<ProtectedRoute allowedRoles={["box_admin"]}><ClassManagement /></ProtectedRoute>} />
-                  <Route path="/box/settings" element={<ProtectedRoute allowedRoles={["box_admin"]}><BoxSettings /></ProtectedRoute>} />
-                  <Route path="/box/reports" element={<ProtectedRoute allowedRoles={["box_admin"]}><BoxReports /></ProtectedRoute>} />
-                  <Route path="/box/crm" element={<ProtectedRoute allowedRoles={["box_admin"]}><BoxCRM /></ProtectedRoute>} />
+                  {/* Company-specific Routes */}
+                  <Route path="/:companySlug" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxDashboard />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/athletes" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <AthleteManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/trainers" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <TrainerManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/classes" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <ClassManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/settings" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxSettings />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/reports" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxReports />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/crm" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxCRM />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
 
                   {/* Student Routes */}
                   <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
