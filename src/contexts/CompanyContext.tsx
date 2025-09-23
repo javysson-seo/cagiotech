@@ -45,11 +45,11 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsLoading(true);
         setError(null);
 
-        // Buscar empresa pelo slug (nome convertido para URL-friendly)
+        // Buscar empresa pelo slug
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .select('*')
-          .ilike('name', companySlug.replace(/-/g, ' '))
+          .eq('slug', companySlug)
           .single();
 
         if (companyError || !company) {

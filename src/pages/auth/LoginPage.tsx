@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -85,13 +86,29 @@ export const LoginPage: React.FC = () => {
       await login(credentials.email, credentials.password, roleMapping[selectedUserType]);
       
       // Redirect based on user type after successful login
-      const redirectPaths = {
-        'student': '/student',
-        'box_admin': '/box',
-        'trainer': '/trainer'
-      };
-      
-      navigate(redirectPaths[selectedUserType]);
+      if (selectedUserType === 'box_admin') {
+        // Get user's company slug for redirect
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: company } = await supabase
+            .from('companies')
+            .select('slug')
+            .eq('owner_id', user.id)
+            .single();
+          
+          if (company?.slug) {
+            navigate(`/${company.slug}`);
+            return;
+          }
+        }
+        navigate('/auth/login'); // Fallback if no company found
+      } else {
+        const redirectPaths = {
+          'student': '/student',
+          'trainer': '/trainer'
+        };
+        navigate(redirectPaths[selectedUserType]);
+      }
     } catch (err) {
       // Error is handled by the AuthContext
       console.error('Login error occurred');

@@ -304,12 +304,31 @@ export type Database = {
           },
         ]
       }
+      bd_ativo: {
+        Row: {
+          created_at: string
+          id: number
+          num: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          num?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          num?: number | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           created_at: string | null
           id: string
           name: string
           owner_id: string
+          slug: string | null
           updated_at: string | null
         }
         Insert: {
@@ -317,6 +336,7 @@ export type Database = {
           id?: string
           name: string
           owner_id: string
+          slug?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -324,6 +344,7 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string
+          slug?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -638,6 +659,10 @@ export type Database = {
         Returns: boolean
       }
       check_birthday_notifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      inserir_3x_e_parar: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

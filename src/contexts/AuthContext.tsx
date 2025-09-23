@@ -301,10 +301,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         toast.success('Conta criada com sucesso! Redirecionando...');
         
         // Redirect to company dashboard after successful registration
-        // Convert company name to URL-friendly slug
-        const companySlug = userData.companyName.toLowerCase().replace(/\s+/g, '-');
+        // Get the company slug for redirect
+        const { data: companyData } = await supabase
+          .from('companies')
+          .select('slug')
+          .eq('owner_id', data.user.id)
+          .single();
+          
+        const redirectUrl = companyData?.slug ? `/${companyData.slug}` : '/auth/login';
         setTimeout(() => {
-          window.location.href = `/${companySlug}`;
+          window.location.href = redirectUrl;
         }, 1000);
       }
 
