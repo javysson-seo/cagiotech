@@ -322,6 +322,51 @@ export type Database = {
         }
         Relationships: []
       }
+      communications: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          message: string
+          read_at: string | null
+          recipient_id: string | null
+          recipient_type: string
+          sender_id: string | null
+          sent_at: string | null
+          status: string | null
+          subject: string | null
+          type: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          message: string
+          read_at?: string | null
+          recipient_id?: string | null
+          recipient_type: string
+          sender_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string | null
+          type?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          read_at?: string | null
+          recipient_id?: string | null
+          recipient_type?: string
+          sender_id?: string | null
+          sent_at?: string | null
+          status?: string | null
+          subject?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
       companies: {
         Row: {
           created_at: string | null
@@ -356,6 +401,120 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      equipment: {
+        Row: {
+          category: string | null
+          company_id: string
+          condition: string | null
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          maintenance_date: string | null
+          name: string
+          next_maintenance: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          quantity: number | null
+          serial_number: string | null
+          status: string | null
+          supplier: string | null
+          updated_at: string
+          warranty_expiry: string | null
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          condition?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          maintenance_date?: string | null
+          name: string
+          next_maintenance?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          serial_number?: string | null
+          status?: string | null
+          supplier?: string | null
+          updated_at?: string
+          warranty_expiry?: string | null
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          condition?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          maintenance_date?: string | null
+          name?: string
+          next_maintenance?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          quantity?: number | null
+          serial_number?: string | null
+          status?: string | null
+          supplier?: string | null
+          updated_at?: string
+          warranty_expiry?: string | null
+        }
+        Relationships: []
+      }
+      financial_transactions: {
+        Row: {
+          amount: number
+          category: string
+          company_id: string
+          created_at: string
+          description: string
+          id: string
+          notes: string | null
+          payment_method: string | null
+          reference_id: string | null
+          reference_type: string | null
+          status: string | null
+          transaction_date: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category: string
+          company_id: string
+          created_at?: string
+          description: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string | null
+          transaction_date: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          company_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          reference_id?: string | null
+          reference_type?: string | null
+          status?: string | null
+          transaction_date?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       groups: {
         Row: {
@@ -401,6 +560,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      kpis: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          notes: string | null
+          period_end: string
+          period_start: string
+          target_value: number | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          metric_name: string
+          metric_type: string
+          metric_value: number
+          notes?: string | null
+          period_end: string
+          period_start: string
+          target_value?: number | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          metric_name?: string
+          metric_type?: string
+          metric_value?: number
+          notes?: string | null
+          period_end?: string
+          period_start?: string
+          target_value?: number | null
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -501,6 +699,42 @@ export type Database = {
           },
         ]
       }
+      observatory_reports: {
+        Row: {
+          company_id: string
+          created_at: string
+          data: Json
+          generated_by: string | null
+          id: string
+          period_end: string
+          period_start: string
+          report_type: string
+          title: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          data: Json
+          generated_by?: string | null
+          id?: string
+          period_end: string
+          period_start: string
+          report_type: string
+          title: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          data?: Json
+          generated_by?: string | null
+          id?: string
+          period_end?: string
+          period_start?: string
+          report_type?: string
+          title?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           company_id: string
@@ -584,6 +818,54 @@ export type Database = {
           phone?: string | null
           role?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      prospects: {
+        Row: {
+          assigned_to: string | null
+          company_id: string
+          contact_date: string | null
+          created_at: string
+          email: string | null
+          follow_up_date: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          company_id: string
+          contact_date?: string | null
+          created_at?: string
+          email?: string | null
+          follow_up_date?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          company_id?: string
+          contact_date?: string | null
+          created_at?: string
+          email?: string | null
+          follow_up_date?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
