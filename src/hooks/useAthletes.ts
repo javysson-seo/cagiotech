@@ -21,7 +21,7 @@ interface Athlete {
   status?: string;
   join_date?: string;
   monthly_fee?: number;
-  medical_conditions?: string;
+  medical_notes?: string;
   goals?: string[];
   notes?: string;
   nutrition_preview?: string;

@@ -42,7 +42,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
     group: '',
     emergencyContactName: '',
     emergencyContactPhone: '',
-    medicalConditions: '',
+    medicalNotes: '',
     goals: [] as string[],
     notes: '',
     nutritionPreview: '',
@@ -89,7 +89,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         group: athlete.group || '',
         emergencyContactName: athlete.emergencyContact || '',
         emergencyContactPhone: athlete.emergencyPhone || '',
-        medicalConditions: athlete.medicalConditions || '',
+        medicalNotes: athlete.medical_notes || '',
         goals: athlete.goals || [],
         notes: athlete.notes || '',
         nutritionPreview: athlete.nutritionPreview || '',
@@ -111,7 +111,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         group: '',
         emergencyContactName: '',
         emergencyContactPhone: '',
-        medicalConditions: '',
+        medicalNotes: '',
         goals: [],
         notes: '',
         nutritionPreview: '',
@@ -436,8 +436,8 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
                 <Label htmlFor="medical">Condições Médicas / Restrições</Label>
                 <Textarea
                   id="medical"
-                  value={formData.medicalConditions}
-                  onChange={(e) => setFormData(prev => ({ ...prev, medicalConditions: e.target.value }))}
+                  value={formData.medicalNotes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, medicalNotes: e.target.value }))}
                   placeholder="Ex: Alergia a frutos secos, lesão no joelho..."
                 />
               </div>

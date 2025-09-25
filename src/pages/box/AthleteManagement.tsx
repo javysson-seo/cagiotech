@@ -10,6 +10,7 @@ import { AthleteList } from '@/components/athletes/AthleteList';
 import { AthleteFormModal } from '@/components/athletes/AthleteFormModal';
 import { AthleteDetailsModal } from '@/components/athletes/AthleteDetailsModal';
 import { AthleteExportDialog } from '@/components/athletes/AthleteExportDialog';
+import { QuickRegisterModal } from '@/components/auth/QuickRegisterModal';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { useAthletes } from '@/hooks/useAthletes';
 
@@ -19,6 +20,7 @@ const AthleteManagementContent: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showQuickRegister, setShowQuickRegister] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -85,6 +87,10 @@ const AthleteManagementContent: React.FC = () => {
                 <Button variant="outline" onClick={handleExport} className="hidden md:flex">
                   <Download className="h-4 w-4 mr-2" />
                   Exportar XLSX
+                </Button>
+                <Button variant="outline" onClick={() => setShowQuickRegister(true)} className="hidden md:flex">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Registo Rápido
                 </Button>
                 <Button onClick={handleNewAthlete} className="bg-green-600 hover:bg-green-700">
                   <Plus className="h-4 w-4 mr-2" />
@@ -177,6 +183,12 @@ const AthleteManagementContent: React.FC = () => {
         isOpen={showExportDialog}
         onClose={() => setShowExportDialog(false)}
         athletes={athletes}
+      />
+
+      <QuickRegisterModal
+        isOpen={showQuickRegister}
+        onClose={() => setShowQuickRegister(false)}
+        userType="athlete"
       />
     </div>
   );

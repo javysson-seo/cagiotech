@@ -7,6 +7,7 @@ import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { TrainerList } from '@/components/trainers/TrainerList';
 import { TrainerForm } from '@/components/trainers/TrainerForm';
 import { TrainerProfile } from '@/components/trainers/TrainerProfile';
+import { QuickRegisterModal } from '@/components/auth/QuickRegisterModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ const TrainerManagementContent: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [showForm, setShowForm] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showQuickRegister, setShowQuickRegister] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState<any>(null);
   const [activeTab, setActiveTab] = useState('list');
 
@@ -102,10 +104,16 @@ const TrainerManagementContent: React.FC = () => {
                   Gerir treinadores e instrutores da sua BOX
                 </p>
               </div>
-              <Button onClick={handleNewTrainer} className="bg-cagio-green hover:bg-cagio-green/90">
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Trainer
-              </Button>
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" onClick={() => setShowQuickRegister(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Registo Rápido
+                </Button>
+                <Button onClick={handleNewTrainer} className="bg-cagio-green hover:bg-cagio-green/90">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Trainer
+                </Button>
+              </div>
             </div>
 
             {/* KPI Cards */}
@@ -248,6 +256,12 @@ const TrainerManagementContent: React.FC = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      <QuickRegisterModal
+        isOpen={showQuickRegister}
+        onClose={() => setShowQuickRegister(false)}
+        userType="trainer"
+      />
     </div>
   );
 };

@@ -33,7 +33,7 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
     trainer: athlete?.trainer || '',
     status: athlete?.status || 'active',
     monthly_fee: athlete?.monthly_fee || '',
-    medical_conditions: athlete?.medical_conditions || '',
+    medical_notes: athlete?.medical_notes || '',
     goals: athlete?.goals || [],
     notes: athlete?.notes || ''
   });
@@ -257,11 +257,11 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
             <h4 className="font-medium text-sm text-muted-foreground">Informações de Saúde</h4>
             
             <div className="space-y-2">
-              <Label htmlFor="medical_conditions">Condições Médicas</Label>
+              <Label htmlFor="medical_notes">Condições Médicas</Label>
               <Textarea
-                id="medical_conditions"
-                value={formData.medical_conditions}
-                onChange={(e) => handleInputChange('medical_conditions', e.target.value)}
+                id="medical_notes"
+                value={formData.medical_notes}
+                onChange={(e) => handleInputChange('medical_notes', e.target.value)}
                 placeholder="Lesões, alergias, medicamentos..."
                 rows={2}
               />

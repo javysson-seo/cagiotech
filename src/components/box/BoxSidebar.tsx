@@ -37,7 +37,7 @@ export const BoxSidebar: React.FC = () => {
   const navigation = [
     { name: 'Dashboard', href: `/${companySlug}`, icon: Home },
     { name: 'Atletas', href: `/${companySlug}/athletes`, icon: Users },
-    { name: 'Recursos humanos', href: `/${companySlug}/trainers`, icon: UserCheck },
+    { name: 'Recursos humanos', href: `/${companySlug}/hr`, icon: UserCheck },
     { name: 'Aulas / Serviços', href: `/${companySlug}/classes`, icon: Calendar },
     { name: 'CRM', href: `/${companySlug}/crm`, icon: UserPlus },
     { name: 'Comunicação', href: `/${companySlug}/communication`, icon: MessageSquare },

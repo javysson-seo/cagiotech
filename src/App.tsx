@@ -30,6 +30,7 @@ import { Reports as AdminReports } from "./pages/admin/Reports";
 // Box Pages
 import { BoxDashboard } from "./pages/box/BoxDashboard";
 import { AthleteManagement } from "./pages/box/AthleteManagement";
+import { HumanResources } from "./pages/box/HumanResources";
 import { TrainerManagement } from "./pages/box/TrainerManagement";
 import { ClassManagement } from "./pages/box/ClassManagement";
 import { BoxSettings } from "./pages/box/BoxSettings";
@@ -93,6 +94,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <AthleteManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/hr" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <HumanResources />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
