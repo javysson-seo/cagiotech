@@ -177,12 +177,14 @@ function App() {
 
                   {/* Student Routes */}
                   <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
+                  <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
                   <Route path="/student/bookings" element={<ProtectedRoute allowedRoles={["student"]}><BookingManagement /></ProtectedRoute>} />
                   <Route path="/student/progress" element={<ProtectedRoute allowedRoles={["student"]}><ProgressTracking /></ProtectedRoute>} />
                   <Route path="/student/payments" element={<ProtectedRoute allowedRoles={["student"]}><PaymentManagement /></ProtectedRoute>} />
 
                   {/* Trainer Routes */}
                   <Route path="/trainer" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerDashboard /></ProtectedRoute>} />
+                  <Route path="/trainer/dashboard" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerDashboard /></ProtectedRoute>} />
                   <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerStudents /></ProtectedRoute>} />
                   <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
                   <Route path="/trainer/nutrition" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerNutritionPlans /></ProtectedRoute>} />

@@ -71,6 +71,36 @@ export const useAthletes = () => {
     }
 
     try {
+      // Create user in Supabase Auth if new athlete and has birth_date
+      if (!athleteData.id && athleteData.birth_date) {
+        // Generate password from birth date (dd/mm/yyyy -> ddmmyyyy)
+        const birthDate = new Date(athleteData.birth_date);
+        const day = birthDate.getDate().toString().padStart(2, '0');
+        const month = (birthDate.getMonth() + 1).toString().padStart(2, '0');
+        const year = birthDate.getFullYear().toString();
+        const password = `${day}${month}${year}`;
+
+        // Create auth user
+        const { data: authUser, error: authError } = await supabase.auth.signUp({
+          email: athleteData.email!,
+          password: password,
+          options: {
+            data: {
+              role: 'student',
+              name: athleteData.name,
+            }
+          }
+        });
+
+        if (authError) {
+          console.error('Error creating auth user:', authError);
+          toast.error('Erro ao criar usuário no sistema');
+          return false;
+        }
+
+        toast.success(`Usuário criado! Email: ${athleteData.email}, Senha: ${password}`);
+      }
+
       const athleteToSave = {
         ...athleteData,
         company_id: currentCompany.id,
