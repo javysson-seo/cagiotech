@@ -80,7 +80,7 @@ export const useAthletes = () => {
         const year = birthDate.getFullYear().toString();
         const password = `${day}${month}${year}`;
 
-        // Create auth user
+        // Create auth user with student role
         const { data: authUser, error: authError } = await supabase.auth.signUp({
           email: athleteData.email!,
           password: password,

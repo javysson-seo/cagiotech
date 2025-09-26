@@ -8,6 +8,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CompanyProvider } from "@/contexts/CompanyContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
+import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
 
 // Pages
 import Index from "./pages/Index";
@@ -54,7 +55,14 @@ import { TrainerStudents } from "./pages/trainer/TrainerStudents";
 import { TrainerWorkoutPlans } from "./pages/trainer/TrainerWorkoutPlans";
 import { TrainerNutritionPlans } from "./pages/trainer/TrainerNutritionPlans";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
@@ -67,7 +75,7 @@ function App() {
                 <Toaster />
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/" element={<RoleBasedRedirect />} />
                   <Route path="/old-landing" element={<Landing />} />
                   <Route path="/auth/login" element={<LoginPage />} />
                   <Route path="/auth/box-register" element={<BoxRegister />} />
@@ -104,73 +112,103 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/trainers" element={
+
+                  {/* Box Routes (without company slug for direct access) */}
+                  <Route path="/box" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxDashboard />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/dashboard" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxDashboard />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/athletes" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <AthleteManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/hr" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <HumanResources />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/trainers" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <TrainerManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/classes" element={
+                  <Route path="/box/classes" element={
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <ClassManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/settings" element={
+                  <Route path="/box/settings" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <BoxSettings />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/reports" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                  <Route path="/box/reports" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <BoxReports />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/crm" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                  <Route path="/box/crm" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCRM />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/communication" element={
+                  <Route path="/box/communication" element={
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCommunication />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/financial" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
-                      <CompanyProvider>
-                        <Financial />
-                      </CompanyProvider>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/:companySlug/equipment" element={
+                  <Route path="/box/equipment" element={
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxEquipment />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/observatory" element={
+                  <Route path="/box/observatory" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <BoxObservatory />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companySlug/kpis" element={
+                  <Route path="/box/kpis" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <BoxKPIs />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/financial" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <Financial />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
@@ -188,6 +226,9 @@ function App() {
                   <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerStudents /></ProtectedRoute>} />
                   <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
                   <Route path="/trainer/nutrition" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerNutritionPlans /></ProtectedRoute>} />
+
+                  {/* Landing Page */}
+                  <Route path="/landing" element={<LandingPage />} />
 
                   {/* Fallback */}
                   <Route path="*" element={<NotFound />} />
