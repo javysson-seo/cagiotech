@@ -871,6 +871,7 @@ export type Database = {
       }
       trainers: {
         Row: {
+          birth_date: string | null
           company_id: string
           created_at: string | null
           email: string | null
@@ -883,6 +884,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          birth_date?: string | null
           company_id: string
           created_at?: string | null
           email?: string | null
@@ -895,6 +897,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          birth_date?: string | null
           company_id?: string
           created_at?: string | null
           email?: string | null

@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { X, Plus, Eye, EyeOff, RefreshCw, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTrainers } from '@/hooks/useTrainers';
 
 interface TrainerFormProps {
   trainer?: any;
@@ -22,6 +23,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   onSave,
   onCancel,
 }) => {
+  const { saveTrainer } = useTrainers();
   const [formData, setFormData] = useState({
     name: trainer?.name || '',
     email: trainer?.email || '',
@@ -176,7 +178,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email) {
@@ -184,13 +186,21 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
       return;
     }
 
-    if (!formData.password) {
-      toast.error('Password é obrigatória');
-      return;
-    }
+    const trainerData = {
+      id: trainer?.id,
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      birth_date: formData.dateOfBirth,
+      specialties: formData.specialties,
+      status: formData.status,
+    };
 
-    toast.success(trainer ? 'Trainer atualizado!' : 'Trainer criado!');
-    onSave();
+    const success = await saveTrainer(trainerData);
+    
+    if (success) {
+      onSave();
+    }
   };
 
   const daysOfWeek = [
@@ -285,49 +295,18 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
             </div>
           </div>
 
-          {/* Sistema de Acesso */}
-          <div className="space-y-4">
-            <h4 className="font-medium text-sm text-muted-foreground">Sistema de Acesso</h4>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password *</Label>
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Input
-                    id="password"
-                    type={formData.isPasswordVisible ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    placeholder="Password de acesso"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {formData.isPasswordVisible ? (
-                      <EyeOff className="h-3 w-3" />
-                    ) : (
-                      <Eye className="h-3 w-3" />
-                    )}
-                  </Button>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={generateRandomPassword}
-                  className="flex-shrink-0"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+          {/* Informação sobre Login Automático */}
+          {!trainer && formData.dateOfBirth && formData.email && (
+            <div className="space-y-4">
+              <h4 className="font-medium text-sm text-muted-foreground">Sistema de Acesso</h4>
+              <div className="p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>Login automático:</strong> Será criado automaticamente um usuário com o email informado. 
+                  A senha será baseada na data de nascimento (formato: DDMMAAAA).
+                </p>
               </div>
-              <p className="text-xs text-muted-foreground">
-                Esta password será usada pelo trainer para aceder ao sistema
-              </p>
             </div>
-          </div>
+          )}
 
           {/* Dados Profissionais */}
           <div className="space-y-4">
