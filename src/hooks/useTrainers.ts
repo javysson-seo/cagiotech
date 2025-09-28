@@ -9,6 +9,7 @@ interface Trainer {
   name: string;
   email?: string;
   phone?: string;
+  birth_date?: string;
   specialties?: string[];
   status?: string;
   company_id?: string;
@@ -59,6 +60,34 @@ export const useTrainers = () => {
     }
 
     try {
+      // Create user in Supabase Auth if new trainer and has birth_date and email
+      if (!trainerData.id && trainerData.birth_date && trainerData.email) {
+        // Generate password from birth date (dd/mm/yyyy -> ddmmyyyy)
+        const birthDate = new Date(trainerData.birth_date);
+        const day = birthDate.getDate().toString().padStart(2, '0');
+        const month = (birthDate.getMonth() + 1).toString().padStart(2, '0');
+        const year = birthDate.getFullYear().toString();
+        const password = `${day}${month}${year}`;
+
+        // Create auth user via Edge Function to auto-confirm and avoid email confirmation
+        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-student', {
+          body: {
+            email: trainerData.email!,
+            password,
+            name: trainerData.name,
+            role: 'trainer',
+          },
+        });
+
+        if (fnError || (fnData as any)?.error) {
+          console.error('Error creating auth user:', fnError || (fnData as any)?.error);
+          toast.error('Erro ao criar usuário no sistema');
+          return false;
+        }
+
+        toast.success(`Usuário criado! Email: ${trainerData.email}, Senha: ${password}`);
+      }
+
       const trainerToSave = {
         ...trainerData,
         company_id: currentCompany.id,
