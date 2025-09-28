@@ -81,19 +81,18 @@ export const useAthletes = () => {
         const password = `${day}${month}${year}`;
 
         // Create auth user with student role
-        const { data: authUser, error: authError } = await supabase.auth.signUp({
-          email: athleteData.email!,
-          password: password,
-          options: {
-            data: {
-              role: 'student',
-              name: athleteData.name,
-            }
-          }
+        // Create auth user via Edge Function to auto-confirm and avoid email confirmation
+        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-student', {
+          body: {
+            email: athleteData.email!,
+            password,
+            name: athleteData.name,
+            role: 'student',
+          },
         });
 
-        if (authError) {
-          console.error('Error creating auth user:', authError);
+        if (fnError || (fnData as any)?.error) {
+          console.error('Error creating auth user:', fnError || (fnData as any)?.error);
           toast.error('Erro ao criar usuário no sistema');
           return false;
         }
