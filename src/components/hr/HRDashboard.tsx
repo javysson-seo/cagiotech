@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -13,8 +13,12 @@ import {
   AlertCircle,
   CheckCircle 
 } from 'lucide-react';
+import { StaffFormModal } from './StaffFormModal';
+import { useStaff } from '@/hooks/useStaff';
 
 export const HRDashboard: React.FC = () => {
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const { saveStaff } = useStaff();
   // Mock data para KPIs
   const stats = [
     {
@@ -128,7 +132,10 @@ export const HRDashboard: React.FC = () => {
             <FileText className="h-4 w-4 mr-2" />
             Relatórios
           </Button>
-          <Button className="bg-green-600 hover:bg-green-700">
+          <Button 
+            className="bg-green-600 hover:bg-green-700"
+            onClick={() => setIsStaffModalOpen(true)}
+          >
             <UserPlus className="h-4 w-4 mr-2" />
             Novo Funcionário
           </Button>
@@ -288,6 +295,15 @@ export const HRDashboard: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <StaffFormModal
+        isOpen={isStaffModalOpen}
+        onClose={() => setIsStaffModalOpen(false)}
+        onSave={async (staffData) => {
+          await saveStaff(staffData);
+          setIsStaffModalOpen(false);
+        }}
+      />
     </div>
   );
 };
