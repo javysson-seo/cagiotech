@@ -869,6 +869,54 @@ export type Database = {
         }
         Relationships: []
       }
+      staff: {
+        Row: {
+          birth_date: string | null
+          company_id: string
+          created_at: string | null
+          department: string
+          email: string | null
+          hire_date: string | null
+          id: string
+          name: string
+          phone: string | null
+          position: string
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          birth_date?: string | null
+          company_id: string
+          created_at?: string | null
+          department: string
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          position: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          birth_date?: string | null
+          company_id?: string
+          created_at?: string | null
+          department?: string
+          email?: string | null
+          hire_date?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          position?: string
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       trainers: {
         Row: {
           birth_date: string | null

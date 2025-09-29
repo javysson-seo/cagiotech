@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/contexts/CompanyContext';
 import { useToast } from '@/hooks/use-toast';
+import type { Database } from '@/integrations/supabase/types';
+
+type StaffTable = Database['public']['Tables']['staff']['Row'];
+type StaffInsert = Database['public']['Tables']['staff']['Insert'];
 
 export interface Staff {
   id?: string;
@@ -46,7 +50,7 @@ export const useStaff = () => {
         return;
       }
 
-      setStaff(data || []);
+      setStaff((data as Staff[]) || []);
     } catch (error) {
       console.error('Error fetching staff:', error);
       toast({
