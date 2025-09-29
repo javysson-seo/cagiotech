@@ -31,6 +31,7 @@ export const ResponsiveStudentSidebar: React.FC = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/student/dashboard', icon: Home },
+    { name: 'Meus Exercícios', href: '/student/workouts', icon: Dumbbell },
     { name: 'Reservar Aulas', href: '/student/bookings', icon: Calendar },
     { name: 'Meus Pagamentos', href: '/student/payments', icon: CreditCard },
     { name: 'Progresso', href: '/student/progress', icon: Target },

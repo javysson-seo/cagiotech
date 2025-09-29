@@ -45,6 +45,7 @@ import { Financial } from "./pages/box/Financial";
 
 // Student Pages
 import { StudentDashboard } from "./pages/student/StudentDashboard";
+import { Workouts } from "./pages/student/Workouts";
 import { BookingManagement } from "./pages/student/BookingManagement";
 import { ProgressTracking } from "./pages/student/ProgressTracking";
 import { PaymentManagement } from "./pages/student/PaymentManagement";
@@ -216,16 +217,17 @@ function App() {
                   {/* Student Routes */}
                   <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
                   <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
+                  <Route path="/student/workouts" element={<ProtectedRoute allowedRoles={["student"]}><Workouts /></ProtectedRoute>} />
                   <Route path="/student/bookings" element={<ProtectedRoute allowedRoles={["student"]}><BookingManagement /></ProtectedRoute>} />
                   <Route path="/student/progress" element={<ProtectedRoute allowedRoles={["student"]}><ProgressTracking /></ProtectedRoute>} />
                   <Route path="/student/payments" element={<ProtectedRoute allowedRoles={["student"]}><PaymentManagement /></ProtectedRoute>} />
 
-                  {/* Trainer Routes */}
-                  <Route path="/trainer" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerDashboard /></ProtectedRoute>} />
-                  <Route path="/trainer/dashboard" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerDashboard /></ProtectedRoute>} />
-                  <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerStudents /></ProtectedRoute>} />
-                  <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
-                  <Route path="/trainer/nutrition" element={<ProtectedRoute allowedRoles={["trainer"]}><TrainerNutritionPlans /></ProtectedRoute>} />
+                  {/* Trainer Routes - Accept both trainer role and box_admin for trainers */}
+                  <Route path="/trainer" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerDashboard /></ProtectedRoute>} />
+                  <Route path="/trainer/dashboard" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerDashboard /></ProtectedRoute>} />
+                  <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerStudents /></ProtectedRoute>} />
+                  <Route path="/trainer/workout-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
+                  <Route path="/trainer/nutrition-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerNutritionPlans /></ProtectedRoute>} />
 
                   {/* Landing Page */}
                   <Route path="/landing" element={<LandingPage />} />
