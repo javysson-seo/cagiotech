@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/contexts/CompanyContext';
 import { useToast } from '@/hooks/use-toast';
-import type { Database } from '@/integrations/supabase/types';
-
-type StaffTable = Database['public']['Tables']['staff']['Row'];
-type StaffInsert = Database['public']['Tables']['staff']['Insert'];
 
 export interface Staff {
   id?: string;
@@ -34,7 +30,7 @@ export const useStaff = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('staff')
         .select('*')
         .eq('company_id', currentCompany.id)
@@ -82,7 +78,7 @@ export const useStaff = () => {
 
       if (staffData.id) {
         // Update existing staff
-        const { error } = await supabase
+        const { error } = await (supabase as any)
           .from('staff')
           .update(staffWithCompany)
           .eq('id', staffData.id);
@@ -103,7 +99,7 @@ export const useStaff = () => {
         });
       } else {
         // Create new staff
-        const { data: newStaff, error } = await supabase
+        const { data: newStaff, error } = await (supabase as any)
           .from('staff')
           .insert([{ ...staffWithCompany, created_at: new Date().toISOString() }])
           .select()
@@ -152,7 +148,7 @@ export const useStaff = () => {
 
   const deleteStaff = async (staffId: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('staff')
         .delete()
         .eq('id', staffId);
@@ -194,7 +190,7 @@ export const useStaff = () => {
   const createUserAccount = async (email: string, name: string, birthDate: string) => {
     const password = generatePasswordFromDate(birthDate);
     
-    const { error } = await supabase.functions.invoke('create-student', {
+    const { data, error } = await supabase.functions.invoke('create-student', {
       body: {
         email,
         password,
@@ -203,7 +199,8 @@ export const useStaff = () => {
       }
     });
 
-    if (error) {
+    const msg = (error as any)?.message || (data as any)?.error || '';
+    if (error && !msg.toString().includes('already been registered') && !msg.toString().includes('email_exists')) {
       console.error('Error creating user account:', error);
       throw error;
     }

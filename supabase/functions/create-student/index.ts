@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2?target=deno";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,7 +52,14 @@ serve(async (req: Request) => {
     });
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), {
+      const msg = (error as any)?.message || String(error);
+      if (msg.includes("already been registered") || msg.includes("email_exists") || (error as any)?.status === 422) {
+        return new Response(JSON.stringify({ message: "User already exists", code: "email_exists" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        });
+      }
+      return new Response(JSON.stringify({ error: msg }), {
         status: 400,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });

@@ -80,8 +80,6 @@ export const useAthletes = () => {
         const year = birthDate.getFullYear().toString();
         const password = `${day}${month}${year}`;
 
-        // Create auth user with student role
-        // Create auth user via Edge Function to auto-confirm and avoid email confirmation
         const { data: fnData, error: fnError } = await supabase.functions.invoke('create-student', {
           body: {
             email: athleteData.email!,
@@ -91,13 +89,16 @@ export const useAthletes = () => {
           },
         });
 
-        if (fnError || (fnData as any)?.error) {
-          console.error('Error creating auth user:', fnError || (fnData as any)?.error);
+        const efErrorMsg = (fnError as any)?.message || (fnData as any)?.error || '';
+        if (fnError && !efErrorMsg.toString().includes('already been registered') && !efErrorMsg.toString().includes('email_exists')) {
+          console.error('Error creating auth user:', fnError);
           toast.error('Erro ao criar usuário no sistema');
-          return false;
+          // Continue saving athlete even if auth creation failed
+        } else if (!fnError && (fnData as any)?.code === 'email_exists') {
+          toast.info('Usuário já existente para este email. Mantendo cadastro do atleta.');
+        } else if (!fnError) {
+          toast.success(`Usuário criado! Email: ${athleteData.email}, Senha: ${password}`);
         }
-
-        toast.success(`Usuário criado! Email: ${athleteData.email}, Senha: ${password}`);
       }
 
       const athleteToSave = {
@@ -189,7 +190,7 @@ export const useAthletes = () => {
   };
 
   useEffect(() => {
-    fetchAthletes();
+    if (currentCompany?.id) fetchAthletes();
   }, [currentCompany?.id]);
 
   return {
