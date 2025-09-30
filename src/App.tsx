@@ -76,7 +76,7 @@ function App() {
                 <Toaster />
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/" element={<RoleBasedRedirect />} />
+                  <Route path="/" element={<Landing />} />
                   <Route path="/old-landing" element={<Landing />} />
                   <Route path="/auth/login" element={<LoginPage />} />
                   <Route path="/auth/box-register" element={<BoxRegister />} />
