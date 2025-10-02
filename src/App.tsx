@@ -113,6 +113,76 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
+                  <Route path="/:companySlug/trainers" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <TrainerManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/classes" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <ClassManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/crm" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxCRM />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/communication" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxCommunication />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/financial" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <Financial />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/equipment" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxEquipment />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/observatory" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxObservatory />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/kpis" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxKPIs />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/settings" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxSettings />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/reports" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <BoxReports />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
 
                   {/* Box Routes (without company slug for direct access) */}
                   <Route path="/box" element={
