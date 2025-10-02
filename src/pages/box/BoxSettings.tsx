@@ -36,6 +36,7 @@ import { BasicReportsSettings } from '@/components/box/settings/BasicReportsSett
 import { FinancialSettings } from '@/components/box/settings/FinancialSettings';
 import { VisualCustomizationSettings } from '@/components/box/settings/VisualCustomizationSettings';
 import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings';
+import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSettings';
 
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
@@ -101,7 +102,7 @@ const BoxSettingsContent: React.FC = () => {
       id: 'integrations',
       label: 'Integrações',
       icon: Plug,
-      component: GamificationSettings,
+      component: IntegrationsSettings,
       description: 'Integrações com sistemas externos'
     },
     {
