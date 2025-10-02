@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Settings, 
   Building2, 
-  Users, 
+  UserCheck, 
   Shield, 
   Bell, 
   Trophy, 
@@ -19,7 +19,10 @@ import {
   BarChart3,
   Euro,
   Palette,
-  Database
+  Database,
+  Calendar,
+  Plug,
+  Lock
 } from 'lucide-react';
 
 import { BoxDataSettings } from '@/components/box/settings/BoxDataSettings';
@@ -35,85 +38,99 @@ import { VisualCustomizationSettings } from '@/components/box/settings/VisualCus
 import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings';
 
 const BoxSettingsContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('box-data');
+  const [activeTab, setActiveTab] = useState('company-data');
 
   const settingsTabs = [
     {
-      id: 'box-data',
-      label: 'Dados da BOX',
+      id: 'company-data',
+      label: 'Dados da Empresa',
       icon: Building2,
       component: BoxDataSettings,
-      description: 'Informações básicas e contacto'
+      description: 'Informações básicas e contacto da empresa'
     },
     {
-      id: 'users',
-      label: 'Usuários',
-      icon: Users,
+      id: 'hr',
+      label: 'Recursos Humanos',
+      icon: UserCheck,
       component: UsersPermissionsSettings,
-      description: 'Gestão de utilizadores'
+      description: 'Gestão de colaboradores e permissões'
     },
     {
       id: 'modalities',
       label: 'Modalidades',
       icon: Database,
       component: ModalitiesSettings,
-      description: 'Configuração de modalidades'
+      description: 'Configuração de modalidades e serviços'
+    },
+    {
+      id: 'classes',
+      label: 'Aulas',
+      icon: Calendar,
+      component: ScheduleRulesSettings,
+      description: 'Gestão de aulas e agendamentos'
     },
     {
       id: 'rooms',
-      label: 'Salas',
+      label: 'Salas e Equipamentos',
       icon: MapPin,
       component: RoomsEquipmentSettings,
-      description: 'Gestão de espaços'
+      description: 'Gestão de espaços e material'
     },
     {
       id: 'schedule',
       label: 'Horários',
       icon: Clock,
       component: ScheduleRulesSettings,
-      description: 'Grade de horários'
+      description: 'Grade de horários e regras'
     },
     {
       id: 'financial',
       label: 'Financeiro',
       icon: Euro,
       component: FinancialSettings,
-      description: 'Configurações financeiras'
+      description: 'Configurações financeiras e pagamentos'
     },
     {
       id: 'reports',
       label: 'Relatórios',
       icon: BarChart3,
       component: BasicReportsSettings,
-      description: 'Métricas e análises'
+      description: 'Métricas e análises de desempenho'
+    },
+    {
+      id: 'integrations',
+      label: 'Integrações',
+      icon: Plug,
+      component: GamificationSettings,
+      description: 'Integrações com sistemas externos'
     },
     {
       id: 'notifications',
       label: 'Notificações',
       icon: Bell,
       component: InternalNotificationsSettings,
-      description: 'Alertas e comunicações'
+      description: 'Alertas e comunicações internas'
     },
     {
       id: 'gamification',
       label: 'Gamificação',
       icon: Trophy,
       component: GamificationSettings,
-      description: 'Sistema de pontos'
+      description: 'Sistema de pontos e recompensas'
     },
     {
       id: 'visual',
-      label: 'Visual',
+      label: 'Personalização',
       icon: Palette,
       component: VisualCustomizationSettings,
-      description: 'Personalização visual'
+      description: 'Customização visual da plataforma'
     },
     {
       id: 'security',
       label: 'Segurança',
-      icon: Shield,
+      icon: Lock,
       component: SecurityBackupSettings,
-      description: 'Proteção de dados'
+      description: 'Proteção de dados e backups'
     }
   ];
 
@@ -144,9 +161,9 @@ const BoxSettingsContent: React.FC = () => {
                 <Settings className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Configurações da BOX</h1>
+                <h1 className="text-3xl font-bold text-foreground">Configurações da Empresa</h1>
                 <p className="text-muted-foreground">
-                  Gerir todas as configurações e preferências da sua BOX
+                  Gerir todas as configurações e preferências da sua empresa
                 </p>
               </div>
             </div>
@@ -154,7 +171,7 @@ const BoxSettingsContent: React.FC = () => {
             {/* Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="border-b border-border mb-6">
-                <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 lg:grid-cols-11 h-auto p-1 bg-muted/50 rounded-lg">
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 h-auto p-1 bg-muted/50 rounded-lg gap-1">
                   {settingsTabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
