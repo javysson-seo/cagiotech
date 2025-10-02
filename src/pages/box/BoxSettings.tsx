@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Settings, 
   Building2, 
-  UserCheck, 
+  Users, 
   Shield, 
   Bell, 
   Trophy, 
@@ -19,10 +19,7 @@ import {
   BarChart3,
   Euro,
   Palette,
-  Database,
-  Calendar,
-  Plug,
-  Lock
+  Database
 } from 'lucide-react';
 
 import { BoxDataSettings } from '@/components/box/settings/BoxDataSettings';
@@ -36,102 +33,87 @@ import { BasicReportsSettings } from '@/components/box/settings/BasicReportsSett
 import { FinancialSettings } from '@/components/box/settings/FinancialSettings';
 import { VisualCustomizationSettings } from '@/components/box/settings/VisualCustomizationSettings';
 import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings';
-import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSettings';
 
 const BoxSettingsContent: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('company-data');
+  const [activeTab, setActiveTab] = useState('box-data');
 
   const settingsTabs = [
     {
-      id: 'company-data',
-      label: 'Dados da Empresa',
+      id: 'box-data',
+      label: 'Dados da BOX',
       icon: Building2,
       component: BoxDataSettings,
-      description: 'Informações básicas e contacto da empresa'
+      description: 'Informações básicas e contacto'
     },
     {
-      id: 'hr',
-      label: 'Recursos Humanos',
-      icon: UserCheck,
+      id: 'users',
+      label: 'Usuários',
+      icon: Users,
       component: UsersPermissionsSettings,
-      description: 'Gestão de colaboradores e permissões'
+      description: 'Gestão de utilizadores'
     },
     {
       id: 'modalities',
       label: 'Modalidades',
       icon: Database,
       component: ModalitiesSettings,
-      description: 'Configuração de modalidades e serviços'
-    },
-    {
-      id: 'classes',
-      label: 'Aulas',
-      icon: Calendar,
-      component: ScheduleRulesSettings,
-      description: 'Gestão de aulas e agendamentos'
+      description: 'Configuração de modalidades'
     },
     {
       id: 'rooms',
-      label: 'Salas e Equipamentos',
+      label: 'Salas',
       icon: MapPin,
       component: RoomsEquipmentSettings,
-      description: 'Gestão de espaços e material'
+      description: 'Gestão de espaços'
     },
     {
       id: 'schedule',
       label: 'Horários',
       icon: Clock,
       component: ScheduleRulesSettings,
-      description: 'Grade de horários e regras'
+      description: 'Grade de horários'
     },
     {
       id: 'financial',
       label: 'Financeiro',
       icon: Euro,
       component: FinancialSettings,
-      description: 'Configurações financeiras e pagamentos'
+      description: 'Configurações financeiras'
     },
     {
       id: 'reports',
       label: 'Relatórios',
       icon: BarChart3,
       component: BasicReportsSettings,
-      description: 'Métricas e análises de desempenho'
-    },
-    {
-      id: 'integrations',
-      label: 'Integrações',
-      icon: Plug,
-      component: IntegrationsSettings,
-      description: 'Integrações com sistemas externos'
+      description: 'Métricas e análises'
     },
     {
       id: 'notifications',
       label: 'Notificações',
       icon: Bell,
       component: InternalNotificationsSettings,
-      description: 'Alertas e comunicações internas'
+      description: 'Alertas e comunicações'
     },
     {
       id: 'gamification',
       label: 'Gamificação',
       icon: Trophy,
       component: GamificationSettings,
-      description: 'Sistema de pontos e recompensas'
+      description: 'Sistema de pontos'
     },
     {
       id: 'visual',
-      label: 'Personalização',
+      label: 'Visual',
       icon: Palette,
       component: VisualCustomizationSettings,
-      description: 'Customização visual da plataforma'
+      description: 'Personalização visual'
     },
     {
       id: 'security',
       label: 'Segurança',
-      icon: Lock,
+      icon: Shield,
       component: SecurityBackupSettings,
-      description: 'Proteção de dados e backups'
+      description: 'Proteção de dados'
     }
   ];
 
@@ -162,9 +144,9 @@ const BoxSettingsContent: React.FC = () => {
                 <Settings className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Configurações da Empresa</h1>
+                <h1 className="text-3xl font-bold text-foreground">Configurações da BOX</h1>
                 <p className="text-muted-foreground">
-                  Gerir todas as configurações e preferências da sua empresa
+                  Gerir todas as configurações e preferências da sua BOX
                 </p>
               </div>
             </div>
@@ -172,7 +154,7 @@ const BoxSettingsContent: React.FC = () => {
             {/* Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="border-b border-border mb-6">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 h-auto p-1 bg-muted/50 rounded-lg gap-1">
+                <TabsList className="grid w-full grid-cols-4 md:grid-cols-6 lg:grid-cols-11 h-auto p-1 bg-muted/50 rounded-lg">
                   {settingsTabs.map((tab) => {
                     const Icon = tab.icon;
                     return (
