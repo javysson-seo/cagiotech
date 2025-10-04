@@ -42,6 +42,7 @@ import { BoxEquipment } from "./pages/box/BoxEquipment";
 import { BoxObservatory } from "./pages/box/BoxObservatory";
 import { BoxKPIs } from "./pages/box/BoxKPIs";
 import { Financial } from "./pages/box/Financial";
+import SubscriptionsManagement from "./pages/box/SubscriptionsManagement";
 
 // Student Pages
 import { StudentDashboard } from "./pages/student/StudentDashboard";
@@ -145,6 +146,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <Financial />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companySlug/subscriptions" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <SubscriptionsManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
@@ -280,6 +288,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <Financial />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/subscriptions" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <SubscriptionsManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />

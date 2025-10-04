@@ -13,7 +13,8 @@ import {
   LogOut,
   Dumbbell,
   UserPlus,
-  Euro
+  Euro,
+  CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -42,6 +43,7 @@ export const BoxSidebar: React.FC = () => {
     { name: 'CRM', href: `/${companySlug}/crm`, icon: UserPlus },
     { name: 'Comunicação', href: `/${companySlug}/communication`, icon: MessageSquare },
     { name: 'Financeiro', href: `/${companySlug}/financial`, icon: Euro },
+    { name: 'Assinaturas', href: `/${companySlug}/subscriptions`, icon: CreditCard },
     { name: 'Material deportivo', href: `/${companySlug}/equipment`, icon: Dumbbell },
     { name: 'Observatorio', href: `/${companySlug}/observatory`, icon: BarChart3 },
     { name: 'KPIS', href: `/${companySlug}/kpis`, icon: BarChart3 },
