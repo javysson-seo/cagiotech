@@ -881,6 +881,7 @@ export type Database = {
           name: string
           phone: string | null
           position: string
+          role_type: string | null
           status: string | null
           updated_at: string | null
           user_id: string | null
@@ -896,6 +897,7 @@ export type Database = {
           name: string
           phone?: string | null
           position: string
+          role_type?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -911,6 +913,7 @@ export type Database = {
           name?: string
           phone?: string | null
           position?: string
+          role_type?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -974,6 +977,41 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -995,13 +1033,26 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      has_role: {
+        Args: {
+          _company_id?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       inserir_3x_e_parar: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "cagio_admin"
+        | "box_owner"
+        | "personal_trainer"
+        | "staff_member"
+        | "student"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1128,6 +1179,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "cagio_admin",
+        "box_owner",
+        "personal_trainer",
+        "staff_member",
+        "student",
+      ],
+    },
   },
 } as const
