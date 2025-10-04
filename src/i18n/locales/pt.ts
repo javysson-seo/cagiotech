@@ -160,5 +160,18 @@ export const ptTranslations = {
     disabled: "Desativado",
     enable: "Ativar",
     disable: "Desativar"
+  },
+
+  // Mobile
+  mobile: {
+    restrictedAccess: "Acesso Restrito no Aplicativo",
+    webOnlyAccess: "Esta área está disponível apenas através do navegador web",
+    useWebBrowser: "Use o navegador web para aceder",
+    allowedRoles: "Acesso Permitido no App",
+    students: "Alunos",
+    trainers: "Personal Trainers",
+    companyAccess: "Acesso da Empresa",
+    openBrowser: "Abrir no Navegador",
+    webOnlyFeature: "Funcionalidade apenas Web"
   }
 };

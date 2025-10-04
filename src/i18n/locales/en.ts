@@ -160,5 +160,18 @@ export const enTranslations = {
     disabled: "Disabled",
     enable: "Enable",
     disable: "Disable"
+  },
+
+  // Mobile
+  mobile: {
+    restrictedAccess: "Restricted Access on App",
+    webOnlyAccess: "This area is only available through web browser",
+    useWebBrowser: "Use web browser to access",
+    allowedRoles: "App Access Allowed",
+    students: "Students",
+    trainers: "Personal Trainers",
+    companyAccess: "Company Access",
+    openBrowser: "Open in Browser",
+    webOnlyFeature: "Web-only Feature"
   }
 };

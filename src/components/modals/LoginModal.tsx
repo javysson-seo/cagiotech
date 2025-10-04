@@ -10,6 +10,8 @@ import { PasswordRecoveryModal } from './PasswordRecoveryModal';
 import { validateEmail, validatePassword, ValidationMessage } from '@/components/ui/form-validation';
 import { LoadingButton } from '@/components/ui/loading-states';
 import { useToast } from '@/components/ui/toast-system';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { MobileAccessRestriction } from '@/components/mobile/MobileAccessRestriction';
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -26,7 +28,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenR
   const [isLoading, setIsLoading] = useState(false);
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({ email: '', password: '' });
+  const [showMobileRestriction, setShowMobileRestriction] = useState(false);
   const { showError, showSuccess } = useToast();
+  const { isMobileApp } = useMobileDetection();
 
   const handleDemo = (type: string) => {
     showSuccess('🎮 Demo em desenvolvimento', 'Esta funcionalidade será implementada em breve!');
@@ -88,14 +92,22 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenR
                   <Button
                     variant="outline"
                     className="h-16 justify-start space-x-3 hover:border-[#bed700] hover:bg-[#bed700]/5"
-                    onClick={() => setSelectedUserType('box')}
+                    onClick={() => {
+                      if (isMobileApp) {
+                        setShowMobileRestriction(true);
+                      } else {
+                        setSelectedUserType('box');
+                      }
+                    }}
                   >
                     <div className="w-10 h-10 bg-[#bed700]/10 rounded-full flex items-center justify-center">
                       <Users className="h-5 w-5 text-[#bed700]" />
                     </div>
                     <div className="text-left">
                       <div className="font-semibold">BOX / Ginásio</div>
-                      <div className="text-sm text-muted-foreground">Proprietário ou gestor</div>
+                      <div className="text-sm text-muted-foreground">
+                        {isMobileApp ? '❌ Apenas no navegador' : 'Proprietário ou gestor'}
+                      </div>
                     </div>
                   </Button>
 
@@ -242,6 +254,18 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onOpenR
         onClose={() => setShowRecovery(false)}
         onBackToLogin={() => setShowRecovery(false)}
       />
+
+      <Dialog open={showMobileRestriction} onOpenChange={setShowMobileRestriction}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Acesso Restrito</DialogTitle>
+          </DialogHeader>
+          <MobileAccessRestriction attemptedRole="box_owner" />
+          <Button onClick={() => setShowMobileRestriction(false)} className="w-full">
+            Entendido
+          </Button>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
