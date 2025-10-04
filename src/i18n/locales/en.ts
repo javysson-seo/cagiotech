@@ -87,7 +87,15 @@ export const enTranslations = {
     classes: "Classes",
     financial: "Financial",
     communication: "Communication",
-    reports: "Reports"
+    reports: "Reports",
+    subscriptions: "Subscriptions",
+    settings: "Settings",
+    athletes: "Athletes",
+    staff: "Staff",
+    equipment: "Equipment",
+    crm: "CRM",
+    kpis: "KPIs",
+    observatory: "Observatory"
   },
 
   // Onboarding
@@ -111,5 +119,46 @@ export const enTranslations = {
     next: "Next",
     previous: "Previous",
     finish: "Finish"
+  },
+
+  // Subscriptions
+  subscriptions: {
+    title: "Subscription Management",
+    plans: "Subscription Plans",
+    active: "Active Subscriptions",
+    paymentMethods: "Payment Methods",
+    createPlan: "Create Plan",
+    editPlan: "Edit Plan",
+    planName: "Plan Name",
+    description: "Description",
+    price: "Price",
+    duration: "Duration",
+    monthly: "Monthly",
+    quarterly: "Quarterly",
+    annual: "Annual",
+    features: "Features",
+    save: "Save",
+    cancel: "Cancel",
+    status: "Status",
+    athlete: "Athlete",
+    plan: "Plan",
+    startDate: "Start Date",
+    endDate: "End Date",
+    actions: "Actions",
+    cancelSubscription: "Cancel Subscription"
+  },
+
+  // Payment Methods
+  paymentMethods: {
+    title: "Payment Methods",
+    creditCard: "Credit Card",
+    mbway: "MB WAY",
+    multibanco: "Multibanco",
+    bankTransfer: "Bank Transfer",
+    paypal: "PayPal",
+    enabled: "Enabled",
+    disabled: "Disabled",
+    enable: "Enable",
+    disable: "Disable"
   }
 };

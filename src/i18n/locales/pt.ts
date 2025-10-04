@@ -87,7 +87,15 @@ export const ptTranslations = {
     classes: "Aulas",
     financial: "Financeiro",
     communication: "Comunicação",
-    reports: "Relatórios"
+    reports: "Relatórios",
+    subscriptions: "Assinaturas",
+    settings: "Definições",
+    athletes: "Atletas",
+    staff: "Equipa",
+    equipment: "Equipamento",
+    crm: "CRM",
+    kpis: "KPIs",
+    observatory: "Observatório"
   },
 
   // Onboarding
@@ -111,5 +119,46 @@ export const ptTranslations = {
     next: "Próximo",
     previous: "Anterior",
     finish: "Finalizar"
+  },
+
+  // Subscriptions
+  subscriptions: {
+    title: "Gestão de Assinaturas",
+    plans: "Planos de Assinatura",
+    active: "Assinaturas Ativas",
+    paymentMethods: "Métodos de Pagamento",
+    createPlan: "Criar Plano",
+    editPlan: "Editar Plano",
+    planName: "Nome do Plano",
+    description: "Descrição",
+    price: "Preço",
+    duration: "Duração",
+    monthly: "Mensal",
+    quarterly: "Trimestral",
+    annual: "Anual",
+    features: "Características",
+    save: "Guardar",
+    cancel: "Cancelar",
+    status: "Estado",
+    athlete: "Atleta",
+    plan: "Plano",
+    startDate: "Data de Início",
+    endDate: "Data de Fim",
+    actions: "Ações",
+    cancelSubscription: "Cancelar Assinatura"
+  },
+
+  // Payment Methods
+  paymentMethods: {
+    title: "Métodos de Pagamento",
+    creditCard: "Cartão de Crédito",
+    mbway: "MB WAY",
+    multibanco: "Multibanco",
+    bankTransfer: "Transferência Bancária",
+    paypal: "PayPal",
+    enabled: "Ativado",
+    disabled: "Desativado",
+    enable: "Ativar",
+    disable: "Desativar"
   }
 };
