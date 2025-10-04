@@ -28,6 +28,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { NutritionalPlanModal } from './NutritionalPlanModal';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -46,6 +47,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [documents, setDocuments] = useState<any[]>([]);
+  const [nutritionalPlanModalOpen, setNutritionalPlanModalOpen] = useState(false);
 
   if (!athlete) return null;
 
@@ -98,8 +100,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   };
 
   const handleCreateNutritionalPlan = () => {
-    toast.success('Redirecionando para criação de plano nutricional...');
-    // Aqui implementaria a navegação para criação de plano nutricional
+    setNutritionalPlanModalOpen(true);
   };
 
   const statusBadge = getStatusBadge(athlete.status);
@@ -556,6 +557,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
             </TabsContent>
           </Tabs>
         </div>
+
+        <NutritionalPlanModal
+          isOpen={nutritionalPlanModalOpen}
+          onClose={() => setNutritionalPlanModalOpen(false)}
+          athleteId={athlete.id}
+          athleteName={athlete.name}
+        />
       </DialogContent>
     </Dialog>
   );
