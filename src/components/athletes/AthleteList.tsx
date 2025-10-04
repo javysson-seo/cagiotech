@@ -22,9 +22,10 @@ export const AthleteList: React.FC<AthleteListProps> = ({
   onView,
 }) => {
   const filteredAthletes = athletes.filter(athlete => {
-    const matchesSearch = athlete.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         athlete.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         athlete.phone.includes(searchTerm);
+    const matchesSearch = 
+      athlete.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      athlete.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      athlete.phone?.includes(searchTerm);
     
     const matchesStatus = statusFilter === 'all' || athlete.status === statusFilter;
     
@@ -53,8 +54,8 @@ export const AthleteList: React.FC<AthleteListProps> = ({
               <div key={athlete.id} className="p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center space-x-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
-                    <AvatarFallback className="bg-green-100 text-green-600">
+                    <AvatarImage src={athlete.profile_photo} alt={athlete.name} />
+                    <AvatarFallback className="bg-cagio-green-light text-cagio-green-dark">
                       {athlete.name.split(' ').map((n: string) => n[0]).join('')}
                     </AvatarFallback>
                   </Avatar>
@@ -82,17 +83,27 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                     
                     <div className="flex items-center justify-between mt-2">
                       <div className="text-sm">
-                        <span className="text-muted-foreground">Plano:</span>
-                        <span className="ml-1 font-medium">{athlete.plan}</span>
-                        <span className="mx-2">•</span>
-                        <span className="text-muted-foreground">Trainer:</span>
-                        <span className="ml-1 font-medium">{athlete.trainer}</span>
+                        {athlete.plan && (
+                          <>
+                            <span className="text-muted-foreground">Plano:</span>
+                            <span className="ml-1 font-medium">{athlete.plan}</span>
+                            <span className="mx-2">•</span>
+                          </>
+                        )}
+                        {athlete.trainer && (
+                          <>
+                            <span className="text-muted-foreground">Trainer:</span>
+                            <span className="ml-1 font-medium">{athlete.trainer}</span>
+                          </>
+                        )}
                       </div>
                       
-                      <div className="flex items-center text-sm">
-                        <Euro className="h-3 w-3 mr-1 text-green-600" />
-                        <span className="font-medium">€{athlete.monthlyFee}/mês</span>
-                      </div>
+                      {athlete.monthly_fee > 0 && (
+                        <div className="flex items-center text-sm">
+                          <Euro className="h-3 w-3 mr-1 text-cagio-green" />
+                          <span className="font-medium">€{athlete.monthly_fee}/mês</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -101,7 +112,7 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => onView(athlete)}
-                      className="hover:bg-green-50 hover:text-green-600"
+                      className="hover:bg-cagio-green-light hover:text-cagio-green-dark"
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -109,7 +120,7 @@ export const AthleteList: React.FC<AthleteListProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => onEdit(athlete)}
-                      className="hover:bg-green-50 hover:text-green-600"
+                      className="hover:bg-cagio-green-light hover:text-cagio-green-dark"
                     >
                       <Edit className="h-4 w-4" />
                     </Button>

@@ -55,7 +55,18 @@ const AthleteManagementContent: React.FC = () => {
     const success = await saveAthlete(athleteData);
     if (success) {
       setShowFormModal(false);
+      setShowQuickRegister(false);
       setEditingAthlete(null);
+      
+      // Se foi criado um novo atleta, abrir modal de detalhes
+      if (!athleteData.id && athletes.length > 0) {
+        // O novo atleta será o primeiro na lista após o refresh
+        setTimeout(() => {
+          const newAthlete = athletes[0];
+          setSelectedAthlete(newAthlete);
+          setShowDetailsModal(true);
+        }, 500);
+      }
     }
   };
 
@@ -76,7 +87,7 @@ const AthleteManagementContent: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">
-                  Gestão de Atletas
+                  Gestão de Alunos / Atletas
                 </h1>
                 <p className="text-muted-foreground">
                   Gerir membros, planos e documentos

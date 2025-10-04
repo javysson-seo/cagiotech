@@ -45,10 +45,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   onDelete,
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [documents, setDocuments] = useState([
-    { id: 1, name: 'Contrato.pdf', size: '2.1 MB', uploaded: '2024-01-15', uploadedBy: 'Admin' },
-    { id: 2, name: 'Atestado_Medico.jpg', size: '1.8 MB', uploaded: '2024-01-20', uploadedBy: 'Carlos Santos' }
-  ]);
+  const [documents, setDocuments] = useState<any[]>([]);
 
   if (!athlete) return null;
 
@@ -107,90 +104,26 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
 
   const statusBadge = getStatusBadge(athlete.status);
 
-  // Histórico de atividades do atleta (expandido)
-  const athleteHistory = [
-    { date: '2024-01-15', action: 'Cadastro realizado', user: 'Admin', details: 'Atleta registrado no sistema' },
-    { date: '2024-01-20', action: 'Plano atualizado para Premium', user: 'Carlos Santos', details: 'Mudança de Básico para Premium' },
-    { date: '2024-02-01', action: 'Dados pessoais atualizados', user: 'Admin', details: 'Telefone e endereço alterados' },
-    { date: '2024-02-15', action: 'Documento anexado', user: 'Ana Silva', details: 'Contrato de adesão enviado' },
-    { date: '2024-03-01', action: 'Pagamento realizado', user: 'Sistema', details: 'Mensalidade de Março paga' }
-  ];
+  // Dados reais virão do banco de dados via props
+  const athleteHistory: any[] = [];
+  const paymentHistory: any[] = [];
 
-  // Histórico de pagamentos baseado no plano (com parcelas)
-  const paymentHistory = [
-    { 
-      id: 1,
-      date: '2024-03-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '3/12',
-      dueDate: '2024-03-01'
-    },
-    { 
-      id: 2,
-      date: '2024-02-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Transferência',
-      planName: 'Premium',
-      installment: '2/12',
-      dueDate: '2024-02-01'
-    },
-    { 
-      id: 3,
-      date: '2024-01-01', 
-      amount: 80, 
-      status: 'Pago', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '1/12',
-      dueDate: '2024-01-01'
-    },
-    { 
-      id: 4,
-      date: '', 
-      amount: 80, 
-      status: 'Pendente', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '4/12',
-      dueDate: '2024-04-01'
-    },
-    { 
-      id: 5,
-      date: '', 
-      amount: 80, 
-      status: 'Pendente', 
-      method: 'Cartão',
-      planName: 'Premium',
-      installment: '5/12',
-      dueDate: '2024-05-01'
-    }
-  ];
-
-  const totalPaid = paymentHistory.filter(p => p.status === 'Pago').reduce((sum, p) => sum + p.amount, 0);
-  const pendingPayments = paymentHistory.filter(p => p.status === 'Pendente');
+  const totalPaid = 0;
+  const pendingPayments: any[] = [];
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl">Detalhes do Atleta</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle className="text-xl">Detalhes do Atleta</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Header do Atleta */}
           <div className="flex items-center space-x-4">
             <Avatar className="h-20 w-20">
-              <AvatarImage src={athlete.profilePhoto} alt={athlete.name} />
-              <AvatarFallback className="bg-green-100 text-green-600 text-xl">
+              <AvatarImage src={athlete.profile_photo} alt={athlete.name} />
+              <AvatarFallback className="bg-cagio-green-light text-cagio-green-dark text-xl">
                 {athlete.name.split(' ').map((n: string) => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
@@ -203,7 +136,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                 <Badge variant={statusBadge.variant}>
                   {statusBadge.label}
                 </Badge>
-                <Badge variant="outline">{athlete.plan}</Badge>
+                <Badge variant="outline">{athlete.plan || 'Sem plano'}</Badge>
               </div>
               <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
                 <span className="flex items-center">
@@ -218,7 +151,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
             </div>
             
             <div className="flex items-center space-x-2">
-              <Button onClick={onEdit} className="bg-green-600 hover:bg-green-700">
+              <Button onClick={onEdit} className="bg-cagio-green hover:bg-cagio-green-dark text-white">
                 <Edit className="h-4 w-4 mr-2" />
                 Editar
               </Button>
@@ -269,10 +202,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     <CardTitle className="text-lg">Informações Pessoais</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {athlete.birthDate && (
+                    {athlete.birth_date && (
                       <div className="flex items-center space-x-2">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{new Date(athlete.birthDate).toLocaleDateString('pt-PT')}</span>
+                        <span>{new Date(athlete.birth_date).toLocaleDateString('pt-PT')}</span>
                       </div>
                     )}
                     {athlete.gender && (
@@ -297,11 +230,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   <CardContent className="space-y-3">
                     <div className="flex items-center justify-between">
                       <span>Plano:</span>
-                      <Badge variant="outline">{athlete.plan}</Badge>
+                      <Badge variant="outline">{athlete.plan || 'Sem plano'}</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Personal Trainer:</span>
-                      <span className="font-medium">{athlete.trainer}</span>
+                      <span className="font-medium">{athlete.trainer || 'Não atribuído'}</span>
                     </div>
                     {athlete.group && (
                       <div className="flex items-center justify-between">
@@ -314,41 +247,41 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                         <Euro className="h-3 w-3 mr-1" />
                         Mensalidade:
                       </span>
-                      <span className="font-semibold text-green-600">
-                        €{athlete.monthlyFee}/mês
+                      <span className="font-semibold text-cagio-green">
+                        €{athlete.monthly_fee || 0}/mês
                       </span>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Estatísticas */}
+              {/* Estatísticas - Dados virão do banco de dados */}
               <div className="grid grid-cols-3 gap-4">
                 <Card>
                   <CardContent className="p-4 text-center">
                     <Activity className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">28</p>
+                    <p className="text-2xl font-bold">0</p>
                     <p className="text-sm text-muted-foreground">Aulas este mês</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
                     <Clock className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">92%</p>
+                    <p className="text-2xl font-bold">0%</p>
                     <p className="text-sm text-muted-foreground">Taxa presença</p>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 text-center">
                     <Euro className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                    <p className="text-2xl font-bold">€{totalPaid}</p>
+                    <p className="text-2xl font-bold">€0</p>
                     <p className="text-sm text-muted-foreground">Total pago</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Informações Médicas e Objetivos */}
-              {athlete.medicalConditions && (
+              {athlete.medical_notes && (
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center">
@@ -357,7 +290,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">{athlete.medicalConditions}</p>
+                    <p className="text-sm">{athlete.medical_notes}</p>
                   </CardContent>
                 </Card>
               )}
@@ -416,8 +349,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   <CardTitle>Documentos Anexados</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {documents.map((doc) => (
+                  {documents.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      Nenhum documento anexado ainda
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {documents.map((doc) => (
                       <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
                         <div className="flex items-center space-x-3">
                           <FileText className="h-8 w-8 text-blue-600" />
@@ -457,10 +395,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -474,8 +413,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {athleteHistory.map((entry, index) => (
+                  {athleteHistory.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      Nenhuma atividade registada ainda
+                    </p>
+                  ) : (
+                    <div className="space-y-4">
+                      {athleteHistory.map((entry, index) => (
                       <div key={index} className="flex items-start space-x-4 pb-4 border-b last:border-b-0">
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                         <div className="flex-1">
@@ -486,10 +430,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                             <span>•</span>
                             <span>por {entry.user}</span>
                           </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -503,61 +448,69 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {/* Resumo de pagamentos pendentes */}
-                  {pendingPayments.length > 0 && (
-                    <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                      <h4 className="font-medium text-orange-800 mb-2">
-                        Parcelas Pendentes ({pendingPayments.length})
-                      </h4>
-                      <div className="space-y-2">
-                        {pendingPayments.map((payment) => (
-                          <div key={payment.id} className="flex justify-between items-center text-sm">
-                            <span>Parcela {payment.installment} - {payment.planName}</span>
-                            <div className="flex items-center space-x-2">
-                              <span>Vencimento: {new Date(payment.dueDate).toLocaleDateString('pt-PT')}</span>
-                              <Badge variant="destructive">€{payment.amount}</Badge>
+                  {paymentHistory.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      Nenhum pagamento registado ainda
+                    </p>
+                  ) : (
+                    <>
+                      {/* Resumo de pagamentos pendentes */}
+                      {pendingPayments.length > 0 && (
+                        <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                          <h4 className="font-medium text-orange-800 mb-2">
+                            Parcelas Pendentes ({pendingPayments.length})
+                          </h4>
+                          <div className="space-y-2">
+                            {pendingPayments.map((payment) => (
+                              <div key={payment.id} className="flex justify-between items-center text-sm">
+                                <span>Parcela {payment.installment} - {payment.planName}</span>
+                                <div className="flex items-center space-x-2">
+                                  <span>Vencimento: {new Date(payment.dueDate).toLocaleDateString('pt-PT')}</span>
+                                  <Badge variant="destructive">€{payment.amount}</Badge>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-3">
+                        {paymentHistory.map((payment) => (
+                          <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <Euro className="h-8 w-8 text-green-600" />
+                              <div>
+                                <p className="font-medium">
+                                  €{payment.amount} - {payment.planName} (Parcela {payment.installment})
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {payment.date ? new Date(payment.date).toLocaleDateString('pt-PT') : `Vencimento: ${new Date(payment.dueDate).toLocaleDateString('pt-PT')}`} • {payment.method}
+                                </p>
+                              </div>
                             </div>
+                            <Badge variant={payment.status === 'Pago' ? 'default' : 'destructive'}>
+                              {payment.status}
+                            </Badge>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  )}
-
-                  <div className="space-y-3">
-                    {paymentHistory.map((payment) => (
-                      <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
-                        <div className="flex items-center space-x-3">
-                          <Euro className="h-8 w-8 text-green-600" />
-                          <div>
-                            <p className="font-medium">
-                              €{payment.amount} - {payment.planName} (Parcela {payment.installment})
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {payment.date ? new Date(payment.date).toLocaleDateString('pt-PT') : `Vencimento: ${new Date(payment.dueDate).toLocaleDateString('pt-PT')}`} • {payment.method}
-                            </p>
+                      
+                      <div className="mt-4 p-4 bg-muted rounded-lg">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">Total Pago:</span>
+                            <span className="text-xl font-bold text-green-600">€{totalPaid}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">Pendente:</span>
+                            <span className="text-xl font-bold text-orange-600">
+                              €{pendingPayments.reduce((sum, p) => sum + p.amount, 0)}
+                            </span>
                           </div>
                         </div>
-                        <Badge variant={payment.status === 'Pago' ? 'default' : 'destructive'}>
-                          {payment.status}
-                        </Badge>
                       </div>
-                    ))}
-                  </div>
-                  
-                  <div className="mt-4 p-4 bg-muted rounded-lg">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Total Pago:</span>
-                        <span className="text-xl font-bold text-green-600">€{totalPaid}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Pendente:</span>
-                        <span className="text-xl font-bold text-orange-600">
-                          €{pendingPayments.reduce((sum, p) => sum + p.amount, 0)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -568,10 +521,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   <CardTitle>Plano Nutricional</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {athlete.nutritionPreview ? (
+                  {athlete.nutrition_preview ? (
                     <div className="space-y-4">
                       <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">{athlete.nutritionPreview}</p>
+                        <p className="text-sm">{athlete.nutrition_preview}</p>
                       </div>
                       <div className="flex space-x-2">
                         <Button variant="outline" className="flex-1">
@@ -591,7 +544,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       </p>
                       <Button 
                         onClick={handleCreateNutritionalPlan}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-cagio-green hover:bg-cagio-green-dark text-white"
                       >
                         <Plus className="h-4 w-4 mr-2" />
                         Criar Plano Nutricional
