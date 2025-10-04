@@ -90,12 +90,109 @@ export const ptTranslations = {
     reports: "Relatórios",
     subscriptions: "Assinaturas",
     settings: "Definições",
-    athletes: "Atletas",
+    athletes: "Alunos / Atletas",
     staff: "Equipa",
     equipment: "Equipamento",
     crm: "CRM",
     kpis: "KPIs",
     observatory: "Observatório"
+  },
+
+  // Athletes Management
+  athletes: {
+    title: "Gestão de Alunos / Atletas",
+    newAthlete: "Novo Atleta",
+    quickRegister: "Registro Rápido",
+    searchPlaceholder: "Pesquisar por nome, email ou telefone...",
+    filters: "Filtros",
+    status: "Estado",
+    all: "Todos",
+    active: "Ativo",
+    inactive: "Inativo",
+    frozen: "Congelado",
+    pending: "Pendente",
+    export: "Exportar",
+    
+    // Quick Register
+    quickRegisterTitle: "Registro Rápido de Atleta",
+    quickRegisterDescription: "Preencha apenas os dados essenciais. O atleta completará o perfil no primeiro acesso.",
+    fullName: "Nome Completo",
+    email: "Email",
+    birthDate: "Data de Nascimento",
+    birthDateHelper: "Esta data será usada para gerar a senha inicial do atleta",
+    accessCredentials: "Credenciais de Acesso",
+    password: "Senha",
+    accessHelper: "O atleta usará essas credenciais para aceder à área do aluno",
+    
+    // Full Form
+    personalInfo: "Informações Pessoais",
+    contactInfo: "Informações de Contacto",
+    emergencyContact: "Contacto de Emergência",
+    subscriptionInfo: "Informação de Subscrição",
+    medicalInfo: "Informações de Saúde",
+    phone: "Telefone",
+    address: "Morada",
+    gender: "Género",
+    male: "Masculino",
+    female: "Feminino",
+    other: "Outro",
+    emergencyName: "Nome do Contacto",
+    emergencyPhone: "Telefone do Contacto",
+    medicalNotes: "Notas Médicas",
+    plan: "Plano",
+    trainer: "Personal Trainer",
+    monthlyFee: "Mensalidade",
+    goals: "Objetivos",
+    notes: "Notas",
+    
+    // Details Modal
+    details: "Detalhes do Atleta",
+    overview: "Resumo",
+    documents: "Documentos",
+    history: "Histórico",
+    payments: "Pagamentos",
+    nutrition: "Nutrição",
+    classesThisMonth: "Aulas este mês",
+    attendanceRate: "Taxa de presença",
+    totalPaid: "Total pago",
+    subscription: "Subscrição",
+    group: "Grupo",
+    editAthlete: "Editar Atleta",
+    deleteAthlete: "Excluir Atleta",
+    confirmDelete: "Confirmar Exclusão",
+    deleteMessage: "Tem certeza que deseja excluir o atleta? Esta ação não pode ser desfeita.",
+    
+    // Documents
+    uploadDocuments: "Enviar Documentos",
+    uploadHelper: "Máximo 5MB por arquivo (PDF, JPG, PNG, DOC)",
+    selectFiles: "Selecionar Ficheiros",
+    attachedDocuments: "Documentos Anexados",
+    uploadedBy: "Enviado por",
+    
+    // Payments
+    pendingPayments: "Pagamentos Pendentes",
+    installment: "Parcela",
+    dueDate: "Data de Vencimento",
+    paymentDate: "Data de Pagamento",
+    amount: "Valor",
+    paymentStatus: "Estado",
+    paymentMethod: "Método de Pagamento",
+    markAsPaid: "Marcar como Pago",
+    manualPayment: "Pagamento Manual",
+    
+    // Nutrition
+    nutritionalPlan: "Plano Nutricional",
+    createNutritionalPlan: "Criar Plano Nutricional",
+    noNutritionalPlan: "Nenhum plano nutricional criado",
+    
+    // Actions
+    save: "Guardar",
+    cancel: "Cancelar",
+    delete: "Excluir",
+    edit: "Editar",
+    view: "Ver",
+    create: "Criar Atleta",
+    update: "Atualizar Atleta"
   },
 
   // Onboarding

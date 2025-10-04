@@ -1,199 +1,122 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Eye, EyeOff, Copy, RefreshCw } from 'lucide-react';
-import { useTrainers } from '@/hooks/useTrainers';
-import { toast } from 'sonner';
 
 interface QuickRegisterModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userType: 'athlete' | 'trainer';
+  onSave: (data: any) => void;
 }
 
 export const QuickRegisterModal: React.FC<QuickRegisterModalProps> = ({
   isOpen,
   onClose,
-  userType
+  onSave,
 }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
+    birth_date: '',
   });
-  const [generatedPassword, setGeneratedPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const { generatePassword, createUserAccount } = useTrainers();
 
-  const handleGeneratePassword = () => {
-    const newPassword = generatePassword();
-    setGeneratedPassword(newPassword);
+  const generatePasswordFromDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+    return `${day}${month}${year}`;
   };
 
-  const handleCopyPassword = () => {
-    navigator.clipboard.writeText(generatedPassword);
-    toast.success('Senha copiada para a área de transferência!');
-  };
-
-  const handleEmailChange = (email: string) => {
-    setFormData(prev => ({ ...prev, email }));
-    if (email && !generatedPassword) {
-      handleGeneratePassword();
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email || !generatedPassword) {
-      toast.error('Preencha todos os campos obrigatórios');
+    if (!formData.name || !formData.email || !formData.birth_date) {
+      alert('Todos os campos são obrigatórios');
       return;
     }
-
-    setIsSubmitting(true);
     
-    try {
-      const userId = await createUserAccount(formData.email, formData.name);
-      if (userId) {
-        toast.success(`${userType === 'athlete' ? 'Atleta' : 'Trainer'} registrado com sucesso!`);
-        onClose();
-        // Reset form
-        setFormData({ name: '', email: '', phone: '' });
-        setGeneratedPassword('');
-      }
-    } catch (error) {
-      console.error('Error in quick register:', error);
-      toast.error('Erro ao registrar utilizador');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleClose = () => {
-    setFormData({ name: '', email: '', phone: '' });
-    setGeneratedPassword('');
-    setShowPassword(false);
-    onClose();
+    onSave(formData);
+    setFormData({ name: '', email: '', birth_date: '' });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            Registo Rápido - {userType === 'athlete' ? 'Atleta' : 'Personal Trainer'}
-          </DialogTitle>
+          <DialogTitle>{t('athletes.quickRegisterTitle')}</DialogTitle>
+          <DialogDescription>
+            {t('athletes.quickRegisterDescription')}
+          </DialogDescription>
         </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t('athletes.fullName')} *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                required
+                placeholder="Nome completo do atleta"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="email">{t('athletes.email')} *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+                placeholder="email@exemplo.com"
+              />
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome Completo *</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="Nome completo"
-              required
-            />
+            <div className="space-y-2">
+              <Label htmlFor="birth_date">{t('athletes.birthDate')} *</Label>
+              <Input
+                id="birth_date"
+                type="date"
+                value={formData.birth_date}
+                onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                {t('athletes.birthDateHelper')}
+              </p>
+            </div>
+
+            {formData.birth_date && formData.email && (
+              <Card className="bg-cagio-green-light border-cagio-green">
+                <CardContent className="pt-4">
+                  <h4 className="font-medium text-cagio-green-dark mb-2">
+                    {t('athletes.accessCredentials')}:
+                  </h4>
+                  <p className="text-sm text-foreground">
+                    <strong>Email:</strong> {formData.email}<br />
+                    <strong>{t('athletes.password')}:</strong> {generatePasswordFromDate(formData.birth_date)}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {t('athletes.accessHelper')}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email">Email *</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              placeholder="email@exemplo.com"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Telefone</Label>
-            <Input
-              id="phone"
-              value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-              placeholder="+351 912 345 678"
-            />
-          </div>
-
-          {generatedPassword && (
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <Label className="text-green-800 font-medium">Senha Gerada</Label>
-                  <Badge variant="outline" className="text-green-600 border-green-300">
-                    Auto-gerada
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <div className="flex-1 relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      value={generatedPassword}
-                      readOnly
-                      className="bg-white border-green-300 pr-20"
-                    />
-                    <div className="absolute right-1 top-1/2 -translate-y-1/2 flex space-x-1">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="h-8 w-8 p-0"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleCopyPassword}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGeneratePassword}
-                    className="border-green-300 text-green-600 hover:bg-green-50"
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </div>
-                
-                <p className="text-xs text-green-600 mt-2">
-                  Esta senha será necessária para o primeiro login. 
-                  {userType === 'trainer' ? ' O trainer pode alterá-la após o login.' : ' O atleta pode alterá-la após o login.'}
-                </p>
-              </CardContent>
-            </Card>
-          )}
-
-          <div className="flex space-x-3">
-            <Button 
-              type="submit" 
-              className="flex-1 bg-green-600 hover:bg-green-700"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Registrando...' : 'Registrar'}
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              {t('athletes.cancel')}
             </Button>
-            <Button type="button" variant="outline" onClick={handleClose}>
-              Cancelar
+            <Button type="submit" className="bg-cagio-green hover:bg-cagio-green-dark text-white">
+              {t('athletes.create')}
             </Button>
           </div>
         </form>

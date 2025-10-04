@@ -92,7 +92,7 @@ const AthleteManagementContent: React.FC = () => {
                   <Plus className="h-4 w-4 mr-2" />
                   Registo Rápido
                 </Button>
-                <Button onClick={handleNewAthlete} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={handleNewAthlete} className="bg-cagio-green hover:bg-cagio-green-dark text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   Novo Atleta
                 </Button>
@@ -188,7 +188,7 @@ const AthleteManagementContent: React.FC = () => {
       <QuickRegisterModal
         isOpen={showQuickRegister}
         onClose={() => setShowQuickRegister(false)}
-        userType="athlete"
+        onSave={handleSaveAthlete}
       />
     </div>
   );

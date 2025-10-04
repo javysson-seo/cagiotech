@@ -82,6 +82,12 @@ const TrainerManagementContent: React.FC = () => {
     setSelectedTrainer(null);
   };
 
+  const handleQuickRegisterSave = (data: any) => {
+    console.log('Quick register trainer:', data);
+    // Aqui você pode adicionar lógica para salvar o trainer rapidamente
+    setShowQuickRegister(false);
+  };
+
   const handleCancel = () => {
     setShowForm(false);
     setSelectedTrainer(null);
@@ -260,7 +266,7 @@ const TrainerManagementContent: React.FC = () => {
       <QuickRegisterModal
         isOpen={showQuickRegister}
         onClose={() => setShowQuickRegister(false)}
-        userType="trainer"
+        onSave={handleQuickRegisterSave}
       />
     </div>
   );
