@@ -63,6 +63,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "athlete_activities_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
         ]
       }
       athlete_documents: {
@@ -113,6 +120,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -216,6 +230,96 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "athlete_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      athlete_subscriptions: {
+        Row: {
+          athlete_id: string
+          auto_renew: boolean | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          company_id: string
+          created_at: string | null
+          end_date: string | null
+          id: string
+          next_billing_date: string | null
+          payment_method: string | null
+          plan_id: string
+          start_date: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          athlete_id: string
+          auto_renew?: boolean | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          company_id: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          next_billing_date?: string | null
+          payment_method?: string | null
+          plan_id: string
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          auto_renew?: boolean | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          end_date?: string | null
+          id?: string
+          next_billing_date?: string | null
+          payment_method?: string | null
+          plan_id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_subscriptions_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "athlete_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
+            referencedColumns: ["id"]
+          },
         ]
       }
       athletes: {
@@ -301,6 +405,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athletes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -399,6 +510,51 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_payment_methods: {
+        Row: {
+          company_id: string
+          configuration: Json | null
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          method_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          method_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          configuration?: Json | null
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          method_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -553,6 +709,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "groups_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
             foreignKeyName: "groups_trainer_id_fkey"
             columns: ["trainer_id"]
             isOneToOne: false
@@ -639,6 +802,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "notifications_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
         ]
       }
       nutritional_plans: {
@@ -689,6 +859,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "nutritional_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
           {
             foreignKeyName: "nutritional_plans_trainer_id_fkey"
@@ -779,6 +956,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "companies"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
@@ -920,6 +1104,155 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_payments: {
+        Row: {
+          amount: number
+          athlete_id: string
+          company_id: string
+          created_at: string | null
+          currency: string
+          due_date: string
+          external_payment_id: string | null
+          id: string
+          notes: string | null
+          payment_date: string | null
+          payment_method: string
+          payment_proof_url: string | null
+          processed_by: string | null
+          status: string
+          subscription_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          athlete_id: string
+          company_id: string
+          created_at?: string | null
+          currency?: string
+          due_date: string
+          external_payment_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method: string
+          payment_proof_url?: string | null
+          processed_by?: string | null
+          status?: string
+          subscription_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          athlete_id?: string
+          company_id?: string
+          created_at?: string | null
+          currency?: string
+          due_date?: string
+          external_payment_id?: string | null
+          id?: string
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string
+          payment_proof_url?: string | null
+          processed_by?: string | null
+          status?: string
+          subscription_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_payments_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "subscription_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_plans: {
+        Row: {
+          billing_period: string
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          description: string | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          max_classes_per_week: number | null
+          name: string
+          price: number
+          updated_at: string | null
+        }
+        Insert: {
+          billing_period: string
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_classes_per_week?: number | null
+          name: string
+          price: number
+          updated_at?: string | null
+        }
+        Update: {
+          billing_period?: string
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_classes_per_week?: number | null
+          name?: string
+          price?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       trainers: {
         Row: {
           birth_date: string | null
@@ -969,6 +1302,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "trainers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
             foreignKeyName: "trainers_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1010,13 +1350,38 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      company_financial_overview: {
+        Row: {
+          active_subscriptions: number | null
+          company_id: string | null
+          company_name: string | null
+          pending_amount: number | null
+          pending_payments: number | null
+          revenue_last_30_days: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      athlete_has_active_subscription: {
+        Args: { _athlete_id: string; _company_id: string }
+        Returns: boolean
+      }
+      calculate_next_billing_date: {
+        Args: { billing_period: string; start_date: string }
+        Returns: string
+      }
       can_access_company_data: {
         Args: { target_company_id: string }
         Returns: boolean
