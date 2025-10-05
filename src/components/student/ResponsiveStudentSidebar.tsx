@@ -42,25 +42,29 @@ export const ResponsiveStudentSidebar: React.FC = () => {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="flex items-center h-16 px-6 border-b border-border">
+      <div className="flex items-center h-16 px-6 border-b border-cagio-green/20 bg-cagio-green-light/30">
         <div className="flex items-center space-x-2">
-          <Dumbbell className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-foreground">CAGIO</span>
+          <div className="p-2 rounded-lg bg-cagio-green">
+            <Dumbbell className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-bold text-cagio-green">CagioTech</span>
         </div>
       </div>
 
       {/* User Info */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-medium">
-              {user?.name?.charAt(0)}
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cagio-green to-cagio-green-dark flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">
+              {user?.email?.charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <p className="font-medium text-foreground">{user?.name}</p>
-            <p className="text-sm text-muted-foreground capitalize">
-              {user?.role === 'student' ? 'Aluno' : user?.role}
+            <p className="font-semibold text-foreground">
+              {user?.email?.split('@')[0]}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Atleta
             </p>
           </div>
         </div>
@@ -75,9 +79,9 @@ export const ResponsiveStudentSidebar: React.FC = () => {
             onClick={() => setOpen(false)}
             className={({ isActive }) =>
               cn(
-                'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                'flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all',
                 isActive
-                  ? 'bg-primary text-primary-foreground'
+                  ? 'bg-cagio-green text-white shadow-md'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
@@ -109,16 +113,19 @@ export const ResponsiveStudentSidebar: React.FC = () => {
     return (
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button variant="outline" size="icon" className="fixed top-4 left-4 z-50">
-            <Menu className="h-4 w-4" />
+          <Button 
+            size="icon" 
+            className="fixed top-4 left-4 z-50 bg-cagio-green hover:bg-cagio-green-dark text-white shadow-lg"
+          >
+            <Menu className="h-5 w-5" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="h-[85vh]">
+        <DrawerContent className="h-[90vh]">
           <div className="flex flex-col h-full">
             <DrawerHeader>
               <DrawerTitle className="sr-only">Menu de Navegação</DrawerTitle>
             </DrawerHeader>
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col overflow-y-auto">
               <SidebarContent />
             </div>
           </div>
@@ -129,7 +136,7 @@ export const ResponsiveStudentSidebar: React.FC = () => {
 
   // Desktop sidebar
   return (
-    <div className="flex flex-col w-64 bg-card border-r border-border">
+    <div className="flex flex-col w-64 bg-card border-r border-cagio-green/20">
       <SidebarContent />
     </div>
   );
