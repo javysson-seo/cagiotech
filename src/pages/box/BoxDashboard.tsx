@@ -3,7 +3,7 @@ import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { useCompany } from '@/contexts/CompanyContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { DashboardKPIs } from '@/components/box/dashboard/DashboardKPIs';
 import { DashboardFilters } from '@/components/box/dashboard/DashboardFilters';
 import { RevenueExpenseChart } from '@/components/financial/RevenueExpenseChart';
@@ -118,83 +118,30 @@ const BoxDashboardContent = () => {
               </Alert>
             )}
 
-            <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-6">
-                <TabsTrigger value="overview">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Visão Geral
-                </TabsTrigger>
-                <TabsTrigger value="kpis">
-                  <BarChart3 className="h-4 w-4 mr-2" />
-                  Todos os KPIs
-                </TabsTrigger>
-                <TabsTrigger value="financial">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Financeiro
-                </TabsTrigger>
-                <TabsTrigger value="members">
-                  <Users className="h-4 w-4 mr-2" />
-                  Membros
-                </TabsTrigger>
-                <TabsTrigger value="classes">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Aulas
-                </TabsTrigger>
-                <TabsTrigger value="operations">
-                  <AlertCircle className="h-4 w-4 mr-2" />
-                  Operacional
-                </TabsTrigger>
-              </TabsList>
+            {/* KPIs Principais */}
+            <DashboardKPIs
+              metrics={{
+                revenue: dashboardMetrics?.revenue || 0,
+                revenueGrowth: dashboardMetrics?.revenueGrowth || 0,
+                activeAthletes: dashboardMetrics?.activeAthletes || 0,
+                occupationRate: dashboardMetrics?.occupationRate || 0,
+                totalClasses: dashboardMetrics?.totalClasses || 0,
+              }}
+              isLoading={isLoadingDashboard}
+            />
 
-              <TabsContent value="kpis" className="space-y-6">
-                {companyKPIs && (
-                  <AllKPIsGrid kpis={companyKPIs} isLoading={isLoadingKPIs} />
-                )}
-              </TabsContent>
+            {/* Todos os KPIs Detalhados */}
+            {companyKPIs && (
+              <div>
+                <h2 className="text-2xl font-bold mb-4">KPIs Detalhados</h2>
+                <AllKPIsGrid kpis={companyKPIs} isLoading={isLoadingKPIs} />
+              </div>
+            )}
 
-              <TabsContent value="overview" className="space-y-6">
-                <DashboardKPIs
-                  metrics={{
-                    revenue: dashboardMetrics?.revenue || 0,
-                    revenueGrowth: dashboardMetrics?.revenueGrowth || 0,
-                    activeAthletes: dashboardMetrics?.activeAthletes || 0,
-                    occupationRate: dashboardMetrics?.occupationRate || 0,
-                    totalClasses: dashboardMetrics?.totalClasses || 0,
-                  }}
-                  isLoading={isLoadingDashboard}
-                />
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <RevenueExpenseChart transactions={transactions} />
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Resumo Rápido</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Membros Ativos</span>
-                        <span className="text-lg font-bold">{athletesMetrics?.active || 0}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Novos este mês</span>
-                        <span className="text-lg font-bold text-green-600">+{athletesMetrics?.new || 0}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Check-ins hoje</span>
-                        <span className="text-lg font-bold">{athletesMetrics?.todayCheckIns || 0}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Taxa de ocupação</span>
-                        <span className="text-lg font-bold">{dashboardMetrics?.occupationRate.toFixed(1) || 0}%</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <RecentTransactionsList transactions={transactions} />
-              </TabsContent>
-
-              <TabsContent value="financial" className="space-y-6">
+            {/* Resumo Financeiro */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Financeiro</h2>
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <RevenueExpenseChart transactions={transactions} />
                   <Card>
@@ -228,78 +175,84 @@ const BoxDashboardContent = () => {
 
                 <ReceivablesList payments={payments} />
                 <RecentTransactionsList transactions={transactions} />
-              </TabsContent>
+              </div>
+            </div>
 
-              <TabsContent value="members" className="space-y-6">
-                <MembersTab
-                  metrics={athletesMetrics || {
-                    total: 0,
-                    active: 0,
-                    inactive: 0,
-                    new: 0,
-                    churnRate: 0,
-                    byPlan: [],
-                    todayCheckIns: 0,
-                    birthdaysThisMonth: 0,
-                  }}
-                  isLoading={isLoadingAthletes}
-                />
-              </TabsContent>
+            {/* Membros */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Membros</h2>
+              <MembersTab
+                metrics={athletesMetrics || {
+                  total: 0,
+                  active: 0,
+                  inactive: 0,
+                  new: 0,
+                  churnRate: 0,
+                  byPlan: [],
+                  todayCheckIns: 0,
+                  birthdaysThisMonth: 0,
+                }}
+                isLoading={isLoadingAthletes}
+              />
+            </div>
 
-              <TabsContent value="classes" className="space-y-6">
-                <ClassesTab
-                  metrics={classesMetrics || {
-                    byModality: [],
-                    byTrainer: [],
-                    totalClasses: 0,
-                    totalBookings: 0,
-                    totalCheckIns: 0,
-                  }}
-                  isLoading={isLoadingClasses}
-                />
-              </TabsContent>
+            {/* Aulas */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Aulas & Agendamentos</h2>
+              <ClassesTab
+                metrics={classesMetrics || {
+                  byModality: [],
+                  byTrainer: [],
+                  totalClasses: 0,
+                  totalBookings: 0,
+                  totalCheckIns: 0,
+                }}
+                isLoading={isLoadingClasses}
+              />
+            </div>
 
-              <TabsContent value="operations" className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Atividade em Tempo Real</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-12">
-                        <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-                        <div className="text-4xl font-bold mb-2">{athletesMetrics?.todayCheckIns || 0}</div>
-                        <p className="text-muted-foreground">check-ins hoje</p>
-                      </div>
-                    </CardContent>
-                  </Card>
+            {/* Operacional */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Operacional</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Atividade em Tempo Real</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-12">
+                      <Users className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
+                      <div className="text-4xl font-bold mb-2">{athletesMetrics?.todayCheckIns || 0}</div>
+                      <p className="text-muted-foreground">check-ins hoje</p>
+                    </div>
+                  </CardContent>
+                </Card>
 
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Alertas Operacionais</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {dashboardMetrics && dashboardMetrics.overduePayments > 0 && (
-                        <Alert>
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>
-                            {dashboardMetrics.overduePayments} pagamentos em atraso
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                      {athletesMetrics && athletesMetrics.birthdaysThisMonth > 0 && (
-                        <Alert>
-                          <AlertCircle className="h-4 w-4" />
-                          <AlertDescription>
-                            {athletesMetrics.birthdaysThisMonth} aniversariantes este mês
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-            </Tabs>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Alertas Operacionais</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {dashboardMetrics && dashboardMetrics.overduePayments > 0 && (
+                      <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          {dashboardMetrics.overduePayments} pagamentos em atraso
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    {athletesMetrics && athletesMetrics.birthdaysThisMonth > 0 && (
+                      <Alert>
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          {athletesMetrics.birthdaysThisMonth} aniversariantes este mês
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </div>
         </main>
       </div>
