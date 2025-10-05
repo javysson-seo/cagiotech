@@ -210,11 +210,7 @@ export const BoxDataSettings: React.FC = () => {
 
   const handleSave = () => {
     updateCompany({
-      name: boxData.name,
-      phone: boxData.phone,
-      email: boxData.email,
-      address: boxData.address,
-      ...(boxData as any),
+      ...boxData,
       operating_hours: operatingHours
     } as any);
   };
