@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Logo } from '@/components/ui/logo';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,10 +22,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { UserProfileModal } from '@/components/UserProfileModal';
+import { useNotifications } from '@/hooks/useNotifications';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { notifications, unreadCount, isLoading } = useNotifications();
   const { language, changeLanguage } = useLanguage();
   const { theme, toggleTheme } = useAreaTheme();
   const { t, i18n } = useTranslation();
@@ -111,46 +116,68 @@ export const BoxHeader: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="sm" className="relative">
                 <Bell className="h-5 w-5" />
-                <Badge 
-                  variant="destructive" 
-                  className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs"
-                >
-                  3
-                </Badge>
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
+                  >
+                    {unreadCount}
+                  </Badge>
+                )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <div className="p-3 border-b">
-                <h4 className="font-medium">Notificações</h4>
+            <DropdownMenuContent align="end" className="w-96">
+              <div className="p-4 border-b">
+                <h4 className="font-semibold text-lg">Notificações</h4>
+                {unreadCount > 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {unreadCount} {unreadCount === 1 ? 'notificação nova' : 'notificações novas'}
+                  </p>
+                )}
               </div>
-              <div className="max-h-64 overflow-y-auto">
-                <DropdownMenuItem className="p-3 cursor-pointer">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Novo atleta registado</p>
-                    <p className="text-xs text-muted-foreground">João Silva acabou de se inscrever</p>
-                    <p className="text-xs text-muted-foreground">há 2 minutos</p>
+              <ScrollArea className="max-h-[400px]">
+                {isLoading ? (
+                  <div className="p-4 text-center text-sm text-muted-foreground">
+                    Carregando...
                   </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="p-3 cursor-pointer">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Pagamento em atraso</p>
-                    <p className="text-xs text-muted-foreground">Maria Santos - €45 em atraso</p>
-                    <p className="text-xs text-muted-foreground">há 1 hora</p>
+                ) : notifications.length === 0 ? (
+                  <div className="p-8 text-center">
+                    <Bell className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
+                    <p className="text-sm text-muted-foreground">
+                      Nenhuma notificação
+                    </p>
                   </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="p-3 cursor-pointer">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Aula cancelada</p>
-                    <p className="text-xs text-muted-foreground">CrossFit 18:00 - instrutor indisponível</p>
-                    <p className="text-xs text-muted-foreground">há 3 horas</p>
+                ) : (
+                  <div className="divide-y">
+                    {notifications.map((notification) => (
+                      <DropdownMenuItem 
+                        key={notification.id} 
+                        className="p-4 cursor-pointer flex-col items-start"
+                      >
+                        <div className="flex items-start gap-3 w-full">
+                          {notification.is_urgent && (
+                            <div className="h-2 w-2 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
+                          )}
+                          <div className="flex-1 space-y-1">
+                            <p className="text-sm font-medium leading-none">
+                              {notification.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(new Date(notification.created_at), {
+                                addSuffix: true,
+                                locale: ptBR
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      </DropdownMenuItem>
+                    ))}
                   </div>
-                </DropdownMenuItem>
-              </div>
-              <div className="p-3 border-t">
-                <Button variant="ghost" size="sm" className="w-full">
-                  Ver todas as notificações
-                </Button>
-              </div>
+                )}
+              </ScrollArea>
             </DropdownMenuContent>
           </DropdownMenu>
 

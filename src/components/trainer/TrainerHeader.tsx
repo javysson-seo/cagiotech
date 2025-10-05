@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,10 +21,14 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { UserProfileModal } from '@/components/UserProfileModal';
+import { useNotifications } from '@/hooks/useNotifications';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const TrainerHeader: React.FC = () => {
   const { language, changeLanguage } = useLanguage();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const { notifications, unreadCount, isLoading } = useNotifications();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
@@ -75,29 +80,60 @@ export const TrainerHeader: React.FC = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-4 w-4" />
-              <Badge className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-blue-500 hover:bg-blue-600 p-0 flex items-center justify-center">
-                2
-              </Badge>
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-4 w-4 text-xs bg-blue-500 hover:bg-blue-600 p-0 flex items-center justify-center">
+                  {unreadCount}
+                </Badge>
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-80 max-w-[90vw]">
-            <div className="p-4">
-              <h4 className="font-semibold mb-2">Notificações</h4>
-              <div className="space-y-3">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm font-medium">Aula às 15:00</p>
-                  <p className="text-xs text-muted-foreground">
-                    CrossFit Strength - 8 alunos confirmados
-                  </p>
-                </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <p className="text-sm font-medium">Novo aluno na turma</p>
-                  <p className="text-xs text-muted-foreground">
-                    Maria Silva - Iniciante
-                  </p>
-                </div>
-              </div>
+            <div className="p-4 border-b">
+              <h4 className="font-semibold">Notificações</h4>
+              {unreadCount > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {unreadCount} {unreadCount === 1 ? 'nova' : 'novas'}
+                </p>
+              )}
             </div>
+            <ScrollArea className="max-h-80">
+              {isLoading ? (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Carregando...
+                </div>
+              ) : notifications.length === 0 ? (
+                <div className="p-6 text-center">
+                  <Bell className="h-10 w-10 mx-auto text-muted-foreground/50 mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    Nenhuma notificação
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {notifications.map((notification) => (
+                    <div key={notification.id} className="p-3">
+                      <div className="flex items-start gap-2">
+                        {notification.is_urgent && (
+                          <div className="h-2 w-2 rounded-full bg-red-500 mt-1 flex-shrink-0" />
+                        )}
+                        <div className="flex-1 space-y-1">
+                          <p className="text-sm font-medium">{notification.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatDistanceToNow(new Date(notification.created_at), {
+                              addSuffix: true,
+                              locale: ptBR
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
 
