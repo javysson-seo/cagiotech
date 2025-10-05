@@ -18,6 +18,7 @@ import {
   Eye,
   Utensils
 } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export const TrainerNutritionPlans: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -311,6 +312,7 @@ export const TrainerNutritionPlans: React.FC = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -16,6 +16,7 @@ import { ApprovalQueue } from '@/components/athletes/ApprovalQueue';
 import { AdvancedFilters } from '@/components/athletes/AdvancedFilters';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { useAthletes } from '@/hooks/useAthletes';
+import { Footer } from '@/components/Footer';
 
 const AthleteManagementContent: React.FC = () => {
   const { athletes, loading, saveAthlete, deleteAthlete } = useAthletes();
@@ -224,6 +225,7 @@ const AthleteManagementContent: React.FC = () => {
         onClose={() => setShowQuickRegister(false)}
         onSave={handleSaveAthlete}
       />
+      <Footer />
     </div>
   );
 };

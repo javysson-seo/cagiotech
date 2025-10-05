@@ -3,6 +3,7 @@ import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { HRDashboard } from '@/components/hr/HRDashboard';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
+import { Footer } from '@/components/Footer';
 
 const HumanResourcesContent: React.FC = () => {
   return (
@@ -17,6 +18,7 @@ const HumanResourcesContent: React.FC = () => {
             <HRDashboard />
           </div>
         </main>
+        <Footer />
       </div>
     </div>
   );

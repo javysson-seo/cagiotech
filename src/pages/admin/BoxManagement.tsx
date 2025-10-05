@@ -24,6 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { toast } from 'sonner';
+import { Footer } from '@/components/Footer';
 
 export const BoxManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -309,6 +310,7 @@ export const BoxManagement: React.FC = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

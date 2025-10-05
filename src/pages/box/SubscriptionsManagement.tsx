@@ -7,6 +7,7 @@ import { SubscriptionPlansList } from '@/components/subscriptions/SubscriptionPl
 import { PaymentMethodsSettings } from '@/components/subscriptions/PaymentMethodsSettings';
 import { ActiveSubscriptions } from '@/components/subscriptions/ActiveSubscriptions';
 import { useCompany } from '@/contexts/CompanyContext';
+import { Footer } from '@/components/Footer';
 
 export default function SubscriptionsManagement() {
   const { companyId } = useParams();
@@ -48,6 +49,7 @@ export default function SubscriptionsManagement() {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

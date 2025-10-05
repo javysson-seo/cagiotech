@@ -19,6 +19,7 @@ import {
   Eye,
   Plus
 } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export const TrainerStudents: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -343,6 +344,7 @@ export const TrainerStudents: React.FC = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

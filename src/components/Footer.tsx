@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
         <p className="text-sm text-muted-foreground">
           Desenvolvido por{' '}
           <a
-            href="https://newdester.com"
+            href="https://www.instagram.com/newdester.io/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:text-primary/80 font-medium transition-colors"

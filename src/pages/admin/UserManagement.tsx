@@ -25,6 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
 import { toast } from 'sonner';
+import { Footer } from '@/components/Footer';
 
 export const UserManagement: React.FC = () => {
   const navigate = useNavigate();
@@ -308,6 +309,7 @@ export const UserManagement: React.FC = () => {
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 };

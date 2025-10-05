@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import { toast } from 'sonner';
 
 export const BoxOnboarding: React.FC = () => {
@@ -327,6 +328,7 @@ export const BoxOnboarding: React.FC = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

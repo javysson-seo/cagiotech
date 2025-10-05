@@ -28,6 +28,7 @@ import { ModalityPerformance } from '@/components/box/dashboard/ModalityPerforma
 import { PeakHoursChart } from '@/components/box/dashboard/PeakHoursChart';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Footer } from '@/components/Footer';
 
 const BoxDashboardContent = () => {
   const { currentCompany } = useCompany();
@@ -326,6 +327,7 @@ const BoxDashboardContent = () => {
             </div>
           </div>
         </main>
+        <Footer />
       </div>
     </div>
   );
