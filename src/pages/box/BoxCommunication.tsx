@@ -29,11 +29,14 @@ import { useAuth } from '@/hooks/useAuth';
 const BoxCommunicationContent: React.FC = () => {
   const { currentCompany } = useCompany();
   const { user } = useAuth();
-  const [selectedRecipient, setSelectedRecipient] = useState<string>('');
+  const [selectedRecipient, setSelectedRecipient] = useState<string>('_all');
   const [notificationDialog, setNotificationDialog] = useState(false);
   const [suggestionDialog, setSuggestionDialog] = useState(false);
 
-  const { messages, sendMessage } = useCompanyMessages(currentCompany?.id || '', selectedRecipient);
+  // Convert "_all" to empty string for the hook
+  const recipientForMessages = selectedRecipient === '_all' ? '' : selectedRecipient;
+
+  const { messages, sendMessage } = useCompanyMessages(currentCompany?.id || '', recipientForMessages);
   const { notifications, createNotification } = useCompanyNotifications(currentCompany?.id || '');
   const { suggestions, createSuggestion, vote } = usePlatformSuggestions(currentCompany?.id);
   const { athletes } = useAthletes();
@@ -43,7 +46,7 @@ const BoxCommunicationContent: React.FC = () => {
   const handleSendMessage = (message: string) => {
     sendMessage({
       message,
-      recipientId: selectedRecipient || undefined,
+      recipientId: selectedRecipient === '_all' ? undefined : selectedRecipient,
     });
   };
 
@@ -124,7 +127,7 @@ const BoxCommunicationContent: React.FC = () => {
                           <SelectValue placeholder="Todos (Geral)" />
                         </SelectTrigger>
                         <SelectContent className="z-50 bg-popover">
-                          <SelectItem value="">Todos (Geral)</SelectItem>
+                          <SelectItem value="_all">Todos (Geral)</SelectItem>
                           {allRecipients.map(recipient => (
                             <SelectItem key={recipient.id} value={recipient.id}>
                               {recipient.name} ({recipient.type})
@@ -141,9 +144,9 @@ const BoxCommunicationContent: React.FC = () => {
                     <ChatInput
                       onSend={handleSendMessage}
                       placeholder={
-                        selectedRecipient
-                          ? 'Mensagem direta...'
-                          : 'Mensagem para todos...'
+                        selectedRecipient === '_all'
+                          ? 'Mensagem para todos...'
+                          : 'Mensagem direta...'
                       }
                     />
                   </CardContent>
