@@ -1304,6 +1304,63 @@ export type Database = {
           },
         ]
       }
+      company_documents: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          description: string | null
+          document_type: string
+          file_size: number | null
+          file_url: string
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          document_type: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          document_type?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       company_messages: {
         Row: {
           company_id: string
@@ -1435,6 +1492,57 @@ export type Database = {
           },
           {
             foreignKeyName: "company_payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      company_schedule: {
+        Row: {
+          close_time: string | null
+          company_id: string
+          created_at: string | null
+          day_of_week: number
+          id: string
+          is_open: boolean | null
+          notes: string | null
+          open_time: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          close_time?: string | null
+          company_id: string
+          created_at?: string | null
+          day_of_week: number
+          id?: string
+          is_open?: boolean | null
+          notes?: string | null
+          open_time?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          close_time?: string | null
+          company_id?: string
+          created_at?: string | null
+          day_of_week?: number
+          id?: string
+          is_open?: boolean | null
+          notes?: string | null
+          open_time?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_schedule_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_schedule_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "company_financial_overview"
@@ -1680,6 +1788,8 @@ export type Database = {
           company_id: string
           created_at: string | null
           discount_percentage: number
+          discount_type: string | null
+          discount_value: number | null
           expires_at: string | null
           id: string
           is_active: boolean | null
@@ -1690,6 +1800,8 @@ export type Database = {
           company_id: string
           created_at?: string | null
           discount_percentage: number
+          discount_type?: string | null
+          discount_value?: number | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -1700,6 +1812,8 @@ export type Database = {
           company_id?: string
           created_at?: string | null
           discount_percentage?: number
+          discount_type?: string | null
+          discount_value?: number | null
           expires_at?: string | null
           id?: string
           is_active?: boolean | null

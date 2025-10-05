@@ -13,7 +13,11 @@ export const RegistrationLinkSettings = () => {
 
   if (!currentCompany) return null;
 
-  const registrationUrl = `${window.location.origin}/register/${currentCompany.id}`;
+  // Usa cagiotech.com quando estiver em produção
+  const baseUrl = window.location.hostname === 'localhost' 
+    ? window.location.origin 
+    : 'https://cagiotech.com';
+  const registrationUrl = `${baseUrl}/register/${currentCompany.id}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(registrationUrl);
