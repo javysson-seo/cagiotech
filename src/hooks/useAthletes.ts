@@ -13,6 +13,10 @@ interface Athlete {
   birth_date?: string;
   gender?: string;
   address?: string;
+  nif?: string;
+  cc_number?: string;
+  cc_expiry_date?: string;
+  niss?: string;
   emergency_contact_name?: string;
   emergency_contact_phone?: string;
   plan?: string;
@@ -23,10 +27,16 @@ interface Athlete {
   monthly_fee?: number;
   medical_notes?: string;
   goals?: string[];
+  tags?: string[];
   notes?: string;
   nutrition_preview?: string;
   profile_photo?: string;
   company_id?: string;
+  is_approved?: boolean;
+  last_check_in?: string;
+  total_check_ins?: number;
+  blocked_at?: string;
+  blocked_reason?: string;
 }
 
 export const useAthletes = () => {
