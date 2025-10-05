@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Bell, Search, User, LogOut, Settings, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,9 +20,11 @@ import { useAreaTheme } from '@/contexts/AreaThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { UserProfileModal } from '@/components/UserProfileModal';
 
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { language, changeLanguage } = useLanguage();
   const { theme, toggleTheme } = useAreaTheme();
   const { t, i18n } = useTranslation();
@@ -169,7 +171,7 @@ export const BoxHeader: React.FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={() => navigate('/box/profile')}>
+              <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
                 <User className="mr-2 h-4 w-4" />
                 Meu Perfil
               </DropdownMenuItem>
@@ -196,6 +198,8 @@ export const BoxHeader: React.FC = () => {
           </DropdownMenu>
         </div>
       </div>
+
+      <UserProfileModal open={isProfileOpen} onOpenChange={setIsProfileOpen} />
     </header>
   );
 };

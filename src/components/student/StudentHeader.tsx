@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Bell, Search, Settings, Globe, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,9 +19,11 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { UserProfileModal } from '@/components/UserProfileModal';
 
 export const StudentHeader: React.FC = () => {
   const { language, changeLanguage } = useLanguage();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
@@ -112,7 +114,7 @@ export const StudentHeader: React.FC = () => {
               <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsProfileOpen(true)}>
               <User className="mr-2 h-4 w-4" />
               Meu Perfil
             </DropdownMenuItem>
@@ -144,6 +146,8 @@ export const StudentHeader: React.FC = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      <UserProfileModal open={isProfileOpen} onOpenChange={setIsProfileOpen} />
     </header>
   );
 };
