@@ -65,31 +65,17 @@ const BoxSettingsContent: React.FC = () => {
           description: 'Colaboradores e permissões'
         },
         {
-          id: 'security',
-          label: 'Segurança',
+          id: 'digital-dossiers',
+          label: 'Dossiês Digital',
           icon: Shield,
           component: SecurityBackupSettings,
-          description: 'Proteção e backups'
+          description: 'Documentos e arquivos'
         }
       ]
     },
     {
       category: 'Operacional',
       tabs: [
-        {
-          id: 'modalities',
-          label: 'Modalidades',
-          icon: Database,
-          component: ModalitiesSettings,
-          description: 'Serviços oferecidos'
-        },
-        {
-          id: 'classes',
-          label: 'Aulas',
-          icon: Calendar,
-          component: ScheduleRulesSettings,
-          description: 'Gestão de agendamentos'
-        },
         {
           id: 'rooms',
           label: 'Espaços',
@@ -143,13 +129,6 @@ const BoxSettingsContent: React.FC = () => {
       category: 'Sistema',
       tabs: [
         {
-          id: 'reports',
-          label: 'Relatórios',
-          icon: BarChart3,
-          component: BasicReportsSettings,
-          description: 'Análises e métricas'
-        },
-        {
           id: 'integrations',
           label: 'Integrações',
           icon: Plug,
@@ -169,13 +148,6 @@ const BoxSettingsContent: React.FC = () => {
           icon: Trophy,
           component: GamificationSettings,
           description: 'Pontos e recompensas'
-        },
-        {
-          id: 'visual',
-          label: 'Visual',
-          icon: Palette,
-          component: VisualCustomizationSettings,
-          description: 'Aparência da plataforma'
         }
       ]
     }
@@ -209,12 +181,12 @@ const BoxSettingsContent: React.FC = () => {
               </div>
 
               {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {settingsCategories.map((category, idx) => (
                   <Card key={category.category} className="hover-scale cursor-pointer transition-all hover:shadow-md">
-                    <CardContent className="pt-6">
-                      <div className="text-center space-y-2">
-                        <p className="text-2xl font-bold text-primary">{category.tabs.length}</p>
+                    <CardContent className="pt-4 pb-4">
+                      <div className="text-center space-y-1">
+                        <p className="text-xl font-bold text-primary">{category.tabs.length}</p>
                         <p className="text-xs text-muted-foreground font-medium">{category.category}</p>
                       </div>
                     </CardContent>
@@ -232,7 +204,7 @@ const BoxSettingsContent: React.FC = () => {
                     <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
                       {category.category}
                     </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                       {category.tabs.map((tab) => {
                         const Icon = tab.icon;
                         const isActive = activeTab === tab.id;
@@ -241,7 +213,7 @@ const BoxSettingsContent: React.FC = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`
-                              group relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all hover-scale
+                              group relative flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all hover-scale
                               ${isActive 
                                 ? 'border-primary bg-primary/5 shadow-sm' 
                                 : 'border-border hover:border-primary/50 hover:bg-muted/50'
@@ -249,23 +221,20 @@ const BoxSettingsContent: React.FC = () => {
                             `}
                           >
                             <div className={`
-                              w-10 h-10 rounded-lg flex items-center justify-center transition-colors
+                              w-8 h-8 rounded-lg flex items-center justify-center transition-colors
                               ${isActive 
                                 ? 'bg-primary text-primary-foreground' 
                                 : 'bg-muted group-hover:bg-primary/10'
                               }
                             `}>
-                              <Icon className="h-5 w-5" />
+                              <Icon className="h-4 w-4" />
                             </div>
                             <span className={`
-                              text-xs font-medium text-center transition-colors
+                              text-xs font-medium text-center transition-colors leading-tight
                               ${isActive ? 'text-primary' : 'text-muted-foreground'}
                             `}>
                               {tab.label}
                             </span>
-                            {isActive && (
-                              <div className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-full" />
-                            )}
                           </button>
                         );
                       })}
