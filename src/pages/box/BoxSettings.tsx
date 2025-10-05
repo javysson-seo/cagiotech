@@ -181,98 +181,87 @@ const BoxSettingsContent: React.FC = () => {
         <BoxHeader />
         
         <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-6 space-y-6">
+          <div className="max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 space-y-6">
             {/* Header Section */}
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Settings className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Configurações da Empresa</h1>
-                <p className="text-muted-foreground">
-                  Gerir todas as configurações e preferências da sua empresa
-                </p>
+            <div className="animate-fade-in">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center ring-1 ring-primary/10">
+                    <Settings className="h-7 w-7 text-primary" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
+                      Configurações
+                    </h1>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Gerir todas as configurações da sua empresa
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <div className="border-b border-border mb-6">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-4 lg:grid-cols-7 h-auto p-1 bg-muted/50 rounded-lg gap-1">
-                  {settingsTabs.map((tab) => {
-                    const Icon = tab.icon;
-                    return (
-                      <TabsTrigger 
-                        key={tab.id} 
-                        value={tab.id} 
-                        className="flex flex-col items-center justify-center p-3 text-xs min-h-[60px] data-[state=active]:bg-background data-[state=active]:shadow-sm"
-                      >
-                        <Icon className="h-4 w-4 mb-1" />
-                        <span className="text-center leading-tight">{tab.label}</span>
-                      </TabsTrigger>
-                    );
-                  })}
-                </TabsList>
+              {/* Compact Tab Navigation */}
+              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 mb-6 border-b">
+                <div className="overflow-x-auto hide-scrollbar">
+                  <TabsList className="inline-flex w-auto h-auto p-1 bg-muted/50 rounded-xl gap-1">
+                    {settingsTabs.map((tab) => {
+                      const Icon = tab.icon;
+                      return (
+                        <TabsTrigger 
+                          key={tab.id} 
+                          value={tab.id} 
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all hover-scale whitespace-nowrap"
+                        >
+                          <Icon className="h-4 w-4" />
+                          <span className="hidden sm:inline">{tab.label}</span>
+                        </TabsTrigger>
+                      );
+                    })}
+                  </TabsList>
+                </div>
               </div>
 
               {/* Active Tab Content */}
-              <div className="w-full">
+              <div className="w-full animate-fade-in">
                 {settingsTabs.map((tab) => (
                   <TabsContent 
                     key={tab.id} 
                     value={tab.id} 
-                    className="mt-0 focus-visible:outline-none focus-visible:ring-0"
+                    className="mt-0 focus-visible:outline-none focus-visible:ring-0 space-y-6"
                   >
-                    <Card className="w-full">
-                      <CardHeader className="pb-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                              <tab.icon className="h-5 w-5 text-primary" />
-                            </div>
-                            <div>
-                              <CardTitle className="text-xl">{tab.label}</CardTitle>
-                              <p className="text-sm text-muted-foreground mt-1">{tab.description}</p>
-                            </div>
+                    {/* Tab Header Card */}
+                    <Card className="border-l-4 border-l-primary shadow-sm">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <tab.icon className="h-6 w-6 text-primary" />
                           </div>
-                          <Badge variant="outline" className="text-xs">
-                            Configurações
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-xl font-semibold mb-1">
+                              {tab.label}
+                            </CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                              {tab.description}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className="text-xs font-normal">
+                            Ativo
                           </Badge>
                         </div>
                       </CardHeader>
-                      <CardContent className="pt-0">
-                        {getCurrentComponent()}
-                      </CardContent>
                     </Card>
+
+                    {/* Tab Content */}
+                    <div className="animate-scale-in">
+                      {getCurrentComponent()}
+                    </div>
                   </TabsContent>
                 ))}
               </div>
             </Tabs>
-
-            {/* Help Section */}
-            <Card className="bg-muted/30 mt-8">
-              <CardContent className="p-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Settings className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-medium mb-2">Precisa de Ajuda?</h3>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Se tiver dúvidas sobre alguma configuração, consulte o nosso guia ou contacte o suporte.
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
-                        📖 Guia de Configurações
-                      </Badge>
-                      <Badge variant="secondary" className="text-xs cursor-pointer hover:bg-secondary/80">
-                        💬 Contactar Suporte
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </main>
         
