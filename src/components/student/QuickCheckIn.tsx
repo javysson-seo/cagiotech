@@ -3,21 +3,58 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { QrCode, CheckCircle, MapPin, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export const QuickCheckIn: React.FC = () => {
+  const { user } = useAuth();
   const [isCheckedIn, setIsCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleCheckIn = async () => {
+    if (!user?.email) {
+      toast.error('Você precisa estar logado para fazer check-in');
+      return;
+    }
+
     setLoading(true);
-    // Simular check-in
-    setTimeout(() => {
+    
+    try {
+      // Get athlete ID
+      const { data: athlete } = await supabase
+        .from('athletes')
+        .select('id, company_id')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (!athlete) {
+        toast.error('Atleta não encontrado');
+        setLoading(false);
+        return;
+      }
+
+      // Create check-in
+      const { error } = await supabase
+        .from('athlete_check_ins')
+        .insert({
+          athlete_id: athlete.id,
+          company_id: athlete.company_id,
+          check_in_type: 'manual',
+          notes: 'Check-in via app do aluno'
+        });
+
+      if (error) throw error;
+
       setIsCheckedIn(true);
-      setLoading(false);
       toast.success('Check-in realizado com sucesso! 🎉', {
-        description: 'Ganhou 10 pontos!'
+        description: 'Presença registrada e pontos adicionados!'
       });
-    }, 1000);
+    } catch (error) {
+      console.error('Error checking in:', error);
+      toast.error('Erro ao fazer check-in. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (isCheckedIn) {

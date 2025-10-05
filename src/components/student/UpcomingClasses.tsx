@@ -4,35 +4,30 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, Users, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAthleteClasses } from '@/hooks/useAthleteClasses';
+import { format, isToday, isTomorrow, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const UpcomingClasses: React.FC = () => {
   const navigate = useNavigate();
+  const { bookings, loading } = useAthleteClasses();
 
-  // Mock data - substituir por dados reais
-  const upcomingClasses = [
-    {
-      id: '1',
-      name: 'CrossFit WOD',
-      time: '18:00',
-      date: 'Hoje',
-      trainer: 'João Silva',
-      room: 'Sala Principal',
-      spots: 3,
-      maxSpots: 15,
-      color: 'cagio-green'
-    },
-    {
-      id: '2',
-      name: 'Yoga Flow',
-      time: '19:30',
-      date: 'Amanhã',
-      trainer: 'Maria Santos',
-      room: 'Sala 2',
-      spots: 8,
-      maxSpots: 12,
-      color: 'blue-500'
-    }
-  ];
+  const getDateLabel = (dateString: string) => {
+    const date = parseISO(dateString);
+    if (isToday(date)) return 'Hoje';
+    if (isTomorrow(date)) return 'Amanhã';
+    return format(date, "dd 'de' MMMM", { locale: ptBR });
+  };
+
+  if (loading) {
+    return (
+      <Card className="border-t-4 border-t-cagio-green">
+        <CardContent className="p-8 text-center">
+          <p className="text-muted-foreground">Carregando aulas...</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border-t-4 border-t-cagio-green">
@@ -49,7 +44,7 @@ export const UpcomingClasses: React.FC = () => {
         </Button>
       </CardHeader>
       <CardContent className="space-y-3">
-        {upcomingClasses.length === 0 ? (
+        {bookings.length === 0 ? (
           <div className="text-center py-8">
             <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-muted-foreground mb-4">Nenhuma aula reservada</p>
@@ -61,44 +56,49 @@ export const UpcomingClasses: React.FC = () => {
             </Button>
           </div>
         ) : (
-          upcomingClasses.map((cls) => (
-            <Card 
-              key={cls.id} 
-              className="p-4 hover:shadow-md transition-shadow cursor-pointer border-l-4"
-              style={{ borderLeftColor: `var(--${cls.color})` }}
-              onClick={() => navigate(`/student/bookings/${cls.id}`)}
-            >
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-semibold text-foreground">{cls.name}</h4>
-                  <p className="text-sm text-muted-foreground">{cls.trainer}</p>
-                </div>
-                <Badge className="bg-cagio-green text-white">
-                  {cls.date}
-                </Badge>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <div className="flex items-center text-muted-foreground">
-                  <Clock className="h-4 w-4 mr-1 text-cagio-green" />
-                  {cls.time}
-                </div>
-                <div className="flex items-center text-muted-foreground">
-                  <MapPin className="h-4 w-4 mr-1 text-cagio-green" />
-                  {cls.room}
-                </div>
-              </div>
+          bookings.map((booking) => {
+            const cls = booking.classes;
+            if (!cls) return null;
 
-              <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                <div className="flex items-center text-sm">
-                  <Users className="h-4 w-4 mr-1 text-cagio-green" />
-                  <span className="font-medium">{cls.spots}/{cls.maxSpots}</span>
-                  <span className="text-muted-foreground ml-1">vagas</span>
+            return (
+              <Card 
+                key={booking.id} 
+                className="p-4 hover:shadow-md transition-shadow cursor-pointer border-l-4"
+                style={{ borderLeftColor: cls.modalities?.color || 'var(--cagio-green)' }}
+                onClick={() => navigate(`/student/bookings`)}
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <h4 className="font-semibold text-foreground">{cls.title}</h4>
+                    <p className="text-sm text-muted-foreground">{cls.trainers?.name || 'Sem instrutor'}</p>
+                  </div>
+                  <Badge className="bg-cagio-green text-white">
+                    {getDateLabel(cls.date)}
+                  </Badge>
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </Card>
-          ))
+                
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center text-muted-foreground">
+                    <Clock className="h-4 w-4 mr-1 text-cagio-green" />
+                    {cls.start_time?.substring(0, 5)}
+                  </div>
+                  <div className="flex items-center text-muted-foreground">
+                    <MapPin className="h-4 w-4 mr-1 text-cagio-green" />
+                    {cls.rooms?.name || 'Não definido'}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                  <div className="flex items-center text-sm">
+                    <Users className="h-4 w-4 mr-1 text-cagio-green" />
+                    <span className="font-medium">{cls.current_bookings}/{cls.max_capacity}</span>
+                    <span className="text-muted-foreground ml-1">vagas</span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </Card>
+            );
+          })
         )}
       </CardContent>
     </Card>

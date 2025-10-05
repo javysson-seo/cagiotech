@@ -1,58 +1,72 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { 
   Flame, 
   Trophy, 
-  Target, 
-  TrendingUp,
   Calendar,
   Award
 } from 'lucide-react';
+import { useAthleteStats } from '@/hooks/useAthleteStats';
 
 export const StatsOverview: React.FC = () => {
-  // Mock data - substituir por dados reais
-  const stats = [
+  const { stats, loading } = useAthleteStats();
+
+  const displayStats = useMemo(() => [
     {
       label: 'Sequência',
-      value: '7',
+      value: stats.currentStreak.toString(),
       unit: 'dias',
       icon: Flame,
       color: 'text-orange-500',
       bgColor: 'bg-orange-500/10',
-      change: '+2'
+      change: stats.currentStreak > 0 ? `+${stats.currentStreak}` : ''
     },
     {
       label: 'Pontos',
-      value: '1,240',
+      value: stats.totalPoints.toLocaleString('pt-BR'),
       unit: 'pts',
       icon: Trophy,
       color: 'text-cagio-green',
       bgColor: 'bg-cagio-green-light',
-      change: '+150'
+      change: stats.totalPoints > 0 ? '+' + stats.totalPoints : ''
     },
     {
       label: 'Aulas',
-      value: '32',
+      value: stats.monthlyClasses.toString(),
       unit: 'mês',
       icon: Calendar,
       color: 'text-blue-500',
       bgColor: 'bg-blue-500/10',
-      change: '+5'
+      change: stats.monthlyClasses > 0 ? `+${stats.monthlyClasses}` : ''
     },
     {
       label: 'Nível',
-      value: 'Elite',
+      value: stats.currentLevel,
       unit: '',
       icon: Award,
       color: 'text-purple-500',
       bgColor: 'bg-purple-500/10',
       change: ''
     }
-  ];
+  ], [stats]);
+
+  if (loading) {
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="border-0 shadow-md animate-pulse">
+            <CardContent className="p-4">
+              <div className="h-16 bg-muted rounded" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-      {stats.map((stat) => (
+      {displayStats.map((stat) => (
         <Card 
           key={stat.label} 
           className="border-0 shadow-md hover:shadow-lg transition-shadow"
