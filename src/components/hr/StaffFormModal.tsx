@@ -246,15 +246,16 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
 
           {/* Credenciais de Acesso */}
           {formData.birth_date && formData.email && !staff && (
-            <Card className="border-green-200 bg-green-50">
+            <Card className="border-cagio-green bg-cagio-green-light">
               <CardHeader>
-                <CardTitle className="text-lg flex items-center justify-between">
+                <CardTitle className="text-lg flex items-center justify-between text-cagio-green">
                   Credenciais de Acesso
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowCredentials(!showCredentials)}
+                    className="text-cagio-green hover:bg-cagio-green/10"
                   >
                     {showCredentials ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
@@ -322,7 +323,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancelar
             </Button>
-            <Button type="submit" className="bg-green-600 hover:bg-green-700">
+            <Button type="submit" className="bg-cagio-green hover:bg-cagio-green-dark text-white">
               {staff ? 'Atualizar' : 'Criar'} Funcionário
             </Button>
           </div>

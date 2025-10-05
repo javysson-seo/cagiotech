@@ -25,7 +25,8 @@ import {
   Phone,
   Search,
   UserPlus,
-  Filter
+  Filter,
+  Users
 } from 'lucide-react';
 import { useStaff, type Staff } from '@/hooks/useStaff';
 import { StaffFormModal } from './StaffFormModal';
@@ -69,15 +70,15 @@ export const StaffList: React.FC = () => {
   };
 
   const getStatusBadge = (status?: string) => {
-    const statusConfig: Record<string, { label: string; variant: any }> = {
-      active: { label: 'Ativo', variant: 'default' },
-      inactive: { label: 'Inativo', variant: 'secondary' },
-      vacation: { label: 'Férias', variant: 'outline' },
-      sick_leave: { label: 'Baixa', variant: 'destructive' }
+    const statusConfig: Record<string, { label: string; className: string }> = {
+      active: { label: 'Ativo', className: 'bg-cagio-green text-white' },
+      inactive: { label: 'Inativo', className: 'bg-gray-400 text-white' },
+      vacation: { label: 'Férias', className: 'bg-blue-500 text-white' },
+      sick_leave: { label: 'Baixa', className: 'bg-orange-500 text-white' }
     };
 
     const config = statusConfig[status || 'active'] || statusConfig.active;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge className={config.className}>{config.label}</Badge>;
   };
 
   const formatDate = (date?: string) => {
@@ -95,16 +96,16 @@ export const StaffList: React.FC = () => {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Funcionários</CardTitle>
+      <Card className="border-t-4 border-t-cagio-green">
+        <CardHeader className="bg-cagio-green-light/30">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <CardTitle className="text-cagio-green">Gestão de Funcionários</CardTitle>
             <Button 
               onClick={() => {
                 setSelectedStaff(null);
                 setIsModalOpen(true);
               }}
-              className="bg-cagio-green hover:bg-cagio-green-dark"
+              className="bg-cagio-green hover:bg-cagio-green-dark text-white"
             >
               <UserPlus className="h-4 w-4 mr-2" />
               Novo Funcionário
@@ -112,30 +113,36 @@ export const StaffList: React.FC = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center space-x-2 mb-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-6">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-cagio-green" />
               <Input
-                placeholder="Pesquisar funcionários..."
+                placeholder="Pesquisar por nome, email ou cargo..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-cagio-green/30 focus:border-cagio-green"
               />
             </div>
-            <Button variant="outline">
+            <Button variant="outline" className="border-cagio-green text-cagio-green hover:bg-cagio-green-light">
               <Filter className="h-4 w-4 mr-2" />
               Filtrar
             </Button>
           </div>
 
           {filteredStaff.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">
-                {searchTerm ? 'Nenhum funcionário encontrado.' : 'Ainda não há funcionários cadastrados.'}
+            <div className="text-center py-16">
+              <div className="inline-flex p-4 rounded-full bg-cagio-green-light mb-4">
+                <Users className="h-12 w-12 text-cagio-green" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                {searchTerm ? 'Nenhum funcionário encontrado' : 'Nenhum funcionário cadastrado'}
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                {searchTerm ? 'Tente ajustar sua pesquisa.' : 'Comece adicionando seu primeiro funcionário.'}
               </p>
               <Button 
                 onClick={() => setIsModalOpen(true)}
-                className="bg-cagio-green hover:bg-cagio-green-dark"
+                className="bg-cagio-green hover:bg-cagio-green-dark text-white"
               >
                 <UserPlus className="h-4 w-4 mr-2" />
                 Adicionar Primeiro Funcionário

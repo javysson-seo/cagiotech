@@ -130,79 +130,92 @@ export const HRDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-2">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Recursos Humanos</h1>
-          <p className="text-muted-foreground">
-            Gestão de pessoal e recursos humanos
+          <h1 className="text-3xl font-bold text-cagio-green">Recursos Humanos</h1>
+          <p className="text-muted-foreground mt-1">
+            Gestão completa de pessoal e recursos humanos
           </p>
         </div>
-        <Button variant="outline">
+        <Button variant="outline" className="border-cagio-green text-cagio-green hover:bg-cagio-green-light">
           <FileText className="h-4 w-4 mr-2" />
           Relatórios
         </Button>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
-          <Card key={stat.title} className="relative overflow-hidden">
+          <Card key={stat.title} className="relative overflow-hidden border-l-4 border-l-cagio-green hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              <div className="p-2 rounded-full bg-cagio-green-light">
+                <stat.icon className="h-4 w-4 text-cagio-green" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-foreground mb-1">
+              <div className="text-3xl font-bold text-foreground mb-2">
                 {stat.value}
               </div>
               <div className="flex items-center space-x-2">
-                <div className={`flex items-center space-x-1 text-sm ${
-                  stat.trend === 'up' ? 'text-green-600' : 
-                  stat.trend === 'down' ? 'text-red-600' : 'text-muted-foreground'
-                }`}>
-                  <span className="font-medium">{stat.change}</span>
-                </div>
+                {stat.change && (
+                  <div className={`flex items-center space-x-1 text-sm font-semibold ${
+                    stat.trend === 'up' ? 'text-cagio-green' : 
+                    stat.trend === 'down' ? 'text-red-600' : 'text-muted-foreground'
+                  }`}>
+                    <span>{stat.change}</span>
+                  </div>
+                )}
                 <span className="text-xs text-muted-foreground">
                   {stat.description}
                 </span>
               </div>
             </CardContent>
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-green-600"></div>
           </Card>
         ))}
       </div>
 
       {/* Tabs Content */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="staff">Pessoal</TabsTrigger>
-          <TabsTrigger value="payroll">Folha de Pagamento</TabsTrigger>
-          <TabsTrigger value="documents">Documentos</TabsTrigger>
-          <TabsTrigger value="schedule">Horários</TabsTrigger>
+        <TabsList className="bg-cagio-green-light">
+          <TabsTrigger value="overview" className="data-[state=active]:bg-cagio-green data-[state=active]:text-white">
+            Visão Geral
+          </TabsTrigger>
+          <TabsTrigger value="staff" className="data-[state=active]:bg-cagio-green data-[state=active]:text-white">
+            Pessoal
+          </TabsTrigger>
+          <TabsTrigger value="payroll" className="data-[state=active]:bg-cagio-green data-[state=active]:text-white">
+            Folha de Pagamento
+          </TabsTrigger>
+          <TabsTrigger value="documents" className="data-[state=active]:bg-cagio-green data-[state=active]:text-white">
+            Documentos
+          </TabsTrigger>
+          <TabsTrigger value="schedule" className="data-[state=active]:bg-cagio-green data-[state=active]:text-white">
+            Horários
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Atividades Recentes */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Atividades Recentes</CardTitle>
+            <Card className="border-t-4 border-t-cagio-green">
+              <CardHeader className="bg-cagio-green-light/30">
+                <CardTitle className="text-cagio-green">Atividades Recentes</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3">
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-cagio-green-light/20 transition-colors">
                     {getStatusIcon(activity.status)}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">
+                      <p className="text-sm font-semibold text-foreground">
                         {activity.title}
                       </p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-muted-foreground mt-1">
                         {activity.description}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-cagio-green font-medium mt-1">
                         {activity.time}
                       </p>
                     </div>
@@ -212,23 +225,25 @@ export const HRDashboard: React.FC = () => {
             </Card>
 
             {/* Próximos Eventos */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Próximos Eventos</CardTitle>
+            <Card className="border-t-4 border-t-cagio-green">
+              <CardHeader className="bg-cagio-green-light/30">
+                <CardTitle className="text-cagio-green">Próximos Eventos</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 pt-6">
                 {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-center space-x-3">
-                    <Calendar className="h-4 w-4 text-blue-600" />
+                  <div key={event.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-cagio-green-light/20 transition-colors">
+                    <div className="p-2 rounded-full bg-cagio-green-light">
+                      <Calendar className="h-4 w-4 text-cagio-green" />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">
+                      <p className="text-sm font-semibold text-foreground">
                         {event.title}
                       </p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Badge variant="outline" className="text-xs">
+                        <Badge className="bg-cagio-green text-white text-xs">
                           {event.date}
                         </Badge>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-muted-foreground font-medium">
                           {event.time}
                         </span>
                       </div>
@@ -249,17 +264,20 @@ export const HRDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="documents">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center py-8">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">
+          <Card className="border-t-4 border-t-cagio-green">
+            <CardContent className="p-12">
+              <div className="text-center">
+                <div className="inline-flex p-4 rounded-full bg-cagio-green-light mb-4">
+                  <FileText className="h-12 w-12 text-cagio-green" />
+                </div>
+                <h3 className="text-xl font-bold text-cagio-green mb-2">
                   Gestão de Documentos
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  Contratos, documentos pessoais e certificações
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Contratos, documentos pessoais, certificações e arquivos importantes
                 </p>
-                <Button className="bg-green-600 hover:bg-green-700">
+                <Button className="bg-cagio-green hover:bg-cagio-green-dark text-white">
+                  <FileText className="h-4 w-4 mr-2" />
                   Ver Documentos
                 </Button>
               </div>
@@ -268,17 +286,20 @@ export const HRDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="schedule">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">
+          <Card className="border-t-4 border-t-cagio-green">
+            <CardContent className="p-12">
+              <div className="text-center">
+                <div className="inline-flex p-4 rounded-full bg-cagio-green-light mb-4">
+                  <Clock className="h-12 w-12 text-cagio-green" />
+                </div>
+                <h3 className="text-xl font-bold text-cagio-green mb-2">
                   Gestão de Horários
                 </h3>
-                <p className="text-muted-foreground mb-4">
-                  Turnos, férias e gestão de tempo de trabalho
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Turnos, férias, folgas e gestão completa de tempo de trabalho
                 </p>
-                <Button className="bg-green-600 hover:bg-green-700">
+                <Button className="bg-cagio-green hover:bg-cagio-green-dark text-white">
+                  <Clock className="h-4 w-4 mr-2" />
                   Ver Horários
                 </Button>
               </div>
