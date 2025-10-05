@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/contexts/CompanyContext';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export interface Staff {
   id?: string;
@@ -23,7 +23,6 @@ export const useStaff = () => {
   const [staff, setStaff] = useState<Staff[]>([]);
   const [loading, setLoading] = useState(true);
   const { currentCompany } = useCompany();
-  const { toast } = useToast();
 
   const fetchStaff = useCallback(async () => {
     if (!currentCompany?.id) return;
@@ -38,34 +37,22 @@ export const useStaff = () => {
 
       if (error) {
         console.error('Error fetching staff:', error);
-        toast({
-          title: "Erro",
-          description: "Erro ao carregar funcionários.",
-          variant: "destructive"
-        });
+        toast.error('Erro ao carregar funcionários.');
         return;
       }
 
       setStaff((data as Staff[]) || []);
     } catch (error) {
       console.error('Error fetching staff:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar funcionários.",
-        variant: "destructive"
-      });
+      toast.error('Erro ao carregar funcionários.');
     } finally {
       setLoading(false);
     }
-  }, [currentCompany?.id, toast]);
+  }, [currentCompany?.id]);
 
   const saveStaff = async (staffData: Staff) => {
     if (!currentCompany?.id) {
-      toast({
-        title: "Erro",
-        description: "Nenhuma empresa selecionada.",
-        variant: "destructive"
-      });
+      toast.error('Nenhuma empresa selecionada.');
       return;
     }
 
@@ -85,18 +72,11 @@ export const useStaff = () => {
 
         if (error) {
           console.error('Error updating staff:', error);
-          toast({
-            title: "Erro",
-            description: "Erro ao atualizar funcionário.",
-            variant: "destructive"
-          });
+          toast.error('Erro ao atualizar funcionário.');
           return;
         }
 
-        toast({
-          title: "Sucesso",
-          description: "Funcionário atualizado com sucesso!"
-        });
+        toast.success('Funcionário atualizado com sucesso!');
       } else {
         // Create new staff
         const { data: newStaff, error } = await (supabase as any)
@@ -107,11 +87,7 @@ export const useStaff = () => {
 
         if (error) {
           console.error('Error creating staff:', error);
-          toast({
-            title: "Erro",
-            description: "Erro ao criar funcionário.",
-            variant: "destructive"
-          });
+          toast.error('Erro ao criar funcionário.');
           return;
         }
 
@@ -121,28 +97,17 @@ export const useStaff = () => {
             await createUserAccount(staffData.email, staffData.name, staffData.birth_date);
           } catch (userError) {
             console.error('Error creating user account:', userError);
-            toast({
-              title: "Aviso",
-              description: "Funcionário criado, mas houve erro ao criar a conta de acesso.",
-              variant: "destructive"
-            });
+            toast.error('Funcionário criado, mas houve erro ao criar a conta de acesso.');
           }
         }
 
-        toast({
-          title: "Sucesso",
-          description: "Funcionário criado com sucesso!"
-        });
+        toast.success('Funcionário criado com sucesso!');
       }
 
       await fetchStaff();
     } catch (error) {
       console.error('Error saving staff:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar funcionário.",
-        variant: "destructive"
-      });
+      toast.error('Erro ao salvar funcionário.');
     }
   };
 
@@ -155,27 +120,16 @@ export const useStaff = () => {
 
       if (error) {
         console.error('Error deleting staff:', error);
-        toast({
-          title: "Erro",
-          description: "Erro ao excluir funcionário.",
-          variant: "destructive"
-        });
+        toast.error('Erro ao excluir funcionário.');
         return;
       }
 
-      toast({
-        title: "Sucesso",
-        description: "Funcionário excluído com sucesso!"
-      });
+      toast.success('Funcionário excluído com sucesso!');
 
       await fetchStaff();
     } catch (error) {
       console.error('Error deleting staff:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir funcionário.",
-        variant: "destructive"
-      });
+      toast.error('Erro ao excluir funcionário.');
     }
   };
 

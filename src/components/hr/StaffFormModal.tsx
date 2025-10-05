@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Copy } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface StaffMember {
   id?: string;
@@ -34,7 +34,6 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   staff,
   onSave
 }) => {
-  const { toast } = useToast();
   const [formData, setFormData] = useState<StaffMember>({
     name: '',
     email: '',
@@ -49,31 +48,29 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   const [showCredentials, setShowCredentials] = useState(false);
 
   useEffect(() => {
-    if (staff) {
-      setFormData(staff);
-    } else {
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        position: '',
-        department: '',
-        birth_date: '',
-        hire_date: new Date().toISOString().split('T')[0],
-        status: 'active'
-      });
+    if (isOpen) {
+      if (staff) {
+        setFormData(staff);
+      } else {
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          position: '',
+          department: '',
+          birth_date: '',
+          hire_date: new Date().toISOString().split('T')[0],
+          status: 'active'
+        });
+      }
     }
-  }, [staff]);
+  }, [staff, isOpen]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name.trim() || !formData.email.trim() || !formData.position.trim()) {
-      toast({
-        title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive"
-      });
+      toast.error('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -91,10 +88,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast({
-      title: "Copiado!",
-      description: "Texto copiado para a área de transferência.",
-    });
+    toast.success('Copiado para a área de transferência.');
   };
 
   const generatedPassword = formData.birth_date ? generatePasswordFromDate(formData.birth_date) : '';

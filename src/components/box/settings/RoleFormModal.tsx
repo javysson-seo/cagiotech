@@ -45,20 +45,22 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
   });
 
   useEffect(() => {
-    if (role) {
-      setFormData({
-        name: role.name,
-        description: role.description,
-        color: role.color,
-        permissions: [...role.permissions]
-      });
-    } else {
-      setFormData({
-        name: '',
-        description: '',
-        color: '#3b82f6',
-        permissions: []
-      });
+    if (isOpen) {
+      if (role) {
+        setFormData({
+          name: role.name,
+          description: role.description,
+          color: role.color,
+          permissions: [...role.permissions]
+        });
+      } else {
+        setFormData({
+          name: '',
+          description: '',
+          color: '#3b82f6',
+          permissions: []
+        });
+      }
     }
   }, [role, isOpen]);
 
