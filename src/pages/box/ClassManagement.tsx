@@ -7,14 +7,19 @@ import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { ClassList } from '@/components/classes/ClassList';
 import { ClassForm } from '@/components/classes/ClassForm';
 import { ClassCalendar } from '@/components/classes/ClassCalendar';
+import { ModalitiesRoomsManagement } from '@/components/classes/ModalitiesRoomsManagement';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Search, Filter, Calendar, List, Users } from 'lucide-react';
+import { Plus, Search, Calendar, List, Users, Settings } from 'lucide-react';
+import { useClasses } from '@/hooks/useClasses';
+import { useModalities } from '@/hooks/useModalities';
 
 const ClassManagementContent: React.FC = () => {
+  const { classes, loading, refetchClasses } = useClasses();
+  const { modalities } = useModalities();
   const [activeTab, setActiveTab] = useState('list');
   const [showForm, setShowForm] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
@@ -34,7 +39,13 @@ const ClassManagementContent: React.FC = () => {
   const handleCloseForm = () => {
     setShowForm(false);
     setSelectedClass(null);
+    refetchClasses();
   };
+
+  const todayClasses = classes.filter(c => c.date === new Date().toISOString().split('T')[0]);
+  const totalCapacity = classes.reduce((sum, c) => sum + (c.max_capacity || 0), 0);
+  const totalBooked = classes.reduce((sum, c) => sum + (c.current_bookings || 0), 0);
+  const occupationRate = totalCapacity > 0 ? Math.round((totalBooked / totalCapacity) * 100) : 0;
 
   return (
     <div className="flex h-screen bg-background">
@@ -64,10 +75,10 @@ const ClassManagementContent: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Calendar className="h-8 w-8 text-cagiogreen-600" />
+                    <Calendar className="h-8 w-8 text-primary" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-muted-foreground">Aulas Hoje</p>
-                      <p className="text-2xl font-bold">8</p>
+                      <p className="text-2xl font-bold">{todayClasses.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -76,10 +87,10 @@ const ClassManagementContent: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <Users className="h-8 w-8 text-blue-600" />
+                    <Users className="h-8 w-8 text-primary" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-muted-foreground">Taxa Ocupação</p>
-                      <p className="text-2xl font-bold">78%</p>
+                      <p className="text-2xl font-bold">{occupationRate}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -88,10 +99,10 @@ const ClassManagementContent: React.FC = () => {
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center">
-                    <List className="h-8 w-8 text-purple-600" />
+                    <List className="h-8 w-8 text-primary" />
                     <div className="ml-4">
                       <p className="text-sm font-medium text-muted-foreground">Total Aulas</p>
-                      <p className="text-2xl font-bold">42</p>
+                      <p className="text-2xl font-bold">{classes.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -119,10 +130,11 @@ const ClassManagementContent: React.FC = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todas Modalidades</SelectItem>
-                      <SelectItem value="crossfit">CrossFit</SelectItem>
-                      <SelectItem value="yoga">Yoga</SelectItem>
-                      <SelectItem value="pilates">Pilates</SelectItem>
-                      <SelectItem value="functional">Functional</SelectItem>
+                      {modalities.filter(m => m.is_active).map(modality => (
+                        <SelectItem key={modality.id} value={modality.id!}>
+                          {modality.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -131,14 +143,18 @@ const ClassManagementContent: React.FC = () => {
 
             {/* Main Content */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="list">
                   <List className="h-4 w-4 mr-2" />
-                  Lista de Aulas
+                  Lista
                 </TabsTrigger>
                 <TabsTrigger value="calendar">
                   <Calendar className="h-4 w-4 mr-2" />
                   Calendário
+                </TabsTrigger>
+                <TabsTrigger value="settings">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Configurações
                 </TabsTrigger>
               </TabsList>
 
@@ -152,6 +168,10 @@ const ClassManagementContent: React.FC = () => {
 
               <TabsContent value="calendar" className="space-y-4">
                 <ClassCalendar onEdit={handleEditClass} />
+              </TabsContent>
+
+              <TabsContent value="settings" className="space-y-4">
+                <ModalitiesRoomsManagement />
               </TabsContent>
             </Tabs>
 

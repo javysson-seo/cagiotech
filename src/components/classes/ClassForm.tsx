@@ -6,9 +6,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { X, Save, Calendar, Clock, Users, MapPin, Euro } from 'lucide-react';
+import { X, Save, Clock, Users, MapPin } from 'lucide-react';
 import { toast } from 'sonner';
+import { useModalities } from '@/hooks/useModalities';
+import { useRooms } from '@/hooks/useRooms';
+import { useTrainers } from '@/hooks/useTrainers';
+import { useClasses } from '@/hooks/useClasses';
 
 interface ClassFormProps {
   classData?: any;
@@ -19,23 +22,23 @@ export const ClassForm: React.FC<ClassFormProps> = ({
   classData,
   onClose,
 }) => {
+  const { modalities, loading: loadingModalities } = useModalities();
+  const { rooms, loading: loadingRooms } = useRooms();
+  const { trainers, loading: loadingTrainers } = useTrainers();
+  const { saveClass } = useClasses();
+  
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    modality: '',
-    trainer: '',
+    modality_id: '',
+    trainer_id: '',
+    room_id: '',
     date: '',
-    startTime: '',
-    endTime: '',
-    duration: 60,
-    capacity: 20,
-    price: 15,
-    credits: 1,
-    location: '',
-    difficulty: 'Intermediário',
-    recurring: false,
-    recurrenceType: 'weekly',
-    status: 'active'
+    start_time: '',
+    end_time: '',
+    max_capacity: 20,
+    status: 'scheduled',
+    notes: ''
   });
 
   useEffect(() => {
@@ -43,42 +46,35 @@ export const ClassForm: React.FC<ClassFormProps> = ({
       setFormData({
         title: classData.title || '',
         description: classData.description || '',
-        modality: classData.modality || '',
-        trainer: classData.trainer || '',
-        date: classData.startTime ? classData.startTime.split('T')[0] : '',
-        startTime: classData.startTime ? classData.startTime.split('T')[1].substring(0, 5) : '',
-        endTime: classData.endTime ? classData.endTime.split('T')[1].substring(0, 5) : '',
-        duration: classData.duration || 60,
-        capacity: classData.capacity || 20,
-        price: classData.price || 15,
-        credits: classData.credits || 1,
-        location: classData.location || '',
-        difficulty: classData.difficulty || 'Intermediário',
-        recurring: classData.recurring !== 'none',
-        recurrenceType: classData.recurring || 'weekly',
-        status: classData.status || 'active'
+        modality_id: classData.modality_id || '',
+        trainer_id: classData.trainer_id || '',
+        room_id: classData.room_id || '',
+        date: classData.date || '',
+        start_time: classData.start_time || '',
+        end_time: classData.end_time || '',
+        max_capacity: classData.max_capacity || 20,
+        status: classData.status || 'scheduled',
+        notes: classData.notes || ''
       });
     }
   }, [classData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validações básicas
-    if (!formData.title || !formData.modality || !formData.trainer) {
+    if (!formData.title || !formData.modality_id || !formData.date || !formData.start_time || !formData.end_time) {
       toast.error('Por favor, preencha todos os campos obrigatórios');
       return;
     }
 
-    console.log('Dados da aula:', formData);
+    const success = await saveClass({
+      ...formData,
+      id: classData?.id
+    });
     
-    if (classData) {
-      toast.success('Aula atualizada com sucesso!');
-    } else {
-      toast.success('Aula criada com sucesso!');
+    if (success) {
+      onClose();
     }
-    
-    onClose();
   };
 
   const updateField = (field: string, value: any) => {
@@ -112,21 +108,24 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                   value={formData.title}
                   onChange={(e) => updateField('title', e.target.value)}
                   placeholder="Ex: CrossFit Morning"
+                  required
                 />
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="modality">Modalidade *</Label>
-                <Select value={formData.modality} onValueChange={(value) => updateField('modality', value)}>
+                <Select value={formData.modality_id} onValueChange={(value) => updateField('modality_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar modalidade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="CrossFit">CrossFit</SelectItem>
-                    <SelectItem value="Yoga">Yoga</SelectItem>
-                    <SelectItem value="Pilates">Pilates</SelectItem>
-                    <SelectItem value="Functional">Functional</SelectItem>
-                    <SelectItem value="HIIT">HIIT</SelectItem>
+                    {loadingModalities ? (
+                      <SelectItem value="loading" disabled>Carregando...</SelectItem>
+                    ) : modalities.filter(m => m.is_active).map(modality => (
+                      <SelectItem key={modality.id} value={modality.id!}>
+                        {modality.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -153,29 +152,37 @@ export const ClassForm: React.FC<ClassFormProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="trainer">Trainer *</Label>
-                <Select value={formData.trainer} onValueChange={(value) => updateField('trainer', value)}>
+                <Label htmlFor="trainer">Trainer</Label>
+                <Select value={formData.trainer_id} onValueChange={(value) => updateField('trainer_id', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar trainer" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Carlos Santos">Carlos Santos</SelectItem>
-                    <SelectItem value="Ana Costa">Ana Costa</SelectItem>
-                    <SelectItem value="Pedro Silva">Pedro Silva</SelectItem>
+                    {loadingTrainers ? (
+                      <SelectItem value="loading" disabled>Carregando...</SelectItem>
+                    ) : trainers.filter(t => t.status === 'active').map(trainer => (
+                      <SelectItem key={trainer.id} value={trainer.id!}>
+                        {trainer.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="location">Local</Label>
-                <Select value={formData.location} onValueChange={(value) => updateField('location', value)}>
+                <Label htmlFor="room">Sala</Label>
+                <Select value={formData.room_id} onValueChange={(value) => updateField('room_id', value)}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecionar local" />
+                    <SelectValue placeholder="Selecionar sala" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Sala Principal">Sala Principal</SelectItem>
-                    <SelectItem value="Sala de Yoga">Sala de Yoga</SelectItem>
-                    <SelectItem value="Área Externa">Área Externa</SelectItem>
+                    {loadingRooms ? (
+                      <SelectItem value="loading" disabled>Carregando...</SelectItem>
+                    ) : rooms.filter(r => r.is_active).map(room => (
+                      <SelectItem key={room.id} value={room.id!}>
+                        {room.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -191,100 +198,64 @@ export const ClassForm: React.FC<ClassFormProps> = ({
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="date">Data</Label>
+                <Label htmlFor="date">Data *</Label>
                 <Input
                   id="date"
                   type="date"
                   value={formData.date}
                   onChange={(e) => updateField('date', e.target.value)}
+                  required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="startTime">Hora Início</Label>
+                <Label htmlFor="start_time">Hora Início *</Label>
                 <Input
-                  id="startTime"
+                  id="start_time"
                   type="time"
-                  value={formData.startTime}
-                  onChange={(e) => updateField('startTime', e.target.value)}
+                  value={formData.start_time}
+                  onChange={(e) => updateField('start_time', e.target.value)}
+                  required
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="endTime">Hora Fim</Label>
+                <Label htmlFor="end_time">Hora Fim *</Label>
                 <Input
-                  id="endTime"
+                  id="end_time"
                   type="time"
-                  value={formData.endTime}
-                  onChange={(e) => updateField('endTime', e.target.value)}
+                  value={formData.end_time}
+                  onChange={(e) => updateField('end_time', e.target.value)}
+                  required
                 />
               </div>
             </div>
           </div>
 
-          {/* Capacidade e Preços */}
+          {/* Capacidade */}
           <div className="space-y-4">
             <h3 className="font-medium text-lg flex items-center">
-              <Euro className="h-4 w-4 mr-2" />
-              Capacidade e Preços
+              <Users className="h-4 w-4 mr-2" />
+              Capacidade
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="capacity">Capacidade</Label>
-                <Input
-                  id="capacity"
-                  type="number"
-                  value={formData.capacity}
-                  onChange={(e) => updateField('capacity', parseInt(e.target.value))}
-                  min="1"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="price">Preço (€)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={(e) => updateField('price', parseFloat(e.target.value))}
-                  min="0"
-                  step="0.01"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="credits">Créditos</Label>
-                <Input
-                  id="credits"
-                  type="number"
-                  value={formData.credits}
-                  onChange={(e) => updateField('credits', parseInt(e.target.value))}
-                  min="1"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="max_capacity">Capacidade Máxima</Label>
+              <Input
+                id="max_capacity"
+                type="number"
+                value={formData.max_capacity}
+                onChange={(e) => updateField('max_capacity', parseInt(e.target.value))}
+                min="1"
+              />
             </div>
           </div>
 
-          {/* Configurações Adicionais */}
+          {/* Status e Notas */}
           <div className="space-y-4">
-            <h3 className="font-medium text-lg">Configurações Adicionais</h3>
+            <h3 className="font-medium text-lg">Status e Observações</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="difficulty">Dificuldade</Label>
-                <Select value={formData.difficulty} onValueChange={(value) => updateField('difficulty', value)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Iniciante">Iniciante</SelectItem>
-                    <SelectItem value="Intermediário">Intermediário</SelectItem>
-                    <SelectItem value="Avançado">Avançado</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
+            <div className="grid grid-cols-1 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
                 <Select value={formData.status} onValueChange={(value) => updateField('status', value)}>
@@ -292,39 +263,23 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Ativa</SelectItem>
+                    <SelectItem value="scheduled">Agendada</SelectItem>
                     <SelectItem value="cancelled">Cancelada</SelectItem>
+                    <SelectItem value="completed">Concluída</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
-            {/* Recorrência */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="recurring"
-                  checked={formData.recurring}
-                  onCheckedChange={(checked) => updateField('recurring', checked)}
-                />
-                <Label htmlFor="recurring">Aula recorrente</Label>
-              </div>
               
-              {formData.recurring && (
-                <div className="space-y-2">
-                  <Label htmlFor="recurrenceType">Tipo de Recorrência</Label>
-                  <Select value={formData.recurrenceType} onValueChange={(value) => updateField('recurrenceType', value)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="daily">Diária</SelectItem>
-                      <SelectItem value="weekly">Semanal</SelectItem>
-                      <SelectItem value="monthly">Mensal</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="notes">Observações</Label>
+                <Textarea
+                  id="notes"
+                  value={formData.notes}
+                  onChange={(e) => updateField('notes', e.target.value)}
+                  placeholder="Observações sobre a aula..."
+                  rows={3}
+                />
+              </div>
             </div>
           </div>
 

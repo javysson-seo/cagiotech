@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight, Calendar, Clock, Users, MapPin } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 import { pt } from 'date-fns/locale';
+import { useClasses } from '@/hooks/useClasses';
 
 interface ClassCalendarProps {
   onEdit: (classData: any) => void;
@@ -14,55 +15,15 @@ interface ClassCalendarProps {
 export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
-  // Mock data das aulas
-  const classes = [
-    {
-      id: 1,
-      title: 'CrossFit Morning',
-      trainer: 'Carlos Santos',
-      modality: 'CrossFit',
-      modalityColor: '#3B82F6',
-      startTime: '2024-01-15T06:00:00',
-      endTime: '2024-01-15T07:00:00',
-      capacity: 20,
-      booked: 12,
-      location: 'Sala Principal',
-    },
-    {
-      id: 2,
-      title: 'Yoga Flow',
-      trainer: 'Ana Costa',
-      modality: 'Yoga',
-      modalityColor: '#10B981',
-      startTime: '2024-01-15T07:30:00',
-      endTime: '2024-01-15T08:30:00',
-      capacity: 15,
-      booked: 8,
-      location: 'Sala de Yoga',
-    },
-    {
-      id: 3,
-      title: 'HIIT Training',
-      trainer: 'Pedro Silva',
-      modality: 'HIIT',
-      modalityColor: '#F59E0B',
-      startTime: '2024-01-16T18:00:00',
-      endTime: '2024-01-16T19:00:00',
-      capacity: 12,
-      booked: 10,
-      location: 'Área Externa',
-    }
-  ];
+  const { classes } = useClasses();
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const getClassesForDate = (date: Date) => {
-    return classes.filter(classItem => 
-      isSameDay(new Date(classItem.startTime), date)
-    );
+    const dateStr = format(date, 'yyyy-MM-dd');
+    return classes.filter(classItem => classItem.date === dateStr);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -131,7 +92,7 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
                       <div
                         key={classItem.id}
                         className="text-xs p-1 rounded cursor-pointer hover:opacity-80"
-                        style={{ backgroundColor: classItem.modalityColor + '20', color: classItem.modalityColor }}
+                        style={{ backgroundColor: classItem.modality?.color + '20', color: classItem.modality?.color || '#3B82F6' }}
                         onClick={(e) => {
                           e.stopPropagation();
                           onEdit(classItem);
@@ -139,7 +100,7 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
                       >
                         <div className="font-medium truncate">{classItem.title}</div>
                         <div className="opacity-75">
-                          {format(new Date(classItem.startTime), 'HH:mm')}
+                          {classItem.start_time}
                         </div>
                       </div>
                     ))}
@@ -179,10 +140,10 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
                       <div className="flex items-center space-x-2">
                         <div 
                           className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: classItem.modalityColor }}
+                          style={{ backgroundColor: classItem.modality?.color || '#3B82F6' }}
                         />
                         <h4 className="font-medium">{classItem.title}</h4>
-                        <Badge variant="outline">{classItem.modality}</Badge>
+                        <Badge variant="outline">{classItem.modality?.name}</Badge>
                       </div>
                     </div>
                     
@@ -190,23 +151,22 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
                       <div className="flex items-center space-x-1">
                         <Clock className="h-3 w-3" />
                         <span>
-                          {format(new Date(classItem.startTime), 'HH:mm')} - 
-                          {format(new Date(classItem.endTime), 'HH:mm')}
+                          {classItem.start_time} - {classItem.end_time}
                         </span>
                       </div>
                       
                       <div className="flex items-center space-x-1">
                         <Users className="h-3 w-3" />
-                        <span>{classItem.booked}/{classItem.capacity}</span>
+                        <span>{classItem.current_bookings || 0}/{classItem.max_capacity}</span>
                       </div>
                       
                       <div className="flex items-center space-x-1">
                         <MapPin className="h-3 w-3" />
-                        <span>{classItem.location}</span>
+                        <span>{classItem.room?.name || 'Não definido'}</span>
                       </div>
                       
                       <div>
-                        <span className="font-medium">{classItem.trainer}</span>
+                        <span className="font-medium">{classItem.trainer?.name || 'Não definido'}</span>
                       </div>
                     </div>
                   </div>
