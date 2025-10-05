@@ -281,38 +281,28 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
                     <CardContent className="pt-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {module.permissions.map((permission) => (
-                          <div
+                          <label
                             key={permission.key}
                             className={`flex items-start space-x-3 p-3 rounded-lg border transition-all hover:bg-muted/50 cursor-pointer ${
                               formData.permissions.includes(permission.key)
                                 ? 'bg-primary/5 border-primary/50'
                                 : 'border-border'
                             }`}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                togglePermission(permission.key);
-                              }
-                            }}
-                            onClick={() => togglePermission(permission.key)}
                           >
                             <Checkbox
                               checked={formData.permissions.includes(permission.key)}
                               onCheckedChange={() => togglePermission(permission.key)}
-                              onClick={(e) => e.stopPropagation()}
                               className="mt-0.5"
                             />
                             <div className="flex-1 min-w-0">
-                              <Label className="font-medium cursor-pointer">
+                              <span className="font-medium cursor-pointer block">
                                 {permission.label}
-                              </Label>
+                              </span>
                               <p className="text-xs text-muted-foreground mt-0.5">
                                 {permission.description}
                               </p>
                             </div>
-                          </div>
+                          </label>
                         ))}
                       </div>
                     </CardContent>
