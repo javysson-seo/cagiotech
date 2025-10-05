@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,31 +15,32 @@ import {
   Clock, 
   Globe,
   Calendar,
-  Hash
+  Hash,
+  Loader2
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useCompanySettings } from '@/hooks/useCompanySettings';
 import { toast } from 'sonner';
 
 export const BoxDataSettings: React.FC = () => {
-  const { user } = useAuth();
+  const { company, isLoading, updateCompany, isUpdating } = useCompanySettings();
   
   const [boxData, setBoxData] = useState({
-    name: user?.boxName || 'CrossFit Benfica',
-    slogan: 'Transforme-se através do movimento',
-    businessType: 'CrossFit',
-    nif: '123456789',
-    phone: '+351 912 345 678',
-    email: 'info@crossfitbenfica.com',
-    website: 'https://crossfitbenfica.com',
-    instagram: '@crossfitbenfica',
-    foundedDate: '2020-01-15',
-    street: 'Rua do Exemplo, 123',
-    city: 'Lisboa',
-    postalCode: '1000-001',
+    name: '',
+    slogan: '',
+    business_type: 'CrossFit',
+    nif: '',
+    phone: '',
+    email: '',
+    website: '',
+    instagram: '',
+    founded_date: '',
+    address: '',
+    city: '',
+    postal_code: '',
     country: 'Portugal',
-    gpsCoordinates: '38.7223, -9.1393',
+    gps_coordinates: '',
     capacity: 30,
-    description: 'A melhor BOX de CrossFit de Lisboa com equipamentos de última geração e trainers certificados.'
+    description: ''
   });
 
   const [operatingHours, setOperatingHours] = useState({
@@ -52,20 +53,66 @@ export const BoxDataSettings: React.FC = () => {
     sunday: { open: '08:00', close: '18:00', closed: false }
   });
 
+  useEffect(() => {
+    if (company) {
+      setBoxData({
+        name: company.name || '',
+        slogan: (company as any).slogan || '',
+        business_type: (company as any).business_type || 'CrossFit',
+        nif: (company as any).nif || '',
+        phone: company.phone || '',
+        email: company.email || '',
+        website: (company as any).website || '',
+        instagram: (company as any).instagram || '',
+        founded_date: (company as any).founded_date || '',
+        address: company.address || '',
+        city: (company as any).city || '',
+        postal_code: (company as any).postal_code || '',
+        country: (company as any).country || 'Portugal',
+        gps_coordinates: (company as any).gps_coordinates || '',
+        capacity: (company as any).capacity || 30,
+        description: (company as any).description || ''
+      });
+
+      if ((company as any).operating_hours) {
+        setOperatingHours((company as any).operating_hours);
+      }
+    }
+  }, [company]);
+
   const handleSave = () => {
-    toast.success('Dados da BOX salvos com sucesso!');
-    console.log('Salvando dados da BOX:', { boxData, operatingHours });
+    updateCompany({
+      name: boxData.name,
+      phone: boxData.phone,
+      email: boxData.email,
+      address: boxData.address,
+      ...(boxData as any),
+      operating_hours: operatingHours
+    } as any);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   const businessTypes = [
-    'CrossFit',
-    'Functional Training',
-    'Yoga',
-    'Pilates',
-    'Boxing',
-    'Multi-modalidade',
-    'Ginásio Tradicional',
-    'Studio Boutique'
+    { value: 'crossfit', label: 'CrossFit' },
+    { value: 'functional', label: 'Treino Funcional' },
+    { value: 'yoga', label: 'Yoga' },
+    { value: 'pilates', label: 'Pilates' },
+    { value: 'boxing', label: 'Boxing / MMA' },
+    { value: 'gym', label: 'Ginásio Tradicional' },
+    { value: 'studio', label: 'Studio Boutique' },
+    { value: 'cycling', label: 'Cycling / Spinning' },
+    { value: 'dance', label: 'Dança' },
+    { value: 'martial_arts', label: 'Artes Marciais' },
+    { value: 'swimming', label: 'Natação' },
+    { value: 'wellness', label: 'Wellness & SPA' },
+    { value: 'multi', label: 'Multi-modalidades' }
   ];
 
   const weekDays = [
@@ -113,15 +160,15 @@ export const BoxDataSettings: React.FC = () => {
             </div>
 
             <div>
-              <Label htmlFor="businessType">Tipo de Negócio</Label>
-              <Select value={boxData.businessType} onValueChange={(value) => setBoxData({ ...boxData, businessType: value })}>
+              <Label htmlFor="businessType">Ramo de Fitness *</Label>
+              <Select value={boxData.business_type} onValueChange={(value) => setBoxData({ ...boxData, business_type: value })}>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Selecione o ramo" />
                 </SelectTrigger>
                 <SelectContent>
                   {businessTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -199,8 +246,8 @@ export const BoxDataSettings: React.FC = () => {
               <Input
                 id="foundedDate"
                 type="date"
-                value={boxData.foundedDate}
-                onChange={(e) => setBoxData({ ...boxData, foundedDate: e.target.value })}
+                value={boxData.founded_date}
+                onChange={(e) => setBoxData({ ...boxData, founded_date: e.target.value })}
               />
             </div>
 
@@ -243,8 +290,8 @@ export const BoxDataSettings: React.FC = () => {
               <Label htmlFor="street">Rua e Número</Label>
               <Input
                 id="street"
-                value={boxData.street}
-                onChange={(e) => setBoxData({ ...boxData, street: e.target.value })}
+                value={boxData.address}
+                onChange={(e) => setBoxData({ ...boxData, address: e.target.value })}
                 placeholder="Rua do Exemplo, 123"
               />
             </div>
@@ -263,8 +310,8 @@ export const BoxDataSettings: React.FC = () => {
               <Label htmlFor="postalCode">Código Postal</Label>
               <Input
                 id="postalCode"
-                value={boxData.postalCode}
-                onChange={(e) => setBoxData({ ...boxData, postalCode: e.target.value })}
+                value={boxData.postal_code}
+                onChange={(e) => setBoxData({ ...boxData, postal_code: e.target.value })}
                 placeholder="1000-001"
               />
             </div>
@@ -284,8 +331,8 @@ export const BoxDataSettings: React.FC = () => {
               <Label htmlFor="gps">Coordenadas GPS (opcional)</Label>
               <Input
                 id="gps"
-                value={boxData.gpsCoordinates}
-                onChange={(e) => setBoxData({ ...boxData, gpsCoordinates: e.target.value })}
+                value={boxData.gps_coordinates}
+                onChange={(e) => setBoxData({ ...boxData, gps_coordinates: e.target.value })}
                 placeholder="38.7223, -9.1393"
               />
             </div>
@@ -349,9 +396,18 @@ export const BoxDataSettings: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} className="w-full" size="lg">
-        <Save className="h-4 w-4 mr-2" />
-        Salvar Dados da BOX
+      <Button onClick={handleSave} className="w-full" size="lg" disabled={isUpdating}>
+        {isUpdating ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Salvando...
+          </>
+        ) : (
+          <>
+            <Save className="h-4 w-4 mr-2" />
+            Salvar Dados da BOX
+          </>
+        )}
       </Button>
     </div>
   );

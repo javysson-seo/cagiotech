@@ -41,6 +41,7 @@ import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings
 import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSettings';
 import { RegistrationLinkSettings } from '@/components/box/settings/RegistrationLinkSettings';
 import { DiscountCouponsSettings } from '@/components/box/settings/DiscountCouponsSettings';
+import { PlansManagementSettings } from '@/components/box/settings/PlansManagementSettings';
 
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
@@ -52,6 +53,13 @@ const BoxSettingsContent: React.FC = () => {
       icon: Building2,
       component: BoxDataSettings,
       description: 'Informações básicas e contacto da empresa'
+    },
+    {
+      id: 'plans',
+      label: 'Planos',
+      icon: Euro,
+      component: PlansManagementSettings,
+      description: 'Gestão de planos de assinatura'
     },
     {
       id: 'hr',
