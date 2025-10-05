@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,14 +45,16 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
   });
 
   useEffect(() => {
-    if (isOpen && role) {
+    if (!isOpen) return;
+    
+    if (role) {
       setFormData({
         name: role.name,
         description: role.description,
         color: role.color,
         permissions: [...role.permissions]
       });
-    } else if (isOpen && !role) {
+    } else {
       setFormData({
         name: '',
         description: '',
@@ -60,7 +62,7 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
         permissions: []
       });
     }
-  }, [isOpen, role?.id]);
+  }, [isOpen, role]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,34 +86,38 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
     onClose();
   };
 
-  const togglePermission = (permissionKey: string) => {
-    setFormData(prev => ({
-      ...prev,
-      permissions: prev.permissions.includes(permissionKey)
-        ? prev.permissions.filter(p => p !== permissionKey)
-        : [...prev.permissions, permissionKey]
-    }));
-  };
+  const togglePermission = useCallback((permissionKey: string) => {
+    setFormData(prev => {
+      const isSelected = prev.permissions.includes(permissionKey);
+      return {
+        ...prev,
+        permissions: isSelected
+          ? prev.permissions.filter(p => p !== permissionKey)
+          : [...prev.permissions, permissionKey]
+      };
+    });
+  }, []);
 
-  const toggleModule = (moduleKey: string) => {
+  const toggleModule = useCallback((moduleKey: string) => {
     const module = PERMISSION_MODULES[moduleKey as keyof typeof PERMISSION_MODULES];
     const modulePermissions = module.permissions.map(p => p.key);
-    const allSelected = modulePermissions.every(p => formData.permissions.includes(p));
-
-    if (allSelected) {
-      // Remove all module permissions
-      setFormData(prev => ({
-        ...prev,
-        permissions: prev.permissions.filter(p => !modulePermissions.includes(p))
-      }));
-    } else {
-      // Add all module permissions
-      setFormData(prev => ({
-        ...prev,
-        permissions: [...new Set([...prev.permissions, ...modulePermissions])]
-      }));
-    }
-  };
+    
+    setFormData(prev => {
+      const allSelected = modulePermissions.every(p => prev.permissions.includes(p));
+      
+      if (allSelected) {
+        return {
+          ...prev,
+          permissions: prev.permissions.filter(p => !modulePermissions.includes(p))
+        };
+      } else {
+        return {
+          ...prev,
+          permissions: [...new Set([...prev.permissions, ...modulePermissions])]
+        };
+      }
+    });
+  }, []);
 
   const isModuleFullySelected = (moduleKey: string) => {
     const module = PERMISSION_MODULES[moduleKey as keyof typeof PERMISSION_MODULES];
