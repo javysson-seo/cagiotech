@@ -43,10 +43,7 @@ export const BoxSidebar: React.FC = () => {
     { name: 'CRM', href: `/${companyId}/crm`, icon: UserPlus },
     { name: 'Comunicação', href: `/${companyId}/communication`, icon: MessageSquare },
     { name: 'Financeiro', href: `/${companyId}/financial`, icon: Euro },
-    { name: 'Assinaturas', href: `/${companyId}/subscriptions`, icon: CreditCard },
     { name: 'Material deportivo', href: `/${companyId}/equipment`, icon: Dumbbell },
-    { name: 'Observatorio', href: `/${companyId}/observatory`, icon: BarChart3 },
-    { name: 'KPIS', href: `/${companyId}/kpis`, icon: BarChart3 },
     { name: 'Configurações', href: `/${companyId}/settings`, icon: Settings },
   ];
 
