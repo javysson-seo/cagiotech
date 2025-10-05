@@ -45,24 +45,22 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
   });
 
   useEffect(() => {
-    if (isOpen) {
-      if (role) {
-        setFormData({
-          name: role.name,
-          description: role.description,
-          color: role.color,
-          permissions: [...role.permissions]
-        });
-      } else {
-        setFormData({
-          name: '',
-          description: '',
-          color: '#3b82f6',
-          permissions: []
-        });
-      }
+    if (isOpen && role) {
+      setFormData({
+        name: role.name,
+        description: role.description,
+        color: role.color,
+        permissions: [...role.permissions]
+      });
+    } else if (isOpen && !role) {
+      setFormData({
+        name: '',
+        description: '',
+        color: '#3b82f6',
+        permissions: []
+      });
     }
-  }, [role, isOpen]);
+  }, [isOpen, role?.id]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
