@@ -7,32 +7,25 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { 
   Building2, 
   Save, 
   Phone, 
   Mail, 
   MapPin, 
-  Clock, 
   Globe,
   Calendar,
   Hash,
   Loader2,
   Upload,
-  Image as ImageIcon,
-  User,
-  Lock,
-  Key
+  Image as ImageIcon
 } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
-import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const BoxDataSettings: React.FC = () => {
   const { company, isLoading, updateCompany, isUpdating } = useCompanySettings();
-  const { user } = useAuth();
   
   const [boxData, setBoxData] = useState({
     name: '',
@@ -54,25 +47,7 @@ export const BoxDataSettings: React.FC = () => {
     description: ''
   });
 
-  const [personalData, setPersonalData] = useState({
-    name: '',
-    email: '',
-    phone: ''
-  });
-
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [isSendingReset, setIsSendingReset] = useState(false);
-
-  const [operatingHours, setOperatingHours] = useState({
-    monday: { open: '06:00', close: '22:00', closed: false },
-    tuesday: { open: '06:00', close: '22:00', closed: false },
-    wednesday: { open: '06:00', close: '22:00', closed: false },
-    thursday: { open: '06:00', close: '22:00', closed: false },
-    friday: { open: '06:00', close: '22:00', closed: false },
-    saturday: { open: '08:00', close: '20:00', closed: false },
-    sunday: { open: '08:00', close: '18:00', closed: false }
-  });
 
   useEffect(() => {
     if (company) {
@@ -95,48 +70,8 @@ export const BoxDataSettings: React.FC = () => {
         capacity: (company as any).capacity || 30,
         description: (company as any).description || ''
       });
-
-      // Merge operating hours with defaults to ensure all days exist
-      if ((company as any).operating_hours) {
-        const defaultHours = {
-          monday: { open: '06:00', close: '22:00', closed: false },
-          tuesday: { open: '06:00', close: '22:00', closed: false },
-          wednesday: { open: '06:00', close: '22:00', closed: false },
-          thursday: { open: '06:00', close: '22:00', closed: false },
-          friday: { open: '06:00', close: '22:00', closed: false },
-          saturday: { open: '08:00', close: '20:00', closed: false },
-          sunday: { open: '08:00', close: '18:00', closed: false }
-        };
-        
-        setOperatingHours({
-          ...defaultHours,
-          ...(company as any).operating_hours
-        });
-      }
     }
   }, [company]);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!user?.id) return;
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('name, email, phone')
-        .eq('id', user.id)
-        .single();
-      
-      if (data && !error) {
-        setPersonalData({
-          name: data.name || '',
-          email: data.email || '',
-          phone: data.phone || ''
-        });
-      }
-    };
-    
-    fetchProfile();
-  }, [user]);
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -169,8 +104,7 @@ export const BoxDataSettings: React.FC = () => {
       
       await updateCompany({ 
         ...boxData,
-        logo_url: newLogoUrl,
-        operating_hours: operatingHours 
+        logo_url: newLogoUrl
       } as any);
 
       setBoxData({ ...boxData, logo_url: newLogoUrl });
@@ -183,50 +117,8 @@ export const BoxDataSettings: React.FC = () => {
     }
   };
 
-  const handleSavePersonalData = async () => {
-    if (!user?.id) return;
-
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          name: personalData.name,
-          phone: personalData.phone
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-      toast.success('Dados pessoais atualizados!');
-    } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error('Erro ao atualizar dados pessoais');
-    }
-  };
-
-  const handlePasswordReset = async () => {
-    if (!user?.email) return;
-
-    setIsSendingReset(true);
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-        redirectTo: `${window.location.origin}/reset-password`
-      });
-
-      if (error) throw error;
-      toast.success('Email de redefinição enviado! Verifique sua caixa de entrada.');
-    } catch (error) {
-      console.error('Error sending reset email:', error);
-      toast.error('Erro ao enviar email de redefinição');
-    } finally {
-      setIsSendingReset(false);
-    }
-  };
-
   const handleSave = () => {
-    updateCompany({
-      ...boxData,
-      operating_hours: operatingHours
-    } as any);
+    updateCompany(boxData as any);
   };
 
   if (isLoading) {
@@ -251,16 +143,6 @@ export const BoxDataSettings: React.FC = () => {
     { value: 'swimming', label: 'Natação' },
     { value: 'wellness', label: 'Wellness & SPA' },
     { value: 'multi', label: 'Multi-modalidades' }
-  ];
-
-  const weekDays = [
-    { key: 'monday', label: 'Segunda-feira' },
-    { key: 'tuesday', label: 'Terça-feira' },
-    { key: 'wednesday', label: 'Quarta-feira' },
-    { key: 'thursday', label: 'Quinta-feira' },
-    { key: 'friday', label: 'Sexta-feira' },
-    { key: 'saturday', label: 'Sábado' },
-    { key: 'sunday', label: 'Domingo' }
   ];
 
   return (
@@ -321,103 +203,6 @@ export const BoxDataSettings: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Dados Pessoais */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5" />
-            Dados Pessoais
-          </CardTitle>
-          <CardDescription>
-            Informações do responsável pela conta
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="personal-name">Nome Completo</Label>
-              <Input
-                id="personal-name"
-                value={personalData.name}
-                onChange={(e) => setPersonalData({ ...personalData, name: e.target.value })}
-                placeholder="Seu nome completo"
-              />
-            </div>
-            <div>
-              <Label htmlFor="personal-email">Email</Label>
-              <Input
-                id="personal-email"
-                type="email"
-                value={personalData.email}
-                disabled
-                className="bg-muted"
-              />
-            </div>
-            <div>
-              <Label htmlFor="personal-phone">Telefone</Label>
-              <Input
-                id="personal-phone"
-                value={personalData.phone}
-                onChange={(e) => setPersonalData({ ...personalData, phone: e.target.value })}
-                placeholder="+351 912 345 678"
-              />
-            </div>
-          </div>
-          <Button onClick={handleSavePersonalData} variant="outline">
-            <Save className="h-4 w-4 mr-2" />
-            Salvar Dados Pessoais
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Segurança */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lock className="h-5 w-5" />
-            Segurança da Conta
-          </CardTitle>
-          <CardDescription>
-            Gerencie sua senha e configurações de segurança
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            <div className="flex items-start justify-between p-4 border rounded-lg">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <Key className="h-4 w-4 text-muted-foreground" />
-                  <span className="font-medium">Redefinir Senha</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Receba um código de 6 dígitos por email para redefinir sua senha
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={handlePasswordReset}
-                disabled={isSendingReset}
-              >
-                {isSendingReset ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  'Enviar Email'
-                )}
-              </Button>
-            </div>
-            <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
-              <strong>📧 Sobre o email:</strong> Você receberá um email da CagioTech com um código de 6 dígitos. 
-              Use esse código para redefinir sua senha de forma segura.
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Separator className="my-6" />
-
       {/* Informações Básicas da Empresa */}
       <Card>
         <CardHeader>
@@ -429,12 +214,12 @@ export const BoxDataSettings: React.FC = () => {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="md:col-span-2">
-              <Label htmlFor="name">Nome da BOX *</Label>
+              <Label htmlFor="name">Nome da Empresa *</Label>
               <Input
                 id="name"
                 value={boxData.name}
                 onChange={(e) => setBoxData({ ...boxData, name: e.target.value })}
-                placeholder="Nome da sua BOX"
+                placeholder="Nome da sua empresa"
               />
             </div>
             
@@ -553,13 +338,13 @@ export const BoxDataSettings: React.FC = () => {
           </div>
 
           <div>
-            <Label htmlFor="description">Descrição da BOX</Label>
+            <Label htmlFor="description">Descrição da Empresa</Label>
             <Textarea
               id="description"
               value={boxData.description}
               onChange={(e) => setBoxData({ ...boxData, description: e.target.value })}
               rows={3}
-              placeholder="Descreva sua BOX, diferenciais, filosofia..."
+              placeholder="Descreva sua empresa, diferenciais, filosofia..."
             />
           </div>
         </CardContent>
@@ -629,69 +414,6 @@ export const BoxDataSettings: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Horários de Funcionamento */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5" />
-            <span>Horários de Funcionamento</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-4">
-            {weekDays.map((day) => {
-              const dayHours = operatingHours[day.key as keyof typeof operatingHours];
-              
-              // Safety check: skip if day hours not defined
-              if (!dayHours) return null;
-              
-              return (
-                <div key={day.key} className="grid grid-cols-4 gap-4 items-center">
-                  <div className="font-medium">{day.label}</div>
-                  <div>
-                    <Input
-                      type="time"
-                      value={dayHours.open}
-                      onChange={(e) => setOperatingHours({
-                        ...operatingHours,
-                        [day.key]: { ...dayHours, open: e.target.value }
-                      })}
-                      disabled={dayHours.closed}
-                    />
-                  </div>
-                  <div>
-                    <Input
-                      type="time"
-                      value={dayHours.close}
-                      onChange={(e) => setOperatingHours({
-                        ...operatingHours,
-                        [day.key]: { ...dayHours, close: e.target.value }
-                      })}
-                      disabled={dayHours.closed}
-                    />
-                  </div>
-                  <div>
-                    <Button
-                      variant={dayHours.closed ? "destructive" : "outline"}
-                      size="sm"
-                      onClick={() => setOperatingHours({
-                        ...operatingHours,
-                        [day.key]: { 
-                          ...dayHours, 
-                          closed: !dayHours.closed 
-                        }
-                      })}
-                    >
-                      {dayHours.closed ? 'Fechado' : 'Aberto'}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-
       <Button onClick={handleSave} className="w-full" size="lg" disabled={isUpdating}>
         {isUpdating ? (
           <>
@@ -701,7 +423,7 @@ export const BoxDataSettings: React.FC = () => {
         ) : (
           <>
             <Save className="h-4 w-4 mr-2" />
-            Salvar Dados da BOX
+            Salvar Dados da Empresa
           </>
         )}
       </Button>
