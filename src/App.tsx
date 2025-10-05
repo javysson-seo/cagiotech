@@ -15,7 +15,7 @@ import Index from "./pages/Index";
 import { LandingPage } from "./pages/LandingPage";
 import { Landing } from "./pages/Landing";
 import { Login } from "./pages/auth/Login";
-import { LoginPage } from "./pages/auth/LoginPage";
+import { UnifiedLogin } from "./pages/auth/UnifiedLogin";
 import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import { EmailVerification } from "./pages/auth/EmailVerification";
@@ -78,7 +78,8 @@ function App() {
                   {/* Public Routes */}
                   <Route path="/" element={<Landing />} />
                   <Route path="/old-landing" element={<Landing />} />
-                  <Route path="/auth/login" element={<LoginPage />} />
+                  <Route path="/auth/login" element={<UnifiedLogin />} />
+                  <Route path="/login" element={<UnifiedLogin />} />
                   <Route path="/auth/box-register" element={<BoxRegister />} />
                   <Route path="/auth/student-register" element={<StudentRegister />} />
                   <Route path="/auth/email-verification" element={<EmailVerification />} />

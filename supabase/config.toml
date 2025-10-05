@@ -11,3 +11,5 @@ verify_jwt = true
 
 [functions.ifthenpay-webhook]
 verify_jwt = false
+
+[functions.create-staff-user]

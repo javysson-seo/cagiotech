@@ -95,10 +95,23 @@ export const useStaff = () => {
         // Create user account if email and birth_date are provided
         if (staffData.email && staffData.birth_date) {
           try {
-            await createUserAccount(staffData.email, staffData.name, staffData.birth_date);
+            const userId = await createUserAccount(
+              staffData.email, 
+              staffData.name, 
+              staffData.birth_date,
+              staffData.position
+            );
+            
+            // Update staff with user_id
+            if (userId && newStaff?.id) {
+              await (supabase as any)
+                .from('staff')
+                .update({ user_id: userId })
+                .eq('id', newStaff.id);
+            }
           } catch (userError) {
             console.error('Error creating user account:', userError);
-            toast.error('Funcionário criado, mas houve erro ao criar a conta de acesso.');
+            toast.warning('Funcionário criado, mas houve erro ao criar a conta de acesso.');
           }
         }
 
@@ -142,23 +155,31 @@ export const useStaff = () => {
     return `${day}${month}${year}`;
   };
 
-  const createUserAccount = async (email: string, name: string, birthDate: string) => {
+  const createUserAccount = async (email: string, name: string, birthDate: string, position: string) => {
+    if (!currentCompany?.id) return;
+    
     const password = generatePasswordFromDate(birthDate);
     
-    const { data, error } = await supabase.functions.invoke('create-student', {
+    const { data, error } = await supabase.functions.invoke('create-staff-user', {
       body: {
         email,
         password,
         name,
-        role: 'staff'
+        position,
+        company_id: currentCompany.id
       }
     });
 
-    const msg = (error as any)?.message || (data as any)?.error || '';
-    if (error && !msg.toString().includes('already been registered') && !msg.toString().includes('email_exists')) {
+    if (error) {
       console.error('Error creating user account:', error);
       throw error;
     }
+
+    if (!data.success) {
+      throw new Error(data.error || 'Erro ao criar usuário');
+    }
+
+    return data.user_id;
   };
 
   const refetchStaff = useCallback(() => {

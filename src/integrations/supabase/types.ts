@@ -2543,6 +2543,100 @@ export type Database = {
           },
         ]
       }
+      payroll: {
+        Row: {
+          base_salary: number
+          bonuses: number | null
+          classes_taught: number | null
+          commissions: number | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          deductions: number | null
+          gross_amount: number
+          hours_worked: number | null
+          id: string
+          net_amount: number
+          notes: string | null
+          payment_date: string | null
+          payment_method: string | null
+          payment_status: string
+          reference_month: string
+          social_security: number | null
+          staff_id: string
+          tax_amount: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          base_salary?: number
+          bonuses?: number | null
+          classes_taught?: number | null
+          commissions?: number | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          deductions?: number | null
+          gross_amount: number
+          hours_worked?: number | null
+          id?: string
+          net_amount: number
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          reference_month: string
+          social_security?: number | null
+          staff_id: string
+          tax_amount?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          base_salary?: number
+          bonuses?: number | null
+          classes_taught?: number | null
+          commissions?: number | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          deductions?: number | null
+          gross_amount?: number
+          hours_worked?: number | null
+          id?: string
+          net_amount?: number
+          notes?: string | null
+          payment_date?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          reference_month?: string
+          social_security?: number | null
+          staff_id?: string
+          tax_amount?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payroll_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payroll_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "payroll_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       physical_assessments: {
         Row: {
           assessed_by: string | null
@@ -3081,6 +3175,91 @@ export type Database = {
           },
         ]
       }
+      staff_payment_config: {
+        Row: {
+          bank_account: string | null
+          base_amount: number
+          commission_percentage: number | null
+          company_id: string
+          created_at: string | null
+          currency: string
+          hourly_rate: number | null
+          iban: string | null
+          id: string
+          is_active: boolean | null
+          nib: string | null
+          notes: string | null
+          payment_day: number | null
+          payment_frequency: string | null
+          payment_type: string
+          per_class_rate: number | null
+          staff_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          bank_account?: string | null
+          base_amount?: number
+          commission_percentage?: number | null
+          company_id: string
+          created_at?: string | null
+          currency?: string
+          hourly_rate?: number | null
+          iban?: string | null
+          id?: string
+          is_active?: boolean | null
+          nib?: string | null
+          notes?: string | null
+          payment_day?: number | null
+          payment_frequency?: string | null
+          payment_type: string
+          per_class_rate?: number | null
+          staff_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          bank_account?: string | null
+          base_amount?: number
+          commission_percentage?: number | null
+          company_id?: string
+          created_at?: string | null
+          currency?: string
+          hourly_rate?: number | null
+          iban?: string | null
+          id?: string
+          is_active?: boolean | null
+          nib?: string | null
+          notes?: string | null
+          payment_day?: number | null
+          payment_frequency?: string | null
+          payment_type?: string
+          per_class_rate?: number | null
+          staff_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_payment_config_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_payment_config_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_payment_config_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: true
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_permissions: {
         Row: {
           can_access: boolean | null
@@ -3126,6 +3305,70 @@ export type Database = {
           },
           {
             foreignKeyName: "staff_permissions_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_work_log: {
+        Row: {
+          amount: number | null
+          class_id: string | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          hours_worked: number | null
+          id: string
+          log_date: string
+          log_type: string
+          staff_id: string
+        }
+        Insert: {
+          amount?: number | null
+          class_id?: string | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          hours_worked?: number | null
+          id?: string
+          log_date: string
+          log_type: string
+          staff_id: string
+        }
+        Update: {
+          amount?: number | null
+          class_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          hours_worked?: number | null
+          id?: string
+          log_date?: string
+          log_type?: string
+          staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_work_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_work_log_staff_id_fkey"
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff"

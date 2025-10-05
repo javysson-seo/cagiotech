@@ -11,9 +11,11 @@ import {
   Calendar,
   FileText,
   AlertCircle,
-  CheckCircle 
+  CheckCircle,
+  DollarSign
 } from 'lucide-react';
 import { StaffFormModal } from './StaffFormModal';
+import { PayrollManagement } from './PayrollManagement';
 import { useStaff } from '@/hooks/useStaff';
 
 export const HRDashboard: React.FC = () => {
@@ -178,6 +180,7 @@ export const HRDashboard: React.FC = () => {
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="staff">Pessoal</TabsTrigger>
+          <TabsTrigger value="payroll">Folha de Pagamento</TabsTrigger>
           <TabsTrigger value="documents">Documentos</TabsTrigger>
           <TabsTrigger value="schedule">Horários</TabsTrigger>
         </TabsList>
@@ -255,6 +258,10 @@ export const HRDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="payroll">
+          <PayrollManagement />
         </TabsContent>
 
         <TabsContent value="documents">
