@@ -2282,6 +2282,83 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          permission_key: string
+          role_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          permission_key: string
+          role_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          permission_key?: string
+          role_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          color: string
+          company_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       rooms: {
         Row: {
           amenities: string[] | null
@@ -2348,6 +2425,7 @@ export type Database = {
           name: string
           phone: string | null
           position: string
+          role_id: string | null
           role_type: string | null
           status: string | null
           updated_at: string | null
@@ -2364,6 +2442,7 @@ export type Database = {
           name: string
           phone?: string | null
           position: string
+          role_id?: string | null
           role_type?: string | null
           status?: string | null
           updated_at?: string | null
@@ -2380,12 +2459,21 @@ export type Database = {
           name?: string
           phone?: string | null
           position?: string
+          role_id?: string | null
           role_type?: string | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "staff_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       staff_permissions: {
         Row: {

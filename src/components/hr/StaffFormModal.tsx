@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { useRoles } from '@/hooks/useRoles';
 
 interface StaffMember {
   id?: string;
@@ -19,6 +20,7 @@ interface StaffMember {
   birth_date?: string;
   hire_date?: string;
   status?: string;
+  role_id?: string;
 }
 
 interface StaffFormModalProps {
@@ -34,6 +36,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   staff,
   onSave
 }) => {
+  const { roles } = useRoles();
   const [formData, setFormData] = useState<StaffMember>({
     name: '',
     email: '',
@@ -42,7 +45,8 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
     department: '',
     birth_date: '',
     hire_date: new Date().toISOString().split('T')[0],
-    status: 'active'
+    status: 'active',
+    role_id: undefined
   });
 
   const [showCredentials, setShowCredentials] = useState(false);
@@ -60,7 +64,8 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
           department: '',
           birth_date: '',
           hire_date: new Date().toISOString().split('T')[0],
-          status: 'active'
+          status: 'active',
+          role_id: undefined
         });
       }
     }
@@ -213,6 +218,35 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                   <SelectItem value="sick_leave">Baixa Médica</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="role_id">Cargo</Label>
+              <Select
+                value={formData.role_id || ''}
+                onValueChange={(value) => setFormData({ ...formData, role_id: value || undefined })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um cargo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">Sem cargo</SelectItem>
+                  {roles.map((role) => (
+                    <SelectItem key={role.id} value={role.id}>
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: role.color }}
+                        />
+                        {role.name}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                O cargo define as permissões que o funcionário terá no sistema
+              </p>
             </div>
           </div>
 
