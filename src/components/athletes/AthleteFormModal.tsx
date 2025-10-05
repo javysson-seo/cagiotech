@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
 import { useTrainers } from '@/hooks/useTrainers';
 import { useCompany } from '@/contexts/CompanyContext';
+import { useDiscountCoupons } from '@/hooks/useDiscountCoupons';
 import { toast } from 'sonner';
 
 interface AthleteFormModalProps {
@@ -31,6 +32,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
   const { currentCompany } = useCompany();
   const { plans } = useSubscriptionPlans(currentCompany?.id);
   const { trainers } = useTrainers();
+  const { validateCoupon } = useDiscountCoupons(currentCompany?.id);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -132,27 +134,24 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
     }
   };
 
-  const applyCoupon = () => {
-    // Simulação de validação de cupom - em produção, deve validar no backend
-    const validCoupons: Record<string, number> = {
-      'WELCOME10': 10,
-      'PROMO20': 20,
-      'SAVE30': 30,
-      'VIP50': 50,
-    };
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error('Digite um código de cupom');
+      return;
+    }
 
-    const discountValue = validCoupons[couponCode.toUpperCase()];
+    const validatedCoupon = await validateCoupon(couponCode);
     
-    if (discountValue) {
-      setDiscount(discountValue);
-      const finalPrice = originalPrice * (1 - discountValue / 100);
+    if (validatedCoupon) {
+      setDiscount(Number(validatedCoupon.discount_percentage));
+      const finalPrice = originalPrice * (1 - Number(validatedCoupon.discount_percentage) / 100);
       setFormData(prev => ({
         ...prev,
         monthly_fee: finalPrice.toFixed(2)
       }));
-      toast.success(`Cupom aplicado! ${discountValue}% de desconto`);
+      toast.success(`Cupom ${validatedCoupon.code} aplicado! ${validatedCoupon.discount_percentage}% de desconto`);
     } else {
-      toast.error('Cupom inválido');
+      toast.error('Cupom inválido ou expirado');
     }
   };
 

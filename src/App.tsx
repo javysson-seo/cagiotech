@@ -19,6 +19,7 @@ import { LoginPage } from "./pages/auth/LoginPage";
 import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import { EmailVerification } from "./pages/auth/EmailVerification";
+import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -83,6 +84,7 @@ function App() {
                   <Route path="/auth/box-register" element={<BoxRegister />} />
                   <Route path="/auth/student-register" element={<StudentRegister />} />
                   <Route path="/auth/email-verification" element={<EmailVerification />} />
+                  <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />

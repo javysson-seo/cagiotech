@@ -22,7 +22,9 @@ import {
   Database,
   Calendar,
   Plug,
-  Lock
+  Lock,
+  Link2,
+  Percent
 } from 'lucide-react';
 
 import { BoxDataSettings } from '@/components/box/settings/BoxDataSettings';
@@ -37,6 +39,8 @@ import { FinancialSettings } from '@/components/box/settings/FinancialSettings';
 import { VisualCustomizationSettings } from '@/components/box/settings/VisualCustomizationSettings';
 import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings';
 import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSettings';
+import { RegistrationLinkSettings } from '@/components/box/settings/RegistrationLinkSettings';
+import { DiscountCouponsSettings } from '@/components/box/settings/DiscountCouponsSettings';
 
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
@@ -90,6 +94,20 @@ const BoxSettingsContent: React.FC = () => {
       icon: Euro,
       component: FinancialSettings,
       description: 'Configurações financeiras e pagamentos'
+    },
+    {
+      id: 'coupons',
+      label: 'Cupons de Desconto',
+      icon: Percent,
+      component: DiscountCouponsSettings,
+      description: 'Gestão de cupons promocionais'
+    },
+    {
+      id: 'registration-link',
+      label: 'Link de Registro',
+      icon: Link2,
+      component: RegistrationLinkSettings,
+      description: 'Link para auto-registro de alunos'
     },
     {
       id: 'reports',
