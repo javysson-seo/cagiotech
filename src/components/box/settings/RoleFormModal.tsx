@@ -171,7 +171,7 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
                           key={color.value}
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, color: color.value }))}
-                          className={`w-10 h-10 rounded-lg border-2 transition-all hover-scale ${
+                          className={`w-10 h-10 rounded-lg border-2 transition-all hover:scale-110 ${
                             formData.color === color.value ? 'border-foreground scale-110' : 'border-border'
                           }`}
                           style={{ backgroundColor: color.value }}
