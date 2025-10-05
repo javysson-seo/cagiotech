@@ -46,120 +46,142 @@ import { PlansManagementSettings } from '@/components/box/settings/PlansManageme
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
 
-  const settingsTabs = [
+  const settingsCategories = [
     {
-      id: 'company-data',
-      label: 'Dados da Empresa',
-      icon: Building2,
-      component: BoxDataSettings,
-      description: 'Informações básicas e contacto da empresa'
+      category: 'Geral',
+      tabs: [
+        {
+          id: 'company-data',
+          label: 'Empresa',
+          icon: Building2,
+          component: BoxDataSettings,
+          description: 'Informações básicas e contacto'
+        },
+        {
+          id: 'hr',
+          label: 'RH',
+          icon: UserCheck,
+          component: UsersPermissionsSettings,
+          description: 'Colaboradores e permissões'
+        },
+        {
+          id: 'security',
+          label: 'Segurança',
+          icon: Shield,
+          component: SecurityBackupSettings,
+          description: 'Proteção e backups'
+        }
+      ]
     },
     {
-      id: 'plans',
-      label: 'Planos',
-      icon: Euro,
-      component: PlansManagementSettings,
-      description: 'Gestão de planos de assinatura'
+      category: 'Operacional',
+      tabs: [
+        {
+          id: 'modalities',
+          label: 'Modalidades',
+          icon: Database,
+          component: ModalitiesSettings,
+          description: 'Serviços oferecidos'
+        },
+        {
+          id: 'classes',
+          label: 'Aulas',
+          icon: Calendar,
+          component: ScheduleRulesSettings,
+          description: 'Gestão de agendamentos'
+        },
+        {
+          id: 'rooms',
+          label: 'Espaços',
+          icon: MapPin,
+          component: RoomsEquipmentSettings,
+          description: 'Salas e equipamentos'
+        },
+        {
+          id: 'schedule',
+          label: 'Horários',
+          icon: Clock,
+          component: ScheduleRulesSettings,
+          description: 'Grade de horários'
+        }
+      ]
     },
     {
-      id: 'hr',
-      label: 'Recursos Humanos',
-      icon: UserCheck,
-      component: UsersPermissionsSettings,
-      description: 'Gestão de colaboradores e permissões'
+      category: 'Comercial',
+      tabs: [
+        {
+          id: 'plans',
+          label: 'Planos',
+          icon: Euro,
+          component: PlansManagementSettings,
+          description: 'Assinaturas e preços'
+        },
+        {
+          id: 'financial',
+          label: 'Financeiro',
+          icon: Euro,
+          component: FinancialSettings,
+          description: 'Pagamentos e transações'
+        },
+        {
+          id: 'coupons',
+          label: 'Cupons',
+          icon: Percent,
+          component: DiscountCouponsSettings,
+          description: 'Descontos promocionais'
+        },
+        {
+          id: 'registration-link',
+          label: 'Auto-Registro',
+          icon: Link2,
+          component: RegistrationLinkSettings,
+          description: 'Link público de cadastro'
+        }
+      ]
     },
     {
-      id: 'modalities',
-      label: 'Modalidades',
-      icon: Database,
-      component: ModalitiesSettings,
-      description: 'Configuração de modalidades e serviços'
-    },
-    {
-      id: 'classes',
-      label: 'Aulas',
-      icon: Calendar,
-      component: ScheduleRulesSettings,
-      description: 'Gestão de aulas e agendamentos'
-    },
-    {
-      id: 'rooms',
-      label: 'Salas e Equipamentos',
-      icon: MapPin,
-      component: RoomsEquipmentSettings,
-      description: 'Gestão de espaços e material'
-    },
-    {
-      id: 'schedule',
-      label: 'Horários',
-      icon: Clock,
-      component: ScheduleRulesSettings,
-      description: 'Grade de horários e regras'
-    },
-    {
-      id: 'financial',
-      label: 'Financeiro',
-      icon: Euro,
-      component: FinancialSettings,
-      description: 'Configurações financeiras e pagamentos'
-    },
-    {
-      id: 'coupons',
-      label: 'Cupons de Desconto',
-      icon: Percent,
-      component: DiscountCouponsSettings,
-      description: 'Gestão de cupons promocionais'
-    },
-    {
-      id: 'registration-link',
-      label: 'Link de Registro',
-      icon: Link2,
-      component: RegistrationLinkSettings,
-      description: 'Link para auto-registro de alunos'
-    },
-    {
-      id: 'reports',
-      label: 'Relatórios',
-      icon: BarChart3,
-      component: BasicReportsSettings,
-      description: 'Métricas e análises de desempenho'
-    },
-    {
-      id: 'integrations',
-      label: 'Integrações',
-      icon: Plug,
-      component: IntegrationsSettings,
-      description: 'Integrações com sistemas externos'
-    },
-    {
-      id: 'notifications',
-      label: 'Notificações',
-      icon: Bell,
-      component: InternalNotificationsSettings,
-      description: 'Alertas e comunicações internas'
-    },
-    {
-      id: 'gamification',
-      label: 'Gamificação',
-      icon: Trophy,
-      component: GamificationSettings,
-      description: 'Sistema de pontos e recompensas'
-    },
-    {
-      id: 'visual',
-      label: 'Personalização',
-      icon: Palette,
-      component: VisualCustomizationSettings,
-      description: 'Customização visual da plataforma'
-    },
-    {
-      id: 'security',
-      label: 'Segurança',
-      icon: Lock,
-      component: SecurityBackupSettings,
-      description: 'Proteção de dados e backups'
+      category: 'Sistema',
+      tabs: [
+        {
+          id: 'reports',
+          label: 'Relatórios',
+          icon: BarChart3,
+          component: BasicReportsSettings,
+          description: 'Análises e métricas'
+        },
+        {
+          id: 'integrations',
+          label: 'Integrações',
+          icon: Plug,
+          component: IntegrationsSettings,
+          description: 'Sistemas externos'
+        },
+        {
+          id: 'notifications',
+          label: 'Notificações',
+          icon: Bell,
+          component: InternalNotificationsSettings,
+          description: 'Alertas internos'
+        },
+        {
+          id: 'gamification',
+          label: 'Gamificação',
+          icon: Trophy,
+          component: GamificationSettings,
+          description: 'Pontos e recompensas'
+        },
+        {
+          id: 'visual',
+          label: 'Visual',
+          icon: Palette,
+          component: VisualCustomizationSettings,
+          description: 'Aparência da plataforma'
+        }
+      ]
     }
   ];
+
+  const allTabs = settingsCategories.flatMap(cat => cat.tabs);
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -171,81 +193,114 @@ const BoxSettingsContent: React.FC = () => {
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-[1400px] mx-auto p-4 md:p-6 lg:p-8 space-y-6 pb-6">
             {/* Header Section */}
-            <div className="animate-fade-in">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-                <div className="flex items-center space-x-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl flex items-center justify-center ring-1 ring-primary/10">
-                    <Settings className="h-7 w-7 text-primary" />
-                  </div>
-                  <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">
-                      Configurações
-                    </h1>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Gerir todas as configurações da sua empresa
-                    </p>
-                  </div>
+            <div className="animate-fade-in space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
+                  <Settings className="h-6 w-6 text-primary-foreground" />
                 </div>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                    Configurações
+                  </h1>
+                  <p className="text-muted-foreground mt-0.5">
+                    Central de controle da sua empresa
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {settingsCategories.map((category, idx) => (
+                  <Card key={category.category} className="hover-scale cursor-pointer transition-all hover:shadow-md">
+                    <CardContent className="pt-6">
+                      <div className="text-center space-y-2">
+                        <p className="text-2xl font-bold text-primary">{category.tabs.length}</p>
+                        <p className="text-xs text-muted-foreground font-medium">{category.category}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
 
             {/* Tabs Navigation */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              {/* Compact Tab Navigation */}
-              <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4 mb-6 border-b">
-                <div className="overflow-x-auto hide-scrollbar">
-                  <TabsList className="inline-flex w-auto h-auto p-1 bg-muted/50 rounded-xl gap-1">
-                    {settingsTabs.map((tab) => {
-                      const Icon = tab.icon;
-                      return (
-                        <TabsTrigger 
-                          key={tab.id} 
-                          value={tab.id} 
-                          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm data-[state=active]:text-primary transition-all hover-scale whitespace-nowrap"
-                        >
-                          <Icon className="h-4 w-4" />
-                          <span className="hidden sm:inline">{tab.label}</span>
-                        </TabsTrigger>
-                      );
-                    })}
-                  </TabsList>
-                </div>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
+              {/* Categorized Navigation */}
+              <div className="space-y-4">
+                {settingsCategories.map((category) => (
+                  <div key={category.category} className="space-y-3">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
+                      {category.category}
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
+                      {category.tabs.map((tab) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`
+                              group relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all hover-scale
+                              ${isActive 
+                                ? 'border-primary bg-primary/5 shadow-sm' 
+                                : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                              }
+                            `}
+                          >
+                            <div className={`
+                              w-10 h-10 rounded-lg flex items-center justify-center transition-colors
+                              ${isActive 
+                                ? 'bg-primary text-primary-foreground' 
+                                : 'bg-muted group-hover:bg-primary/10'
+                              }
+                            `}>
+                              <Icon className="h-5 w-5" />
+                            </div>
+                            <span className={`
+                              text-xs font-medium text-center transition-colors
+                              ${isActive ? 'text-primary' : 'text-muted-foreground'}
+                            `}>
+                              {tab.label}
+                            </span>
+                            {isActive && (
+                              <div className="absolute inset-x-0 -bottom-px h-0.5 bg-primary rounded-full" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
 
               {/* Active Tab Content */}
-              <div className="w-full animate-fade-in">
-                {settingsTabs.map((tab) => (
+              <div className="w-full">
+                {allTabs.map((tab) => (
                   <TabsContent 
                     key={tab.id} 
                     value={tab.id} 
-                    className="mt-0 focus-visible:outline-none focus-visible:ring-0 space-y-6"
+                    className="mt-0 focus-visible:outline-none focus-visible:ring-0 animate-fade-in"
                   >
-                    {/* Tab Header Card */}
-                    <Card className="border-l-4 border-l-primary shadow-sm">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start gap-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <tab.icon className="h-6 w-6 text-primary" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <CardTitle className="text-xl font-semibold mb-1">
-                              {tab.label}
-                            </CardTitle>
-                            <p className="text-sm text-muted-foreground">
-                              {tab.description}
-                            </p>
-                          </div>
-                          <Badge variant="outline" className="text-xs font-normal">
-                            Ativo
-                          </Badge>
+                    {/* Tab Header */}
+                    <div className="mb-6 pb-4 border-b">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shadow">
+                          <tab.icon className="h-5 w-5 text-primary-foreground" />
                         </div>
-                      </CardHeader>
-                    </Card>
+                        <div>
+                          <h2 className="text-2xl font-bold text-foreground">
+                            {tab.label}
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            {tab.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Tab Content */}
-                    <div className="animate-scale-in">
-                      <tab.component />
-                    </div>
+                    <tab.component />
                   </TabsContent>
                 ))}
               </div>
