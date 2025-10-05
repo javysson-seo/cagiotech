@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export interface FinancialTransaction {
   id: string;
@@ -19,7 +19,6 @@ export interface FinancialTransaction {
 }
 
 export const useFinancialTransactions = (companyId: string, limit?: number) => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: transactions = [], isLoading } = useQuery({
@@ -57,16 +56,13 @@ export const useFinancialTransactions = (companyId: string, limit?: number) => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['financial-transactions'] });
       queryClient.invalidateQueries({ queryKey: ['financial-metrics'] });
-      toast({
-        title: 'Transação criada',
+      toast.success('Transação criada', {
         description: 'A transação foi registrada com sucesso',
       });
     },
     onError: (error: Error) => {
-      toast({
-        title: 'Erro ao criar transação',
+      toast.error('Erro ao criar transação', {
         description: error.message,
-        variant: 'destructive',
       });
     },
   });
@@ -75,5 +71,6 @@ export const useFinancialTransactions = (companyId: string, limit?: number) => {
     transactions,
     isLoading,
     createTransaction: createTransaction.mutate,
+    isCreating: createTransaction.isPending,
   };
 };
