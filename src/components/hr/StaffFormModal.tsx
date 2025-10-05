@@ -223,14 +223,14 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
             <div className="space-y-2">
               <Label htmlFor="role_id">Permissão</Label>
               <Select
-                value={formData.role_id || ''}
-                onValueChange={(value) => setFormData({ ...formData, role_id: value || undefined })}
+                value={formData.role_id || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, role_id: value === 'none' ? undefined : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione permissão" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Sem permissão</SelectItem>
+                  <SelectItem value="none">Sem permissão</SelectItem>
                   {roles.map((role) => (
                     <SelectItem key={role.id} value={role.id}>
                       {role.name}
