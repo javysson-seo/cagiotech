@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Tag, Percent } from 'lucide-react';
+import { Calendar, Tag, Percent, Plus, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSubscriptionPlans } from '@/hooks/useSubscriptionPlans';
 import { useTrainers } from '@/hooks/useTrainers';
@@ -41,6 +41,10 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
     phone: '',
     address: '',
     gender: '',
+    nif: '',
+    cc_number: '',
+    cc_expiry_date: '',
+    niss: '',
     emergency_contact_name: '',
     emergency_contact_phone: '',
     medical_notes: '',
@@ -48,6 +52,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
     trainer: '',
     monthly_fee: '',
     goals: [] as string[],
+    tags: [] as string[],
     notes: '',
   });
 
@@ -55,6 +60,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [originalPrice, setOriginalPrice] = useState(0);
+  const [newTag, setNewTag] = useState('');
 
   useEffect(() => {
     if (athlete) {
@@ -65,6 +71,10 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         phone: athlete.phone || '',
         address: athlete.address || '',
         gender: athlete.gender || '',
+        nif: athlete.nif || '',
+        cc_number: athlete.cc_number || '',
+        cc_expiry_date: athlete.cc_expiry_date || '',
+        niss: athlete.niss || '',
         emergency_contact_name: athlete.emergency_contact_name || '',
         emergency_contact_phone: athlete.emergency_contact_phone || '',
         medical_notes: athlete.medical_notes || '',
@@ -72,6 +82,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         trainer: athlete.trainer || '',
         monthly_fee: athlete.monthly_fee?.toString() || '',
         goals: athlete.goals || [],
+        tags: athlete.tags || [],
         notes: athlete.notes || '',
       });
     } else {
@@ -82,6 +93,10 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         phone: '',
         address: '',
         gender: '',
+        nif: '',
+        cc_number: '',
+        cc_expiry_date: '',
+        niss: '',
         emergency_contact_name: '',
         emergency_contact_phone: '',
         medical_notes: '',
@@ -89,6 +104,7 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
         trainer: '',
         monthly_fee: '',
         goals: [],
+        tags: [],
         notes: '',
       });
     }
@@ -163,6 +179,23 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
       monthly_fee: originalPrice.toFixed(2)
     }));
     toast.success('Cupom removido');
+  };
+
+  const addTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter(tag => tag !== tagToRemove)
+    }));
   };
 
   return (
@@ -256,6 +289,58 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
                     value={formData.address}
                     onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                     placeholder="Rua, número, código postal, cidade"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Documentos (Portugal) */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Documentos (Portugal)</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="nif">NIF</Label>
+                  <Input
+                    id="nif"
+                    value={formData.nif}
+                    onChange={(e) => setFormData(prev => ({ ...prev, nif: e.target.value }))}
+                    placeholder="123456789"
+                    maxLength={9}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="niss">NISS</Label>
+                  <Input
+                    id="niss"
+                    value={formData.niss}
+                    onChange={(e) => setFormData(prev => ({ ...prev, niss: e.target.value }))}
+                    placeholder="12345678901"
+                    maxLength={11}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cc_number">Cartão de Cidadão</Label>
+                  <Input
+                    id="cc_number"
+                    value={formData.cc_number}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cc_number: e.target.value }))}
+                    placeholder="000000000ZZ0"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cc_expiry_date">Validade CC</Label>
+                  <Input
+                    id="cc_expiry_date"
+                    type="date"
+                    value={formData.cc_expiry_date}
+                    onChange={(e) => setFormData(prev => ({ ...prev, cc_expiry_date: e.target.value }))}
                   />
                 </div>
               </div>
@@ -448,6 +533,46 @@ export const AthleteFormModal: React.FC<AthleteFormModalProps> = ({
                   rows={3}
                 />
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Notas Gerais */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Tags / Categorias</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  value={newTag}
+                  onChange={(e) => setNewTag(e.target.value)}
+                  placeholder="Adicionar tag (ex: VIP, Iniciante)"
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addTag();
+                    }
+                  }}
+                />
+                <Button type="button" onClick={addTag} size="sm" variant="outline">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+              
+              {formData.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {formData.tags.map((tag, index) => (
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                      {tag}
+                      <X
+                        className="h-3 w-3 cursor-pointer hover:text-destructive"
+                        onClick={() => removeTag(tag)}
+                      />
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
