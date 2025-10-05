@@ -8,6 +8,7 @@ import { QuickCheckIn } from '@/components/student/QuickCheckIn';
 import { UpcomingClasses } from '@/components/student/UpcomingClasses';
 import { ProgressStats } from '@/components/student/ProgressStats';
 import { BadgesDisplay } from '@/components/student/BadgesDisplay';
+import { NutritionOverview } from '@/components/student/NutritionOverview';
 import { Footer } from '@/components/Footer';
 import { useAuth } from '@/hooks/useAuth';
 import { useGamification } from '@/hooks/useGamification';
@@ -112,6 +113,11 @@ export const StudentDashboard: React.FC = () => {
                   </Card>
                 </div>
               </div>
+            </div>
+
+            {/* Nutrition Section */}
+            <div className="animate-fade-in" style={{ animationDelay: '0.7s' }}>
+              <NutritionOverview />
             </div>
           </div>
         </main>
