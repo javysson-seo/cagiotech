@@ -326,6 +326,8 @@ export type Database = {
         Row: {
           address: string | null
           birth_date: string | null
+          blocked_at: string | null
+          blocked_reason: string | null
           company_id: string
           created_at: string | null
           email: string | null
@@ -351,6 +353,8 @@ export type Database = {
         Insert: {
           address?: string | null
           birth_date?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           company_id: string
           created_at?: string | null
           email?: string | null
@@ -376,6 +380,8 @@ export type Database = {
         Update: {
           address?: string | null
           birth_date?: string | null
+          blocked_at?: string | null
+          blocked_reason?: string | null
           company_id?: string
           created_at?: string | null
           email?: string | null
@@ -480,26 +486,35 @@ export type Database = {
       }
       companies: {
         Row: {
+          address: string | null
           created_at: string | null
+          email: string | null
           id: string
           name: string
           owner_id: string
+          phone: string | null
           slug: string | null
           updated_at: string | null
         }
         Insert: {
+          address?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           name: string
           owner_id: string
+          phone?: string | null
           slug?: string | null
           updated_at?: string | null
         }
         Update: {
+          address?: string | null
           created_at?: string | null
+          email?: string | null
           id?: string
           name?: string
           owner_id?: string
+          phone?: string | null
           slug?: string | null
           updated_at?: string | null
         }
@@ -551,6 +566,54 @@ export type Database = {
           },
           {
             foreignKeyName: "company_payment_methods_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      discount_coupons: {
+        Row: {
+          code: string
+          company_id: string
+          created_at: string | null
+          discount_percentage: number
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          company_id: string
+          created_at?: string | null
+          discount_percentage: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          company_id?: string
+          created_at?: string | null
+          discount_percentage?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discount_coupons_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discount_coupons_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "company_financial_overview"
@@ -1103,6 +1166,58 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      staff_permissions: {
+        Row: {
+          can_access: boolean | null
+          company_id: string
+          created_at: string | null
+          id: string
+          permission_key: string
+          staff_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          can_access?: boolean | null
+          company_id: string
+          created_at?: string | null
+          id?: string
+          permission_key: string
+          staff_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          can_access?: boolean | null
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          permission_key?: string
+          staff_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_permissions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_permissions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_permissions_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_payments: {
         Row: {

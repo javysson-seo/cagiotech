@@ -136,11 +136,6 @@ const AthleteManagementContent: React.FC = () => {
                       <option value="frozen">Congelado</option>
                       <option value="pending">Pendente</option>
                     </select>
-                    
-                    <Button variant="outline" size="sm">
-                      <Filter className="h-4 w-4 mr-2" />
-                      Mais Filtros
-                    </Button>
                   </div>
                 </div>
               </CardContent>
