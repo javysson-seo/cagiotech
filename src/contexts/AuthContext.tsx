@@ -63,8 +63,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
-      // Reduced logging for security - no sensitive data
-      console.log('Auth event:', event, session?.user ? 'User authenticated' : 'No user');
+      // Gate debug logs behind development mode
+      if (import.meta.env.DEV) {
+        console.log('Auth event:', event, session?.user ? 'User authenticated' : 'No user');
+      }
       
       setSession(session);
       
@@ -115,7 +117,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
-      console.log('Fetching profile for user ID:', supabaseUser.id.substring(0, 8) + '...'); // Partial ID only
+      if (import.meta.env.DEV) {
+        console.log('Fetching profile for user ID:', supabaseUser.id.substring(0, 8) + '...');
+      }
       
       const { data: profile, error } = await supabase
         .from('profiles')
@@ -133,7 +137,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error fetching profile:', error.message);
         // Create profile if it doesn't exist
         if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating one...');
+          if (import.meta.env.DEV) {
+            console.log('Profile not found, creating one...');
+          }
           const newProfile = {
             id: supabaseUser.id,
             name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
@@ -169,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (companyError) {
               console.error('Error creating company:', companyError.message);
-            } else {
+            } else if (import.meta.env.DEV) {
               console.log('Company created successfully');
             }
           }
@@ -214,7 +220,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`
       };
 
-      console.log('User profile loaded successfully');
+      if (import.meta.env.DEV) {
+        console.log('User profile loaded successfully');
+      }
       setUser(authUser);
     } catch (err) {
       console.error('Error in fetchUserProfile:', err instanceof Error ? err.message : 'Unknown error');
@@ -230,7 +238,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      console.log('Attempting login for user'); // No email logging for security
+      if (import.meta.env.DEV) {
+        console.log('Attempting login for user');
+      }
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
@@ -243,7 +253,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        console.log('Login successful');
+        if (import.meta.env.DEV) {
+          console.log('Login successful');
+        }
         toast.success('Login realizado com sucesso!');
         // Don't manually fetch profile here - let onAuthStateChange handle it
       }
@@ -263,7 +275,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      console.log('Attempting registration'); // No email logging for security
+      if (import.meta.env.DEV) {
+        console.log('Attempting registration');
+      }
       
       // Register without email confirmation
       const { data, error } = await supabase.auth.signUp({
@@ -285,7 +299,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data.user) {
-        console.log('Registration successful, signing in user');
+        if (import.meta.env.DEV) {
+          console.log('Registration successful, signing in user');
+        }
         
         // Since we're not requiring email confirmation, we can sign in immediately
         const { error: signInError } = await supabase.auth.signInWithPassword({

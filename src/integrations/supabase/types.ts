@@ -2782,6 +2782,17 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      get_company_financial_overview: {
+        Args: { target_company_id: string }
+        Returns: {
+          active_subscriptions: number
+          company_id: string
+          company_name: string
+          pending_amount: number
+          pending_payments: number
+          revenue_last_30_days: number
+        }[]
+      }
       has_role: {
         Args: {
           _company_id?: string
