@@ -2241,6 +2241,194 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_gateway_settings: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          gateway_type: string
+          id: string
+          is_enabled: boolean | null
+          is_sandbox: boolean | null
+          settings: Json
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          gateway_type: string
+          id?: string
+          is_enabled?: boolean | null
+          is_sandbox?: boolean | null
+          settings?: Json
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          gateway_type?: string
+          id?: string
+          is_enabled?: boolean | null
+          is_sandbox?: boolean | null
+          settings?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_gateway_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_gateway_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          athlete_id: string | null
+          company_id: string
+          created_at: string | null
+          currency: string
+          entity: string | null
+          expires_at: string | null
+          gateway_type: string
+          id: string
+          metadata: Json | null
+          paid_at: string | null
+          payment_id: string | null
+          payment_method: string
+          phone_number: string | null
+          reference: string | null
+          status: string
+          transaction_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          athlete_id?: string | null
+          company_id: string
+          created_at?: string | null
+          currency?: string
+          entity?: string | null
+          expires_at?: string | null
+          gateway_type: string
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_method: string
+          phone_number?: string | null
+          reference?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          athlete_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          currency?: string
+          entity?: string | null
+          expires_at?: string | null
+          gateway_type?: string
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          payment_id?: string | null
+          payment_method?: string
+          phone_number?: string | null
+          reference?: string | null
+          status?: string
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_transactions_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "payment_transactions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "athlete_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_webhooks_log: {
+        Row: {
+          company_id: string | null
+          created_at: string | null
+          error_message: string | null
+          gateway_type: string
+          id: string
+          payload: Json
+          processed_at: string | null
+          status: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          gateway_type: string
+          id?: string
+          payload: Json
+          processed_at?: string | null
+          status?: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          gateway_type?: string
+          id?: string
+          payload?: Json
+          processed_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_webhooks_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_webhooks_log_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       physical_assessments: {
         Row: {
           assessed_by: string | null

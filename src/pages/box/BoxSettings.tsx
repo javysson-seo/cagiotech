@@ -42,6 +42,7 @@ import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSett
 import { RegistrationLinkSettings } from '@/components/box/settings/RegistrationLinkSettings';
 import { DiscountCouponsSettings } from '@/components/box/settings/DiscountCouponsSettings';
 import { PlansManagementSettings } from '@/components/box/settings/PlansManagementSettings';
+import { PaymentGatewaySettings } from '@/components/box/settings/PaymentGatewaySettings';
 
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
@@ -95,6 +96,13 @@ const BoxSettingsContent: React.FC = () => {
       icon: Euro,
       component: FinancialSettings,
       description: 'Pagamentos e transações'
+    },
+    {
+      id: 'payment-gateway',
+      label: 'Gateway',
+      icon: Lock,
+      component: PaymentGatewaySettings,
+      description: 'IfthenPay e métodos de pagamento'
     },
     {
       id: 'coupons',

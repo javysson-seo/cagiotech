@@ -1,1 +1,13 @@
 project_id = "vwonynqoybfvaleyfmog"
+
+[functions.create-student]
+verify_jwt = false
+
+[functions.ifthenpay-multibanco]
+verify_jwt = true
+
+[functions.ifthenpay-mbway]
+verify_jwt = true
+
+[functions.ifthenpay-webhook]
+verify_jwt = false
