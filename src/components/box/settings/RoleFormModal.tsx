@@ -288,11 +288,20 @@ export const RoleFormModal: React.FC<RoleFormModalProps> = ({
                                 ? 'bg-primary/5 border-primary/50'
                                 : 'border-border'
                             }`}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                togglePermission(permission.key);
+                              }
+                            }}
                             onClick={() => togglePermission(permission.key)}
                           >
                             <Checkbox
                               checked={formData.permissions.includes(permission.key)}
                               onCheckedChange={() => togglePermission(permission.key)}
+                              onClick={(e) => e.stopPropagation()}
                               className="mt-0.5"
                             />
                             <div className="flex-1 min-w-0">
