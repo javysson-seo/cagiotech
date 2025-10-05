@@ -46,114 +46,92 @@ import { PlansManagementSettings } from '@/components/box/settings/PlansManageme
 const BoxSettingsContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('company-data');
 
-  const settingsCategories = [
+  const allTabs = [
     {
-      category: 'Geral',
-      tabs: [
-        {
-          id: 'company-data',
-          label: 'Empresa',
-          icon: Building2,
-          component: BoxDataSettings,
-          description: 'Informações básicas e contacto'
-        },
-        {
-          id: 'hr',
-          label: 'RH',
-          icon: UserCheck,
-          component: UsersPermissionsSettings,
-          description: 'Colaboradores e permissões'
-        },
-        {
-          id: 'digital-dossiers',
-          label: 'Dossiês Digital',
-          icon: Shield,
-          component: SecurityBackupSettings,
-          description: 'Documentos e arquivos'
-        }
-      ]
+      id: 'company-data',
+      label: 'Empresa',
+      icon: Building2,
+      component: BoxDataSettings,
+      description: 'Informações básicas e contacto'
     },
     {
-      category: 'Operacional',
-      tabs: [
-        {
-          id: 'rooms',
-          label: 'Espaços',
-          icon: MapPin,
-          component: RoomsEquipmentSettings,
-          description: 'Salas e equipamentos'
-        },
-        {
-          id: 'schedule',
-          label: 'Horários',
-          icon: Clock,
-          component: ScheduleRulesSettings,
-          description: 'Grade de horários'
-        }
-      ]
+      id: 'hr',
+      label: 'RH',
+      icon: UserCheck,
+      component: UsersPermissionsSettings,
+      description: 'Colaboradores e permissões'
     },
     {
-      category: 'Comercial',
-      tabs: [
-        {
-          id: 'plans',
-          label: 'Planos',
-          icon: Euro,
-          component: PlansManagementSettings,
-          description: 'Assinaturas e preços'
-        },
-        {
-          id: 'financial',
-          label: 'Financeiro',
-          icon: Euro,
-          component: FinancialSettings,
-          description: 'Pagamentos e transações'
-        },
-        {
-          id: 'coupons',
-          label: 'Cupons',
-          icon: Percent,
-          component: DiscountCouponsSettings,
-          description: 'Descontos promocionais'
-        },
-        {
-          id: 'registration-link',
-          label: 'Auto-Registro',
-          icon: Link2,
-          component: RegistrationLinkSettings,
-          description: 'Link público de cadastro'
-        }
-      ]
+      id: 'digital-dossiers',
+      label: 'Dossiês Digital',
+      icon: Shield,
+      component: SecurityBackupSettings,
+      description: 'Documentos e arquivos'
     },
     {
-      category: 'Sistema',
-      tabs: [
-        {
-          id: 'integrations',
-          label: 'Integrações',
-          icon: Plug,
-          component: IntegrationsSettings,
-          description: 'Sistemas externos'
-        },
-        {
-          id: 'notifications',
-          label: 'Notificações',
-          icon: Bell,
-          component: InternalNotificationsSettings,
-          description: 'Alertas internos'
-        },
-        {
-          id: 'gamification',
-          label: 'Gamificação',
-          icon: Trophy,
-          component: GamificationSettings,
-          description: 'Pontos e recompensas'
-        }
-      ]
+      id: 'rooms',
+      label: 'Espaços',
+      icon: MapPin,
+      component: RoomsEquipmentSettings,
+      description: 'Salas e equipamentos'
+    },
+    {
+      id: 'schedule',
+      label: 'Horários',
+      icon: Clock,
+      component: ScheduleRulesSettings,
+      description: 'Grade de horários'
+    },
+    {
+      id: 'plans',
+      label: 'Planos',
+      icon: Euro,
+      component: PlansManagementSettings,
+      description: 'Assinaturas e preços'
+    },
+    {
+      id: 'financial',
+      label: 'Financeiro',
+      icon: Euro,
+      component: FinancialSettings,
+      description: 'Pagamentos e transações'
+    },
+    {
+      id: 'coupons',
+      label: 'Cupons',
+      icon: Percent,
+      component: DiscountCouponsSettings,
+      description: 'Descontos promocionais'
+    },
+    {
+      id: 'registration-link',
+      label: 'Auto-Registro',
+      icon: Link2,
+      component: RegistrationLinkSettings,
+      description: 'Link público de cadastro'
+    },
+    {
+      id: 'integrations',
+      label: 'Integrações',
+      icon: Plug,
+      component: IntegrationsSettings,
+      description: 'Sistemas externos'
+    },
+    {
+      id: 'notifications',
+      label: 'Notificações',
+      icon: Bell,
+      component: InternalNotificationsSettings,
+      description: 'Alertas internos'
+    },
+    {
+      id: 'gamification',
+      label: 'Gamificação',
+      icon: Trophy,
+      component: GamificationSettings,
+      description: 'Pontos e recompensas'
     }
   ];
-
-  const allTabs = settingsCategories.flatMap(cat => cat.tabs);
 
   return (
     <div className="flex min-h-screen w-full bg-background">
@@ -180,67 +158,45 @@ const BoxSettingsContent: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {settingsCategories.map((category, idx) => (
-                  <Card key={category.category} className="hover-scale cursor-pointer transition-all hover:shadow-md">
-                    <CardContent className="pt-4 pb-4">
-                      <div className="text-center space-y-1">
-                        <p className="text-xl font-bold text-primary">{category.tabs.length}</p>
-                        <p className="text-xs text-muted-foreground font-medium">{category.category}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
             </div>
 
             {/* Tabs Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full space-y-6">
-              {/* Categorized Navigation */}
-              <div className="space-y-4">
-                {settingsCategories.map((category) => (
-                  <div key={category.category} className="space-y-3">
-                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-1">
-                      {category.category}
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                      {category.tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
-                        return (
-                          <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`
-                              group relative flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all hover-scale
-                              ${isActive 
-                                ? 'border-primary bg-primary/5 shadow-sm' 
-                                : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                              }
-                            `}
-                          >
-                            <div className={`
-                              w-8 h-8 rounded-lg flex items-center justify-center transition-colors
-                              ${isActive 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'bg-muted group-hover:bg-primary/10'
-                              }
-                            `}>
-                              <Icon className="h-4 w-4" />
-                            </div>
-                            <span className={`
-                              text-xs font-medium text-center transition-colors leading-tight
-                              ${isActive ? 'text-primary' : 'text-muted-foreground'}
-                            `}>
-                              {tab.label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
+              {/* Compact 2-Row Grid */}
+              <div className="grid grid-cols-6 gap-2">
+                {allTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`
+                        group relative flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all hover-scale
+                        ${isActive 
+                          ? 'border-primary bg-primary/5 shadow-sm' 
+                          : 'border-border hover:border-primary/50 hover:bg-muted/50'
+                        }
+                      `}
+                    >
+                      <div className={`
+                        w-8 h-8 rounded-lg flex items-center justify-center transition-colors
+                        ${isActive 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'bg-muted group-hover:bg-primary/10'
+                        }
+                      `}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <span className={`
+                        text-xs font-medium text-center transition-colors leading-tight
+                        ${isActive ? 'text-primary' : 'text-muted-foreground'}
+                      `}>
+                        {tab.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Active Tab Content */}
