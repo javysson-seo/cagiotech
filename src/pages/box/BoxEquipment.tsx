@@ -3,141 +3,155 @@ import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { Footer } from '@/components/Footer';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
+import { useCompany } from '@/contexts/CompanyContext';
+import { useEquipment } from '@/hooks/useEquipment';
+import { EquipmentForm } from '@/components/equipment/EquipmentForm';
+import { EquipmentCard } from '@/components/equipment/EquipmentCard';
+import { EquipmentStats } from '@/components/equipment/EquipmentStats';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dumbbell, Plus, Search, Calendar, Wrench, Package, AlertTriangle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Plus, Search, Package, Wrench, BarChart3, Download, Upload } from 'lucide-react';
+import { Equipment } from '@/hooks/useEquipment';
+import { toast } from 'sonner';
 
 const BoxEquipmentContent: React.FC = () => {
+  const { currentCompany } = useCompany();
+  const {
+    equipment,
+    isLoading,
+    createEquipment,
+    updateEquipment,
+    deleteEquipment,
+    addDefaultEquipment,
+  } = useEquipment(currentCompany?.id || '');
+
   const [searchTerm, setSearchTerm] = useState('');
-  const [isAddingEquipment, setIsAddingEquipment] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [conditionFilter, setConditionFilter] = useState<string>('all');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingEquipment, setEditingEquipment] = useState<Equipment | undefined>();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const equipment = [
-    {
-      id: 1,
-      name: 'Halteres 20kg',
-      category: 'Pesos',
-      quantity: 4,
-      condition: 'good',
-      location: 'Área de Musculação',
-      purchase_date: '2023-06-15',
-      next_maintenance: '2024-06-15',
-      status: 'active'
-    },
-    {
-      id: 2,
-      name: 'Esteira Profissional',
-      category: 'Cardio',
-      quantity: 1,
-      condition: 'excellent',
-      location: 'Área Cardio',
-      purchase_date: '2023-03-10',
-      next_maintenance: '2024-03-10',
-      status: 'active'
-    },
-    {
-      id: 3,
-      name: 'Kettlebell 16kg',
-      category: 'Funcional',
-      quantity: 6,
-      condition: 'good',
-      location: 'Área Funcional',
-      purchase_date: '2023-01-20',
-      next_maintenance: '2024-07-20',
-      status: 'maintenance'
+  const handleAddNew = () => {
+    setEditingEquipment(undefined);
+    setIsFormOpen(true);
+  };
+
+  const handleEdit = (eq: Equipment) => {
+    setEditingEquipment(eq);
+    setIsFormOpen(true);
+  };
+
+  const handleSubmit = (data: Partial<Equipment>) => {
+    if (editingEquipment) {
+      updateEquipment.mutate({ ...data, id: editingEquipment.id });
+    } else {
+      if (!data.name) {
+        toast.error('Nome do equipamento é obrigatório');
+        return;
+      }
+      createEquipment.mutate(data as Partial<Equipment> & { name: string });
     }
-  ];
+    setIsFormOpen(false);
+    setEditingEquipment(undefined);
+  };
 
-  const getConditionColor = (condition: string) => {
-    switch(condition) {
-      case 'excellent': return 'bg-green-100 text-green-800';
-      case 'good': return 'bg-blue-100 text-blue-800';
-      case 'fair': return 'bg-yellow-100 text-yellow-800';
-      case 'poor': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleDelete = () => {
+    if (deleteId) {
+      deleteEquipment.mutate(deleteId);
+      setDeleteId(null);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'maintenance': return 'bg-yellow-100 text-yellow-800';
-      case 'retired': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  const handleScheduleMaintenance = (eq: Equipment) => {
+    // Abre o formulário de edição com foco na data de manutenção
+    setEditingEquipment(eq);
+    setIsFormOpen(true);
   };
+
+  const filteredEquipment = equipment.filter((eq) => {
+    const matchesSearch =
+      eq.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      eq.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      eq.location?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      categoryFilter === 'all' || eq.category === categoryFilter;
+
+    const matchesStatus = statusFilter === 'all' || eq.status === statusFilter;
+
+    const matchesCondition =
+      conditionFilter === 'all' || eq.condition === conditionFilter;
+
+    return matchesSearch && matchesCategory && matchesStatus && matchesCondition;
+  });
+
+  const categories = Array.from(new Set(equipment.map(eq => eq.category).filter(Boolean)));
+
+  const maintenanceDue = equipment.filter(eq => {
+    if (!eq.next_maintenance) return false;
+    return new Date(eq.next_maintenance) <= new Date();
+  });
 
   return (
     <div className="flex h-screen bg-background">
       <BoxSidebar />
-      
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <BoxHeader />
-        
+
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto space-y-6">
+            {/* Header */}
             <div className="flex justify-between items-center">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Material Deportivo</h1>
+                <h1 className="text-3xl font-bold text-foreground">Material Desportivo</h1>
                 <p className="text-muted-foreground">
-                  Gestão de equipamentos e material desportivo
+                  Gestão completa de equipamentos e material desportivo
                 </p>
               </div>
-              <Dialog open={isAddingEquipment} onOpenChange={setIsAddingEquipment}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Adicionar Equipamento
+              <div className="flex gap-2">
+                {equipment.length === 0 && (
+                  <Button
+                    variant="outline"
+                    onClick={() => addDefaultEquipment.mutate()}
+                    disabled={addDefaultEquipment.isPending}
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {addDefaultEquipment.isPending ? 'A adicionar...' : 'Adicionar Equipamentos Padrão'}
                   </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Novo Equipamento</DialogTitle>
-                    <DialogDescription>
-                      Adicionar novo equipamento ao inventário
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">Nome</Label>
-                      <Input id="name" className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="category" className="text-right">Categoria</Label>
-                      <Select>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Selecionar categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="cardio">Cardio</SelectItem>
-                          <SelectItem value="weights">Pesos</SelectItem>
-                          <SelectItem value="functional">Funcional</SelectItem>
-                          <SelectItem value="accessories">Acessórios</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="quantity" className="text-right">Quantidade</Label>
-                      <Input id="quantity" type="number" className="col-span-3" />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="location" className="text-right">Localização</Label>
-                      <Input id="location" className="col-span-3" />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button onClick={() => setIsAddingEquipment(false)}>Guardar</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                )}
+                <Button onClick={handleAddNew}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Novo Equipamento
+                </Button>
+              </div>
             </div>
 
+            {/* Stats */}
+            <EquipmentStats equipment={equipment} />
+
+            {/* Main Content */}
             <Tabs defaultValue="inventory" className="space-y-4">
               <TabsList>
                 <TabsTrigger value="inventory">
@@ -146,167 +160,209 @@ const BoxEquipmentContent: React.FC = () => {
                 </TabsTrigger>
                 <TabsTrigger value="maintenance">
                   <Wrench className="h-4 w-4 mr-2" />
-                  Manutenção
+                  Manutenção {maintenanceDue.length > 0 && `(${maintenanceDue.length})`}
                 </TabsTrigger>
-                <TabsTrigger value="reports">
-                  <AlertTriangle className="h-4 w-4 mr-2" />
-                  Relatórios
+                <TabsTrigger value="analytics">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Análises
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="inventory">
+              {/* Inventory Tab */}
+              <TabsContent value="inventory" className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col md:flex-row gap-4 justify-between">
                       <div>
                         <CardTitle>Inventário de Equipamentos</CardTitle>
                         <CardDescription>
-                          Lista completa de todos os equipamentos
+                          {filteredEquipment.length} de {equipment.length} equipamentos
                         </CardDescription>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="relative">
-                          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+
+                      <div className="flex flex-wrap gap-2">
+                        <div className="relative flex-1 min-w-[200px]">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             placeholder="Pesquisar equipamentos..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="pl-8 w-64"
+                            className="pl-9"
                           />
                         </div>
-                        <Select>
-                          <SelectTrigger className="w-32">
+
+                        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                          <SelectTrigger className="w-[150px]">
                             <SelectValue placeholder="Categoria" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="all">Todas</SelectItem>
-                            <SelectItem value="cardio">Cardio</SelectItem>
-                            <SelectItem value="weights">Pesos</SelectItem>
-                            <SelectItem value="functional">Funcional</SelectItem>
+                            {categories.map(cat => (
+                              <SelectItem key={cat} value={cat!}>{cat}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <Select value={statusFilter} onValueChange={setStatusFilter}>
+                          <SelectTrigger className="w-[140px]">
+                            <SelectValue placeholder="Estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Todos</SelectItem>
+                            <SelectItem value="active">Ativo</SelectItem>
+                            <SelectItem value="maintenance">Manutenção</SelectItem>
+                            <SelectItem value="retired">Retirado</SelectItem>
+                          </SelectContent>
+                        </Select>
+
+                        <Select value={conditionFilter} onValueChange={setConditionFilter}>
+                          <SelectTrigger className="w-[140px]">
+                            <SelectValue placeholder="Condição" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Todas</SelectItem>
+                            <SelectItem value="excellent">Excelente</SelectItem>
+                            <SelectItem value="good">Boa</SelectItem>
+                            <SelectItem value="fair">Razoável</SelectItem>
+                            <SelectItem value="poor">Má</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </div>
                   </CardHeader>
+
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {equipment.map(item => (
-                        <Card key={item.id} className="border">
-                          <CardHeader className="pb-3">
-                            <div className="flex justify-between items-start">
-                              <CardTitle className="text-lg">{item.name}</CardTitle>
-                              <Badge className={getStatusColor(item.status)}>
-                                {item.status === 'active' ? 'Ativo' : 
-                                 item.status === 'maintenance' ? 'Manutenção' : 'Retirado'}
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-muted-foreground">{item.category}</p>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span>Quantidade:</span>
-                              <span className="font-medium">{item.quantity}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span>Condição:</span>
-                              <Badge className={getConditionColor(item.condition)} variant="outline">
-                                {item.condition === 'excellent' ? 'Excelente' :
-                                 item.condition === 'good' ? 'Boa' :
-                                 item.condition === 'fair' ? 'Razoável' : 'Má'}
-                              </Badge>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span>Localização:</span>
-                              <span className="font-medium">{item.location}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                              <span>Próxima manutenção:</span>
-                              <span className="font-medium">{item.next_maintenance}</span>
-                            </div>
-                            <div className="flex space-x-2 pt-2">
-                              <Button variant="outline" size="sm" className="flex-1">
-                                Editar
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <Wrench className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                    {isLoading ? (
+                      <div className="text-center py-12">
+                        <p className="text-muted-foreground">A carregar equipamentos...</p>
+                      </div>
+                    ) : filteredEquipment.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground mb-4">
+                          {equipment.length === 0
+                            ? 'Nenhum equipamento registado'
+                            : 'Nenhum equipamento encontrado com os filtros aplicados'}
+                        </p>
+                        {equipment.length === 0 && (
+                          <Button onClick={() => addDefaultEquipment.mutate()}>
+                            <Upload className="h-4 w-4 mr-2" />
+                            Adicionar Equipamentos Padrão
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filteredEquipment.map((eq) => (
+                          <EquipmentCard
+                            key={eq.id}
+                            equipment={eq}
+                            onEdit={handleEdit}
+                            onDelete={setDeleteId}
+                            onScheduleMaintenance={handleScheduleMaintenance}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
 
+              {/* Maintenance Tab */}
               <TabsContent value="maintenance">
                 <Card>
                   <CardHeader>
                     <CardTitle>Plano de Manutenção</CardTitle>
                     <CardDescription>
-                      Equipamentos que precisam de manutenção
+                      Equipamentos que necessitam manutenção
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      {equipment.filter(item => item.status === 'maintenance' || new Date(item.next_maintenance) <= new Date()).map(item => (
-                        <div key={item.id} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <h4 className="font-medium">{item.name}</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Localização: {item.location}
-                              </p>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Badge variant="destructive">
-                                <Calendar className="h-3 w-3 mr-1" />
-                                {item.next_maintenance}
-                              </Badge>
-                              <Button size="sm">
-                                <Wrench className="h-4 w-4 mr-2" />
-                                Agendar
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                    {maintenanceDue.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Wrench className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <p className="text-muted-foreground">
+                          Não há equipamentos com manutenção pendente
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {maintenanceDue.map((eq) => (
+                          <EquipmentCard
+                            key={eq.id}
+                            equipment={eq}
+                            onEdit={handleEdit}
+                            onDelete={setDeleteId}
+                            onScheduleMaintenance={handleScheduleMaintenance}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              <TabsContent value="reports">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Analytics Tab */}
+              <TabsContent value="analytics">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Total de Equipamentos</CardTitle>
+                      <CardTitle>Equipamentos por Categoria</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{equipment.length}</div>
-                      <p className="text-xs text-muted-foreground">equipamentos registados</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-lg">Em Manutenção</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold text-yellow-600">
-                        {equipment.filter(e => e.status === 'maintenance').length}
+                      <div className="space-y-2">
+                        {categories.map(cat => {
+                          const count = equipment.filter(eq => eq.category === cat).length;
+                          const percentage = (count / equipment.length) * 100;
+                          return (
+                            <div key={cat} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span>{cat}</span>
+                                <span className="font-medium">{count}</span>
+                              </div>
+                              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-primary"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                      <p className="text-xs text-muted-foreground">equipamentos</p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Valor Total</CardTitle>
+                      <CardTitle>Estado dos Equipamentos</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">€15.420</div>
-                      <p className="text-xs text-muted-foreground">valor estimado</p>
+                      <div className="space-y-2">
+                        {['active', 'maintenance', 'retired'].map(status => {
+                          const count = equipment.filter(eq => eq.status === status).length;
+                          const percentage = equipment.length > 0 ? (count / equipment.length) * 100 : 0;
+                          const labels: Record<string, string> = {
+                            active: 'Ativo',
+                            maintenance: 'Em Manutenção',
+                            retired: 'Retirado',
+                          };
+                          return (
+                            <div key={status} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span>{labels[status]}</span>
+                                <span className="font-medium">{count}</span>
+                              </div>
+                              <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-primary"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -314,9 +370,34 @@ const BoxEquipmentContent: React.FC = () => {
             </Tabs>
           </div>
         </main>
-        
+
         <Footer />
       </div>
+
+      {/* Forms and Dialogs */}
+      <EquipmentForm
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        onSubmit={handleSubmit}
+        equipment={editingEquipment}
+        isLoading={createEquipment.isPending || updateEquipment.isPending}
+      />
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar remoção</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem a certeza que deseja remover este equipamento? Esta ação não pode ser
+              desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Remover</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
