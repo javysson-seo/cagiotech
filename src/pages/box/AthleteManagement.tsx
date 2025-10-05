@@ -16,7 +16,7 @@ import { ApprovalQueue } from '@/components/athletes/ApprovalQueue';
 import { AdvancedFilters } from '@/components/athletes/AdvancedFilters';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { useAthletes } from '@/hooks/useAthletes';
-import { Footer } from '@/components/Footer';
+
 
 const AthleteManagementContent: React.FC = () => {
   const { athletes, loading, saveAthlete, deleteAthlete } = useAthletes();
@@ -81,14 +81,14 @@ const AthleteManagementContent: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen w-full bg-background">
       <BoxSidebar />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col">
         <BoxHeader />
         
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+          <div className="max-w-7xl mx-auto space-y-6 pb-6">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -225,7 +225,6 @@ const AthleteManagementContent: React.FC = () => {
         onClose={() => setShowQuickRegister(false)}
         onSave={handleSaveAthlete}
       />
-      <Footer />
     </div>
   );
 };
