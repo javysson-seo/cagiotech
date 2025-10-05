@@ -585,6 +585,386 @@ export type Database = {
         }
         Relationships: []
       }
+      class_bookings: {
+        Row: {
+          athlete_id: string
+          booking_date: string | null
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          checked_in_at: string | null
+          class_id: string
+          company_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          athlete_id: string
+          booking_date?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          checked_in_at?: string | null
+          class_id: string
+          company_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Update: {
+          athlete_id?: string
+          booking_date?: string | null
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          checked_in_at?: string | null
+          class_id?: string
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_bookings_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_bookings_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_bookings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_bookings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      class_check_ins: {
+        Row: {
+          athlete_id: string
+          booking_id: string
+          check_in_method: string | null
+          check_in_time: string | null
+          class_id: string
+          company_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+        }
+        Insert: {
+          athlete_id: string
+          booking_id: string
+          check_in_method?: string | null
+          check_in_time?: string | null
+          class_id: string
+          company_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          booking_id?: string
+          check_in_method?: string | null
+          check_in_time?: string | null
+          class_id?: string
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_check_ins_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_check_ins_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "class_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_check_ins_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_check_ins_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_check_ins_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      class_templates: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          day_of_week: number
+          end_time: string
+          id: string
+          is_active: boolean | null
+          max_capacity: number
+          modality_id: string
+          room_id: string | null
+          start_time: string
+          trainer_id: string | null
+          updated_at: string | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          day_of_week: number
+          end_time: string
+          id?: string
+          is_active?: boolean | null
+          max_capacity?: number
+          modality_id: string
+          room_id?: string | null
+          start_time: string
+          trainer_id?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          day_of_week?: number
+          end_time?: string
+          id?: string
+          is_active?: boolean | null
+          max_capacity?: number
+          modality_id?: string
+          room_id?: string | null
+          start_time?: string
+          trainer_id?: string | null
+          updated_at?: string | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "class_templates_modality_id_fkey"
+            columns: ["modality_id"]
+            isOneToOne: false
+            referencedRelation: "modalities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_templates_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_templates_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "trainers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          current_bookings: number | null
+          date: string
+          description: string | null
+          end_time: string
+          id: string
+          max_capacity: number
+          modality_id: string
+          notes: string | null
+          room_id: string | null
+          start_time: string
+          status: string
+          title: string
+          trainer_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          current_bookings?: number | null
+          date: string
+          description?: string | null
+          end_time: string
+          id?: string
+          max_capacity?: number
+          modality_id: string
+          notes?: string | null
+          room_id?: string | null
+          start_time: string
+          status?: string
+          title: string
+          trainer_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          current_bookings?: number | null
+          date?: string
+          description?: string | null
+          end_time?: string
+          id?: string
+          max_capacity?: number
+          modality_id?: string
+          notes?: string | null
+          room_id?: string | null
+          start_time?: string
+          status?: string
+          title?: string
+          trainer_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "classes_modality_id_fkey"
+            columns: ["modality_id"]
+            isOneToOne: false
+            referencedRelation: "modalities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "trainers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      closures: {
+        Row: {
+          affects_all_modalities: boolean | null
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string
+          id: string
+          modality_ids: string[] | null
+          start_date: string
+          title: string
+        }
+        Insert: {
+          affects_all_modalities?: boolean | null
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date: string
+          id?: string
+          modality_ids?: string[] | null
+          start_date: string
+          title: string
+        }
+        Update: {
+          affects_all_modalities?: boolean | null
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string
+          id?: string
+          modality_ids?: string[] | null
+          start_date?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "closures_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "closures_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       communications: {
         Row: {
           company_id: string
@@ -1016,6 +1396,66 @@ export type Database = {
           },
           {
             foreignKeyName: "message_templates_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      modalities: {
+        Row: {
+          color: string | null
+          company_id: string
+          created_at: string | null
+          description: string | null
+          duration_minutes: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          max_capacity: number | null
+          name: string
+          requires_booking: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_capacity?: number | null
+          name: string
+          requires_booking?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          duration_minutes?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_capacity?: number | null
+          name?: string
+          requires_booking?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "modalities_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "modalities_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "company_financial_overview"
@@ -1457,6 +1897,60 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "subscription_plans"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          amenities: string[] | null
+          capacity: number
+          company_id: string
+          created_at: string | null
+          description: string | null
+          floor: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          amenities?: string[] | null
+          capacity: number
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          floor?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          amenities?: string[] | null
+          capacity?: number
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          floor?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rooms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rooms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
