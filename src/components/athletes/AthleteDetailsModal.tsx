@@ -29,6 +29,9 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NutritionalPlanModal } from './NutritionalPlanModal';
+import { CheckInDialog } from './CheckInDialog';
+import { BlockAthleteDialog } from './BlockAthleteDialog';
+import { PhysicalAssessmentModal } from './PhysicalAssessmentModal';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -48,6 +51,9 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [documents, setDocuments] = useState<any[]>([]);
   const [nutritionalPlanModalOpen, setNutritionalPlanModalOpen] = useState(false);
+  const [checkInDialogOpen, setCheckInDialogOpen] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [physicalAssessmentOpen, setPhysicalAssessmentOpen] = useState(false);
 
   if (!athlete) return null;
 
@@ -151,15 +157,29 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
-              <Button onClick={onEdit} className="bg-cagio-green hover:bg-cagio-green-dark text-white">
+            <div className="flex flex-wrap items-center gap-2">
+              <Button onClick={() => setCheckInDialogOpen(true)} variant="outline" size="sm">
+                <Clock className="h-4 w-4 mr-2" />
+                Check-in
+              </Button>
+              
+              <Button onClick={() => setPhysicalAssessmentOpen(true)} variant="outline" size="sm">
+                <Activity className="h-4 w-4 mr-2" />
+                Avaliação Física
+              </Button>
+              
+              <Button onClick={() => setBlockDialogOpen(true)} variant="outline" size="sm" className="text-destructive">
+                Bloquear Acesso
+              </Button>
+              
+              <Button onClick={onEdit} className="bg-cagio-green hover:bg-cagio-green-dark text-white" size="sm">
                 <Edit className="h-4 w-4 mr-2" />
                 Editar
               </Button>
               
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="destructive">
+                  <Button variant="destructive" size="sm">
                     <Trash2 className="h-4 w-4 mr-2" />
                     Excluir
                   </Button>
@@ -219,6 +239,24 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                       <div className="flex items-center space-x-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <span>{athlete.address}</span>
+                      </div>
+                    )}
+                    {athlete.nif && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">NIF:</span>
+                        <span className="font-medium">{athlete.nif}</span>
+                      </div>
+                    )}
+                    {athlete.cc_number && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">CC:</span>
+                        <span className="font-medium">{athlete.cc_number}</span>
+                      </div>
+                    )}
+                    {athlete.niss && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">NISS:</span>
+                        <span className="font-medium">{athlete.niss}</span>
                       </div>
                     )}
                   </CardContent>
@@ -565,6 +603,30 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
           athleteName={athlete.name}
         />
       </DialogContent>
+
+      <CheckInDialog
+        isOpen={checkInDialogOpen}
+        onClose={() => setCheckInDialogOpen(false)}
+        athlete={athlete}
+        onSuccess={onClose}
+      />
+
+      <BlockAthleteDialog
+        isOpen={blockDialogOpen}
+        onClose={() => setBlockDialogOpen(false)}
+        athlete={athlete}
+        onSuccess={onClose}
+      />
+
+      <PhysicalAssessmentModal
+        isOpen={physicalAssessmentOpen}
+        onClose={() => setPhysicalAssessmentOpen(false)}
+        athlete={athlete}
+        onSuccess={() => {
+          setPhysicalAssessmentOpen(false);
+          toast.success('Avaliação física salva com sucesso!');
+        }}
+      />
     </Dialog>
   );
 };

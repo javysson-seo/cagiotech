@@ -27,6 +27,10 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
     birth_date: athlete?.birth_date || '',
     gender: athlete?.gender || '',
     address: athlete?.address || '',
+    nif: athlete?.nif || '',
+    cc_number: athlete?.cc_number || '',
+    cc_expiry_date: athlete?.cc_expiry_date || '',
+    niss: athlete?.niss || '',
     emergency_contact_name: athlete?.emergency_contact_name || '',
     emergency_contact_phone: athlete?.emergency_contact_phone || '',
     plan: athlete?.plan || '',
@@ -35,10 +39,12 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
     monthly_fee: athlete?.monthly_fee || '',
     medical_notes: athlete?.medical_notes || '',
     goals: athlete?.goals || [],
+    tags: athlete?.tags || [],
     notes: athlete?.notes || ''
   });
 
   const [newGoal, setNewGoal] = useState('');
+  const [newTag, setNewTag] = useState('');
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -58,6 +64,23 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
     setFormData(prev => ({
       ...prev,
       goals: prev.goals.filter((_: any, i: number) => i !== index)
+    }));
+  };
+
+  const addTag = () => {
+    if (newTag.trim()) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()]
+      }));
+      setNewTag('');
+    }
+  };
+
+  const removeTag = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.filter((_: any, i: number) => i !== index)
     }));
   };
 
@@ -156,6 +179,57 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
                 placeholder="Morada completa"
                 rows={2}
               />
+            </div>
+          </div>
+
+          {/* Documentos Portugueses */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Documentos (Portugal)</h4>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="nif">NIF</Label>
+                <Input
+                  id="nif"
+                  value={formData.nif}
+                  onChange={(e) => handleInputChange('nif', e.target.value)}
+                  placeholder="123456789"
+                  maxLength={9}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="niss">NISS</Label>
+                <Input
+                  id="niss"
+                  value={formData.niss}
+                  onChange={(e) => handleInputChange('niss', e.target.value)}
+                  placeholder="12345678901"
+                  maxLength={11}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="cc_number">Cartão de Cidadão</Label>
+                <Input
+                  id="cc_number"
+                  value={formData.cc_number}
+                  onChange={(e) => handleInputChange('cc_number', e.target.value)}
+                  placeholder="000000000ZZ0"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="cc_expiry_date">Validade CC</Label>
+                <Input
+                  id="cc_expiry_date"
+                  type="date"
+                  value={formData.cc_expiry_date}
+                  onChange={(e) => handleInputChange('cc_expiry_date', e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -292,6 +366,37 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
                     <X
                       className="h-3 w-3 cursor-pointer"
                       onClick={() => removeGoal(index)}
+                    />
+                  </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="space-y-4">
+            <h4 className="font-medium text-sm text-muted-foreground">Tags / Categorias</h4>
+            
+            <div className="flex gap-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                placeholder="Adicionar tag (ex: VIP, Iniciante)"
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
+              />
+              <Button type="button" onClick={addTag} size="sm">
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {formData.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {formData.tags.map((tag: string, index: number) => (
+                  <Badge key={index} variant="outline" className="flex items-center gap-1">
+                    {tag}
+                    <X
+                      className="h-3 w-3 cursor-pointer"
+                      onClick={() => removeTag(index)}
                     />
                   </Badge>
                 ))}
