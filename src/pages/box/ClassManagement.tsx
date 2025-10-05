@@ -173,7 +173,7 @@ const ClassManagementContent: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="calendar" className="mt-4 space-y-4">
-                <ClassCalendar onEdit={handleEditClass} />
+                <ClassCalendar onEdit={handleEditClass} onAddClass={handleCreateClass} />
               </TabsContent>
 
               <TabsContent value="settings" className="mt-4 space-y-4">

@@ -2,19 +2,21 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Calendar, Clock, Users, MapPin } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { useClasses } from '@/hooks/useClasses';
+import { DayDetailsModal } from './DayDetailsModal';
 
 interface ClassCalendarProps {
   onEdit: (classData: any) => void;
+  onAddClass: () => void;
 }
 
-export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
+export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit, onAddClass }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { classes } = useClasses();
 
   const monthStart = startOfMonth(currentDate);
@@ -33,6 +35,16 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
   const getDayClasses = (date: Date) => {
     const dayClasses = getClassesForDate(date);
     return dayClasses.length > 0 ? dayClasses : [];
+  };
+
+  const handleDayClick = (date: Date) => {
+    setSelectedDate(date);
+    setIsModalOpen(true);
+  };
+
+  const handleAddClass = () => {
+    setIsModalOpen(false);
+    onAddClass();
   };
 
   return (
@@ -81,7 +93,7 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
                     ${isSelected ? 'bg-primary/10 border-primary' : 'hover:bg-muted/50'}
                     ${!isCurrentMonth ? 'opacity-50' : ''}
                   `}
-                  onClick={() => setSelectedDate(day)}
+                  onClick={() => handleDayClick(day)}
                 >
                   <div className="text-sm font-medium mb-1">
                     {format(day, 'd')}
@@ -118,68 +130,18 @@ export const ClassCalendar: React.FC<ClassCalendarProps> = ({ onEdit }) => {
         </CardContent>
       </Card>
 
-      {/* Selected Date Details */}
-      {selectedDate && (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Aulas de {format(selectedDate, 'dd/MM/yyyy', { locale: pt })}
-            </CardTitle>
-          </CardHeader>
-          
-          <CardContent>
-            {getClassesForDate(selectedDate).length > 0 ? (
-              <div className="space-y-4">
-                {getClassesForDate(selectedDate).map(classItem => (
-                  <div
-                    key={classItem.id}
-                    className="p-4 border rounded-lg hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => onEdit(classItem)}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center space-x-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: classItem.modality?.color || '#3B82F6' }}
-                        />
-                        <h4 className="font-medium">{classItem.title}</h4>
-                        <Badge variant="outline">{classItem.modality?.name}</Badge>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-3 w-3" />
-                        <span>
-                          {classItem.start_time} - {classItem.end_time}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <Users className="h-3 w-3" />
-                        <span>{classItem.current_bookings || 0}/{classItem.max_capacity}</span>
-                      </div>
-                      
-                      <div className="flex items-center space-x-1">
-                        <MapPin className="h-3 w-3" />
-                        <span>{classItem.room?.name || 'Não definido'}</span>
-                      </div>
-                      
-                      <div>
-                        <span className="font-medium">{classItem.trainer?.name || 'Não definido'}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-8">
-                Nenhuma aula agendada para este dia.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      {/* Day Details Modal */}
+      <DayDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDate={selectedDate}
+        classes={selectedDate ? getClassesForDate(selectedDate) : []}
+        onEditClass={(classData) => {
+          setIsModalOpen(false);
+          onEdit(classData);
+        }}
+        onAddClass={handleAddClass}
+      />
     </div>
   );
 };
