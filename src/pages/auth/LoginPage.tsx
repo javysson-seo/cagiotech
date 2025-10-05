@@ -87,17 +87,17 @@ export const LoginPage: React.FC = () => {
       
       // Redirect based on user type after successful login
       if (selectedUserType === 'box_admin') {
-        // Get user's company slug for redirect
+        // Get user's company ID for redirect
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           const { data: company } = await supabase
             .from('companies')
-            .select('slug')
+            .select('id')
             .eq('owner_id', user.id)
             .single();
           
-          if (company?.slug) {
-            navigate(`/${company.slug}`);
+          if (company?.id) {
+            navigate(`/${company.id}`);
             return;
           }
         }

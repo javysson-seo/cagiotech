@@ -9,7 +9,7 @@ import { ActiveSubscriptions } from '@/components/subscriptions/ActiveSubscripti
 import { useCompany } from '@/contexts/CompanyContext';
 
 export default function SubscriptionsManagement() {
-  const { companySlug } = useParams();
+  const { companyId } = useParams();
   const { currentCompany } = useCompany();
   const [activeTab, setActiveTab] = useState('plans');
 

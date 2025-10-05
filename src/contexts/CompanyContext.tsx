@@ -7,7 +7,6 @@ interface Company {
   id: string;
   name: string;
   owner_id: string;
-  slug: string;
 }
 
 interface CompanyContextType {
@@ -30,13 +29,13 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [currentCompany, setCurrentCompany] = useState<Company | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { companySlug } = useParams<{ companySlug: string }>();
+  const { companyId } = useParams<{ companyId: string }>();
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const loadCompany = async () => {
-      if (!companySlug || !user) {
+      if (!companyId || !user) {
         setIsLoading(false);
         return;
       }
@@ -45,11 +44,11 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsLoading(true);
         setError(null);
 
-        // Buscar empresa pelo slug
+        // Buscar empresa pelo ID
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .select('*')
-          .eq('slug', companySlug)
+          .eq('id', companyId)
           .single();
 
         if (companyError || !company) {
@@ -67,10 +66,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
           return;
         }
 
-        setCurrentCompany({
-          ...company,
-          slug: companySlug
-        });
+        setCurrentCompany(company);
 
       } catch (err) {
         console.error('Error loading company:', err);
@@ -82,7 +78,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     loadCompany();
-  }, [companySlug, user, navigate]);
+  }, [companyId, user, navigate]);
 
   const checkUserAccess = async (companyId: string, userId: string): Promise<boolean> => {
     try {

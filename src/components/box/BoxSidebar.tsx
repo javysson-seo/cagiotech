@@ -25,29 +25,29 @@ import { useAthletes } from '@/hooks/useAthletes';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
-  const { companySlug } = useParams<{ companySlug: string }>();
+  const { companyId } = useParams<{ companyId: string }>();
   const { currentCompany } = useCompany();
   const { athletes } = useAthletes();
 
-  if (!companySlug || !currentCompany) {
+  if (!companyId || !currentCompany) {
     return null;
   }
 
   const activeAthletes = athletes.filter(athlete => athlete.status === 'active').length;
 
   const navigation = [
-    { name: 'Dashboard', href: `/${companySlug}`, icon: Home },
-    { name: 'Atletas', href: `/${companySlug}/athletes`, icon: Users },
-    { name: 'Recursos humanos', href: `/${companySlug}/hr`, icon: UserCheck },
-    { name: 'Aulas / Serviços', href: `/${companySlug}/classes`, icon: Calendar },
-    { name: 'CRM', href: `/${companySlug}/crm`, icon: UserPlus },
-    { name: 'Comunicação', href: `/${companySlug}/communication`, icon: MessageSquare },
-    { name: 'Financeiro', href: `/${companySlug}/financial`, icon: Euro },
-    { name: 'Assinaturas', href: `/${companySlug}/subscriptions`, icon: CreditCard },
-    { name: 'Material deportivo', href: `/${companySlug}/equipment`, icon: Dumbbell },
-    { name: 'Observatorio', href: `/${companySlug}/observatory`, icon: BarChart3 },
-    { name: 'KPIS', href: `/${companySlug}/kpis`, icon: BarChart3 },
-    { name: 'Configurações', href: `/${companySlug}/settings`, icon: Settings },
+    { name: 'Dashboard', href: `/${companyId}`, icon: Home },
+    { name: 'Atletas', href: `/${companyId}/athletes`, icon: Users },
+    { name: 'Recursos humanos', href: `/${companyId}/hr`, icon: UserCheck },
+    { name: 'Aulas / Serviços', href: `/${companyId}/classes`, icon: Calendar },
+    { name: 'CRM', href: `/${companyId}/crm`, icon: UserPlus },
+    { name: 'Comunicação', href: `/${companyId}/communication`, icon: MessageSquare },
+    { name: 'Financeiro', href: `/${companyId}/financial`, icon: Euro },
+    { name: 'Assinaturas', href: `/${companyId}/subscriptions`, icon: CreditCard },
+    { name: 'Material deportivo', href: `/${companyId}/equipment`, icon: Dumbbell },
+    { name: 'Observatorio', href: `/${companyId}/observatory`, icon: BarChart3 },
+    { name: 'KPIS', href: `/${companyId}/kpis`, icon: BarChart3 },
+    { name: 'Configurações', href: `/${companyId}/settings`, icon: Settings },
   ];
 
   return (
