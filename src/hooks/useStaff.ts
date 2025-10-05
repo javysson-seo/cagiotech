@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/contexts/CompanyContext';
 import { useToast } from '@/hooks/use-toast';
@@ -25,7 +25,7 @@ export const useStaff = () => {
   const { currentCompany } = useCompany();
   const { toast } = useToast();
 
-  const fetchStaff = async () => {
+  const fetchStaff = useCallback(async () => {
     if (!currentCompany?.id) return;
 
     try {
@@ -57,7 +57,7 @@ export const useStaff = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentCompany?.id, toast]);
 
   const saveStaff = async (staffData: Staff) => {
     if (!currentCompany?.id) {
@@ -206,15 +206,15 @@ export const useStaff = () => {
     }
   };
 
-  const refetchStaff = () => {
+  const refetchStaff = useCallback(() => {
     fetchStaff();
-  };
+  }, [fetchStaff]);
 
   useEffect(() => {
     if (currentCompany?.id) {
       fetchStaff();
     }
-  }, [currentCompany?.id]);
+  }, [currentCompany?.id, fetchStaff]);
 
   return {
     staff,
