@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 import { 
   Building2, 
   Save, 
@@ -16,16 +18,25 @@ import {
   Globe,
   Calendar,
   Hash,
-  Loader2
+  Loader2,
+  Upload,
+  Image as ImageIcon,
+  User,
+  Lock,
+  Key
 } from 'lucide-react';
 import { useCompanySettings } from '@/hooks/useCompanySettings';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export const BoxDataSettings: React.FC = () => {
   const { company, isLoading, updateCompany, isUpdating } = useCompanySettings();
+  const { user } = useAuth();
   
   const [boxData, setBoxData] = useState({
     name: '',
+    logo_url: '',
     slogan: '',
     business_type: 'CrossFit',
     nif: '',
@@ -43,6 +54,16 @@ export const BoxDataSettings: React.FC = () => {
     description: ''
   });
 
+  const [personalData, setPersonalData] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
+
   const [operatingHours, setOperatingHours] = useState({
     monday: { open: '06:00', close: '22:00', closed: false },
     tuesday: { open: '06:00', close: '22:00', closed: false },
@@ -57,6 +78,7 @@ export const BoxDataSettings: React.FC = () => {
     if (company) {
       setBoxData({
         name: company.name || '',
+        logo_url: (company as any).logo_url || '',
         slogan: (company as any).slogan || '',
         business_type: (company as any).business_type || 'CrossFit',
         nif: (company as any).nif || '',
@@ -79,6 +101,112 @@ export const BoxDataSettings: React.FC = () => {
       }
     }
   }, [company]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.id) return;
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('name, email, phone')
+        .eq('id', user.id)
+        .single();
+      
+      if (data && !error) {
+        setPersonalData({
+          name: data.name || '',
+          email: data.email || '',
+          phone: data.phone || ''
+        });
+      }
+    };
+    
+    fetchProfile();
+  }, [user]);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !company?.id) return;
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${company.id}/logo.${fileExt}`;
+
+      // Delete old logo if exists
+      if (boxData.logo_url) {
+        const oldPath = boxData.logo_url.split('/').pop();
+        await supabase.storage
+          .from('company-logos')
+          .remove([`${company.id}/${oldPath}`]);
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from('company-logos')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('company-logos')
+        .getPublicUrl(fileName);
+
+      const newLogoUrl = urlData.publicUrl;
+      
+      await updateCompany({ 
+        ...boxData,
+        logo_url: newLogoUrl,
+        operating_hours: operatingHours 
+      } as any);
+
+      setBoxData({ ...boxData, logo_url: newLogoUrl });
+      toast.success('Logo atualizado com sucesso!');
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      toast.error('Erro ao fazer upload do logo');
+    } finally {
+      setIsUploadingLogo(false);
+    }
+  };
+
+  const handleSavePersonalData = async () => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          name: personalData.name,
+          phone: personalData.phone
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      toast.success('Dados pessoais atualizados!');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error('Erro ao atualizar dados pessoais');
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!user?.email) return;
+
+    setIsSendingReset(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+
+      if (error) throw error;
+      toast.success('Email de redefinição enviado! Verifique sua caixa de entrada.');
+    } catch (error) {
+      console.error('Error sending reset email:', error);
+      toast.error('Erro ao enviar email de redefinição');
+    } finally {
+      setIsSendingReset(false);
+    }
+  };
 
   const handleSave = () => {
     updateCompany({
@@ -127,15 +255,166 @@ export const BoxDataSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-2">
-        <Building2 className="h-6 w-6 text-primary" />
-        <h2 className="text-2xl font-bold">Dados da BOX</h2>
-      </div>
-
-      {/* Informações Básicas */}
+      {/* Logo da Empresa */}
       <Card>
         <CardHeader>
-          <CardTitle>Informações Básicas</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <ImageIcon className="h-5 w-5" />
+            Logo da Empresa
+          </CardTitle>
+          <CardDescription>
+            Faça upload do logo que aparecerá em emails e documentos
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-6">
+            <Avatar className="h-24 w-24 rounded-lg">
+              <AvatarImage src={boxData.logo_url} alt={boxData.name} />
+              <AvatarFallback className="rounded-lg bg-primary/10">
+                <Building2 className="h-12 w-12 text-primary" />
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1">
+              <Label htmlFor="logo-upload" className="cursor-pointer">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+                  <Upload className="h-4 w-4" />
+                  <span>PNG, JPG, SVG até 5MB</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isUploadingLogo}
+                  onClick={() => document.getElementById('logo-upload')?.click()}
+                >
+                  {isUploadingLogo ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="h-4 w-4 mr-2" />
+                      Escolher Logo
+                    </>
+                  )}
+                </Button>
+                <Input
+                  id="logo-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                />
+              </Label>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Dados Pessoais */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Dados Pessoais
+          </CardTitle>
+          <CardDescription>
+            Informações do responsável pela conta
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="personal-name">Nome Completo</Label>
+              <Input
+                id="personal-name"
+                value={personalData.name}
+                onChange={(e) => setPersonalData({ ...personalData, name: e.target.value })}
+                placeholder="Seu nome completo"
+              />
+            </div>
+            <div>
+              <Label htmlFor="personal-email">Email</Label>
+              <Input
+                id="personal-email"
+                type="email"
+                value={personalData.email}
+                disabled
+                className="bg-muted"
+              />
+            </div>
+            <div>
+              <Label htmlFor="personal-phone">Telefone</Label>
+              <Input
+                id="personal-phone"
+                value={personalData.phone}
+                onChange={(e) => setPersonalData({ ...personalData, phone: e.target.value })}
+                placeholder="+351 912 345 678"
+              />
+            </div>
+          </div>
+          <Button onClick={handleSavePersonalData} variant="outline">
+            <Save className="h-4 w-4 mr-2" />
+            Salvar Dados Pessoais
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Segurança */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            Segurança da Conta
+          </CardTitle>
+          <CardDescription>
+            Gerencie sua senha e configurações de segurança
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-4">
+            <div className="flex items-start justify-between p-4 border rounded-lg">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Key className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Redefinir Senha</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Receba um código de 6 dígitos por email para redefinir sua senha
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={handlePasswordReset}
+                disabled={isSendingReset}
+              >
+                {isSendingReset ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  'Enviar Email'
+                )}
+              </Button>
+            </div>
+            <div className="text-xs text-muted-foreground p-3 bg-muted/50 rounded-lg">
+              <strong>📧 Sobre o email:</strong> Você receberá um email da CagioTech com um código de 6 dígitos. 
+              Use esse código para redefinir sua senha de forma segura.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Separator className="my-6" />
+
+      {/* Informações Básicas da Empresa */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Informações da Empresa
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

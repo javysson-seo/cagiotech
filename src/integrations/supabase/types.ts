@@ -1013,36 +1013,78 @@ export type Database = {
       companies: {
         Row: {
           address: string | null
+          business_type: string | null
+          capacity: number | null
+          city: string | null
+          country: string | null
           created_at: string | null
+          description: string | null
           email: string | null
+          founded_date: string | null
+          gps_coordinates: string | null
           id: string
+          instagram: string | null
+          logo_url: string | null
           name: string
+          nif: string | null
+          operating_hours: Json | null
           owner_id: string
           phone: string | null
+          postal_code: string | null
+          slogan: string | null
           slug: string | null
           updated_at: string | null
+          website: string | null
         }
         Insert: {
           address?: string | null
+          business_type?: string | null
+          capacity?: number | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          description?: string | null
           email?: string | null
+          founded_date?: string | null
+          gps_coordinates?: string | null
           id?: string
+          instagram?: string | null
+          logo_url?: string | null
           name: string
+          nif?: string | null
+          operating_hours?: Json | null
           owner_id: string
           phone?: string | null
+          postal_code?: string | null
+          slogan?: string | null
           slug?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Update: {
           address?: string | null
+          business_type?: string | null
+          capacity?: number | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          description?: string | null
           email?: string | null
+          founded_date?: string | null
+          gps_coordinates?: string | null
           id?: string
+          instagram?: string | null
+          logo_url?: string | null
           name?: string
+          nif?: string | null
+          operating_hours?: Json | null
           owner_id?: string
           phone?: string | null
+          postal_code?: string | null
+          slogan?: string | null
           slug?: string | null
           updated_at?: string | null
+          website?: string | null
         }
         Relationships: [
           {
