@@ -96,8 +96,22 @@ export const BoxDataSettings: React.FC = () => {
         description: (company as any).description || ''
       });
 
+      // Merge operating hours with defaults to ensure all days exist
       if ((company as any).operating_hours) {
-        setOperatingHours((company as any).operating_hours);
+        const defaultHours = {
+          monday: { open: '06:00', close: '22:00', closed: false },
+          tuesday: { open: '06:00', close: '22:00', closed: false },
+          wednesday: { open: '06:00', close: '22:00', closed: false },
+          thursday: { open: '06:00', close: '22:00', closed: false },
+          friday: { open: '06:00', close: '22:00', closed: false },
+          saturday: { open: '08:00', close: '20:00', closed: false },
+          sunday: { open: '08:00', close: '18:00', closed: false }
+        };
+        
+        setOperatingHours({
+          ...defaultHours,
+          ...(company as any).operating_hours
+        });
       }
     }
   }, [company]);
@@ -625,48 +639,55 @@ export const BoxDataSettings: React.FC = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
-            {weekDays.map((day) => (
-              <div key={day.key} className="grid grid-cols-4 gap-4 items-center">
-                <div className="font-medium">{day.label}</div>
-                <div>
-                  <Input
-                    type="time"
-                    value={operatingHours[day.key as keyof typeof operatingHours].open}
-                    onChange={(e) => setOperatingHours({
-                      ...operatingHours,
-                      [day.key]: { ...operatingHours[day.key as keyof typeof operatingHours], open: e.target.value }
-                    })}
-                    disabled={operatingHours[day.key as keyof typeof operatingHours].closed}
-                  />
+            {weekDays.map((day) => {
+              const dayHours = operatingHours[day.key as keyof typeof operatingHours];
+              
+              // Safety check: skip if day hours not defined
+              if (!dayHours) return null;
+              
+              return (
+                <div key={day.key} className="grid grid-cols-4 gap-4 items-center">
+                  <div className="font-medium">{day.label}</div>
+                  <div>
+                    <Input
+                      type="time"
+                      value={dayHours.open}
+                      onChange={(e) => setOperatingHours({
+                        ...operatingHours,
+                        [day.key]: { ...dayHours, open: e.target.value }
+                      })}
+                      disabled={dayHours.closed}
+                    />
+                  </div>
+                  <div>
+                    <Input
+                      type="time"
+                      value={dayHours.close}
+                      onChange={(e) => setOperatingHours({
+                        ...operatingHours,
+                        [day.key]: { ...dayHours, close: e.target.value }
+                      })}
+                      disabled={dayHours.closed}
+                    />
+                  </div>
+                  <div>
+                    <Button
+                      variant={dayHours.closed ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() => setOperatingHours({
+                        ...operatingHours,
+                        [day.key]: { 
+                          ...dayHours, 
+                          closed: !dayHours.closed 
+                        }
+                      })}
+                    >
+                      {dayHours.closed ? 'Fechado' : 'Aberto'}
+                    </Button>
+                  </div>
                 </div>
-                <div>
-                  <Input
-                    type="time"
-                    value={operatingHours[day.key as keyof typeof operatingHours].close}
-                    onChange={(e) => setOperatingHours({
-                      ...operatingHours,
-                      [day.key]: { ...operatingHours[day.key as keyof typeof operatingHours], close: e.target.value }
-                    })}
-                    disabled={operatingHours[day.key as keyof typeof operatingHours].closed}
-                  />
-                </div>
-                <div>
-                  <Button
-                    variant={operatingHours[day.key as keyof typeof operatingHours].closed ? "destructive" : "outline"}
-                    size="sm"
-                    onClick={() => setOperatingHours({
-                      ...operatingHours,
-                      [day.key]: { 
-                        ...operatingHours[day.key as keyof typeof operatingHours], 
-                        closed: !operatingHours[day.key as keyof typeof operatingHours].closed 
-                      }
-                    })}
-                  >
-                    {operatingHours[day.key as keyof typeof operatingHours].closed ? 'Fechado' : 'Aberto'}
-                  </Button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>
