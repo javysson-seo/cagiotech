@@ -77,6 +77,8 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('info');
+  const [copyModalOpen, setCopyModalOpen] = useState(false);
+  const [currentDayToCopy, setCurrentDayToCopy] = useState<string>('');
   
   const weekDays = [
     { key: 'monday', label: 'Segunda-feira' },
@@ -202,12 +204,24 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
     }));
   };
 
-  const copyDayPlan = (fromDay: string, toDay: string) => {
+  const openCopyModal = (toDay: string) => {
+    setCurrentDayToCopy(toDay);
+    setCopyModalOpen(true);
+  };
+
+  const copyDayPlan = (fromDay: string) => {
+    if (!currentDayToCopy) return;
+    
     setWeekPlans(prev => ({
       ...prev,
-      [toDay]: JSON.parse(JSON.stringify(prev[fromDay]))
+      [currentDayToCopy]: JSON.parse(JSON.stringify(prev[fromDay]))
     }));
-    toast.success(`Plano de ${weekDays.find(d => d.key === fromDay)?.label} copiado para ${weekDays.find(d => d.key === toDay)?.label}`);
+    
+    const fromLabel = weekDays.find(d => d.key === fromDay)?.label;
+    const toLabel = weekDays.find(d => d.key === currentDayToCopy)?.label;
+    toast.success(`Plano de ${fromLabel} copiado para ${toLabel}`);
+    setCopyModalOpen(false);
+    setCurrentDayToCopy('');
   };
 
   const clearDayPlan = (day: string) => {
@@ -371,23 +385,14 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
               <TabsContent key={day.key} value={day.key} className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
                       <CardTitle>{day.label}</CardTitle>
                       <div className="flex gap-2">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() => {
-                            const otherDays = weekDays.filter(d => d.key !== day.key);
-                            const fromDay = prompt(`Copiar de qual dia?\n${otherDays.map((d, i) => `${i + 1}. ${d.label}`).join('\n')}`);
-                            if (fromDay) {
-                              const selectedDay = otherDays[parseInt(fromDay) - 1];
-                              if (selectedDay) {
-                                copyDayPlan(selectedDay.key, day.key);
-                              }
-                            }
-                          }}
+                          onClick={() => openCopyModal(day.key)}
                         >
                           <Copy className="h-4 w-4 mr-2" />
                           Copiar de...
@@ -534,6 +539,43 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
             </Button>
           </div>
         </form>
+
+        {/* Modal para Copiar Dia */}
+        <Dialog open={copyModalOpen} onOpenChange={setCopyModalOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>
+                Copiar Plano para {weekDays.find(d => d.key === currentDayToCopy)?.label}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Selecione de qual dia deseja copiar o plano nutricional:
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {weekDays
+                  .filter(d => d.key !== currentDayToCopy)
+                  .map(day => (
+                    <Button
+                      key={day.key}
+                      variant="outline"
+                      className="justify-start h-auto py-3"
+                      onClick={() => copyDayPlan(day.key)}
+                    >
+                      <div className="flex flex-col items-start">
+                        <span className="font-semibold">{day.label}</span>
+                        {weekPlans[day.key].total_calories && (
+                          <span className="text-xs text-muted-foreground">
+                            {weekPlans[day.key].total_calories} kcal
+                          </span>
+                        )}
+                      </div>
+                    </Button>
+                  ))}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
