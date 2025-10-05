@@ -139,74 +139,82 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               <h2 className="text-2xl font-bold text-foreground">
                 {athlete.name}
               </h2>
-              <div className="flex items-center space-x-2 mt-1">
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <Badge variant={statusBadge.variant}>
                   {statusBadge.label}
                 </Badge>
                 <Badge variant="outline">{athlete.plan || 'Sem plano'}</Badge>
+                {athlete.tags && athlete.tags.map((tag: string, index: number) => (
+                  <Badge key={index} variant="secondary">{tag}</Badge>
+                ))}
               </div>
-              <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                <span className="flex items-center">
-                  <Mail className="h-4 w-4 mr-1" />
-                  {athlete.email}
-                </span>
-                <span className="flex items-center">
-                  <Phone className="h-4 w-4 mr-1" />
-                  {athlete.phone}
-                </span>
+              <div className="flex flex-col gap-1 mt-3 text-sm text-muted-foreground">
+                {athlete.email && (
+                  <span className="flex items-center">
+                    <Mail className="h-4 w-4 mr-2" />
+                    {athlete.email}
+                  </span>
+                )}
+                {athlete.phone && (
+                  <span className="flex items-center">
+                    <Phone className="h-4 w-4 mr-2" />
+                    {athlete.phone}
+                  </span>
+                )}
               </div>
             </div>
+          </div>
+
+          {/* Botões de Ação */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            <Button onClick={() => setCheckInDialogOpen(true)} variant="outline" size="sm">
+              <Clock className="h-4 w-4 mr-2" />
+              Check-in
+            </Button>
             
-            <div className="flex flex-wrap items-center gap-2">
-              <Button onClick={() => setCheckInDialogOpen(true)} variant="outline" size="sm">
-                <Clock className="h-4 w-4 mr-2" />
-                Check-in
-              </Button>
-              
-              <Button onClick={() => setPhysicalAssessmentOpen(true)} variant="outline" size="sm">
-                <Activity className="h-4 w-4 mr-2" />
-                Avaliação Física
-              </Button>
-              
-              <Button onClick={() => setBlockDialogOpen(true)} variant="outline" size="sm" className="text-destructive">
-                Bloquear Acesso
-              </Button>
-              
-              <Button onClick={onEdit} className="bg-cagio-green hover:bg-cagio-green-dark text-white" size="sm">
-                <Edit className="h-4 w-4 mr-2" />
-                Editar
-              </Button>
-              
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive" size="sm">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Excluir
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Tem certeza que deseja excluir o atleta <strong>{athlete.name}</strong>? 
-                      Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
-                      Excluir Atleta
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            <Button onClick={() => setPhysicalAssessmentOpen(true)} variant="outline" size="sm">
+              <Activity className="h-4 w-4 mr-2" />
+              Avaliação Física
+            </Button>
+            
+            <Button onClick={() => setBlockDialogOpen(true)} variant="outline" size="sm" className="text-destructive hover:bg-destructive/10">
+              Bloquear Acesso
+            </Button>
+            
+            <Button onClick={onEdit} className="bg-cagio-green hover:bg-cagio-green-dark text-white" size="sm">
+              <Edit className="h-4 w-4 mr-2" />
+              Editar
+            </Button>
+            
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive" size="sm">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Excluir
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja excluir o atleta <strong>{athlete.name}</strong>? 
+                    Esta ação não pode ser desfeita e todos os dados relacionados serão perdidos.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700">
+                    Excluir Atleta
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           <Separator />
 
           {/* Tabs de Conteúdo */}
-          <Tabs defaultValue="overview" className="w-full">
+          <Tabs defaultValue="overview" className="w-full mt-4">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="overview">Resumo</TabsTrigger>
               <TabsTrigger value="documents">Documentos</TabsTrigger>
@@ -223,42 +231,67 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                     <CardTitle className="text-lg">Informações Pessoais</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    {athlete.birth_date && (
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        <span>{new Date(athlete.birth_date).toLocaleDateString('pt-PT')}</span>
-                      </div>
-                    )}
-                    {athlete.gender && (
-                      <div className="flex items-center space-x-2">
-                        <User className="h-4 w-4 text-muted-foreground" />
-                        <span>{athlete.gender === 'male' ? 'Masculino' : athlete.gender === 'female' ? 'Feminino' : 'Outro'}</span>
-                      </div>
-                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                      {athlete.birth_date && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground mb-1">Data de Nascimento</span>
+                          <span className="flex items-center">
+                            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {new Date(athlete.birth_date).toLocaleDateString('pt-PT')}
+                          </span>
+                        </div>
+                      )}
+                      {athlete.gender && (
+                        <div className="flex flex-col">
+                          <span className="text-xs text-muted-foreground mb-1">Género</span>
+                          <span className="flex items-center">
+                            <User className="h-4 w-4 mr-2 text-muted-foreground" />
+                            {athlete.gender === 'male' ? 'Masculino' : athlete.gender === 'female' ? 'Feminino' : 'Outro'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
                     {athlete.address && (
-                      <div className="flex items-center space-x-2">
-                        <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{athlete.address}</span>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-muted-foreground mb-1">Morada</span>
+                        <span className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2 text-muted-foreground" />
+                          {athlete.address}
+                        </span>
                       </div>
                     )}
-                    {athlete.nif && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">NIF:</span>
-                        <span className="font-medium">{athlete.nif}</span>
+
+                    <Separator className="my-3" />
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium">Documentos (Portugal)</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        {athlete.nif && (
+                          <div className="flex flex-col p-2 bg-muted/50 rounded">
+                            <span className="text-xs text-muted-foreground">NIF</span>
+                            <span className="font-medium">{athlete.nif}</span>
+                          </div>
+                        )}
+                        {athlete.niss && (
+                          <div className="flex flex-col p-2 bg-muted/50 rounded">
+                            <span className="text-xs text-muted-foreground">NISS</span>
+                            <span className="font-medium">{athlete.niss}</span>
+                          </div>
+                        )}
+                        {athlete.cc_number && (
+                          <div className="flex flex-col p-2 bg-muted/50 rounded">
+                            <span className="text-xs text-muted-foreground">Cartão de Cidadão</span>
+                            <span className="font-medium">{athlete.cc_number}</span>
+                          </div>
+                        )}
+                        {athlete.cc_expiry_date && (
+                          <div className="flex flex-col p-2 bg-muted/50 rounded">
+                            <span className="text-xs text-muted-foreground">Validade CC</span>
+                            <span className="font-medium">{new Date(athlete.cc_expiry_date).toLocaleDateString('pt-PT')}</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                    {athlete.cc_number && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">CC:</span>
-                        <span className="font-medium">{athlete.cc_number}</span>
-                      </div>
-                    )}
-                    {athlete.niss && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">NISS:</span>
-                        <span className="font-medium">{athlete.niss}</span>
-                      </div>
-                    )}
+                    </div>
                   </CardContent>
                 </Card>
 
