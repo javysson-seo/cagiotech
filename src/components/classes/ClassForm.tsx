@@ -324,7 +324,7 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                   <SelectTrigger className={getFieldError('modality_id') ? 'border-destructive' : ''}>
                     <SelectValue placeholder="Selecionar modalidade" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-popover">
                     {loadingModalities ? (
                       <SelectItem value="loading" disabled>Carregando...</SelectItem>
                     ) : modalities.filter(m => m.is_active).length === 0 ? (
@@ -386,14 +386,14 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                 <Label htmlFor="trainer">Personal Trainer</Label>
                 <Select 
                   value={formData.trainer_id} 
-                  onValueChange={(value) => updateField('trainer_id', value)}
+                  onValueChange={(value) => updateField('trainer_id', value === '_none' ? '' : value)}
                   disabled={isSubmitting || loadingTrainers}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar trainer" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Nenhum</SelectItem>
+                  <SelectContent className="z-50 bg-popover">
+                    <SelectItem value="_none">Nenhum</SelectItem>
                     {loadingTrainers ? (
                       <SelectItem value="loading" disabled>Carregando...</SelectItem>
                     ) : trainers.filter(t => t.status === 'active').length === 0 ? (
@@ -413,14 +413,14 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                 <Label htmlFor="room">Sala</Label>
                 <Select 
                   value={formData.room_id} 
-                  onValueChange={(value) => updateField('room_id', value)}
+                  onValueChange={(value) => updateField('room_id', value === '_none' ? '' : value)}
                   disabled={isSubmitting || loadingRooms}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecionar sala" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Nenhuma</SelectItem>
+                  <SelectContent className="z-50 bg-popover">
+                    <SelectItem value="_none">Nenhuma</SelectItem>
                     {loadingRooms ? (
                       <SelectItem value="loading" disabled>Carregando...</SelectItem>
                     ) : rooms.filter(r => r.is_active).length === 0 ? (
@@ -580,7 +580,7 @@ export const ClassForm: React.FC<ClassFormProps> = ({
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-popover">
                     <SelectItem value="scheduled">
                       <div className="flex items-center gap-2">
                         <Badge variant="default">Agendada</Badge>
