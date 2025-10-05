@@ -64,7 +64,7 @@ const BoxCRMContent: React.FC = () => {
       <div className="flex-1 flex flex-col min-h-screen">
         <BoxHeader />
         
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
           <div className="container max-w-full mx-auto p-6 space-y-6">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -177,8 +177,10 @@ const BoxCRMContent: React.FC = () => {
             </Card>
 
             {/* Kanban Board */}
-            <div className="bg-muted/20 rounded-lg p-4">
-              <KanbanBoard onDealClick={handleDealClick} />
+            <div className="bg-muted/20 rounded-lg p-4 overflow-x-auto">
+              <div className="min-w-max">
+                <KanbanBoard onDealClick={handleDealClick} />
+              </div>
             </div>
           </div>
         </main>
