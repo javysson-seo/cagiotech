@@ -71,6 +71,10 @@ export const UserProfileModal = ({ open, onOpenChange }: UserProfileModalProps) 
         .eq('id', user.id);
 
       if (error) throw error;
+      
+      // Refresh auth context to update UI
+      window.dispatchEvent(new CustomEvent('profile-updated'));
+      
       toast.success('Perfil atualizado com sucesso!');
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -117,6 +121,10 @@ export const UserProfileModal = ({ open, onOpenChange }: UserProfileModalProps) 
       if (error) throw error;
 
       setProfileData({ ...profileData, avatar_url: newAvatarUrl });
+      
+      // Refresh auth context to update UI
+      window.dispatchEvent(new CustomEvent('profile-updated'));
+      
       toast.success('Foto atualizada com sucesso!');
     } catch (error) {
       console.error('Error uploading avatar:', error);

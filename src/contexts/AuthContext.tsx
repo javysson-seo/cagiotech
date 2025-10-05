@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error('Error getting session:', error.message); // Don't log full error object
+          console.error('Error getting session:', error.message);
           setIsLoading(false);
           return;
         }
@@ -114,6 +114,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, []);
+
+  // Separate effect for profile update listener
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      if (session?.user) {
+        fetchUserProfile(session.user);
+      }
+    };
+
+    window.addEventListener('profile-updated', handleProfileUpdate);
+
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, [session]);
 
   const fetchUserProfile = async (supabaseUser: SupabaseUser) => {
     try {
