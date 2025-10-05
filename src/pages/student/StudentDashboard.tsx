@@ -1,12 +1,39 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResponsiveStudentSidebar } from '@/components/student/ResponsiveStudentSidebar';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { ProgressStats } from '@/components/student/ProgressStats';
 import { RecentActivity } from '@/components/student/RecentActivity';
+import { BadgesDisplay } from '@/components/student/BadgesDisplay';
 import { Footer } from '@/components/Footer';
+import { useAuth } from '@/hooks/useAuth';
+import { useGamification } from '@/hooks/useGamification';
+import { supabase } from '@/integrations/supabase/client';
 
 export const StudentDashboard: React.FC = () => {
+  const { user } = useAuth();
+  const [athleteId, setAthleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAthleteId = async () => {
+      if (!user?.email) return;
+
+      const { data } = await supabase
+        .from('athletes')
+        .select('id')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (data) {
+        setAthleteId(data.id);
+      }
+    };
+
+    fetchAthleteId();
+  }, [user?.email]);
+
+  const { badges, isLoading } = useGamification(athleteId || undefined);
+
   return (
     <div className="flex min-h-screen bg-background">
       <ResponsiveStudentSidebar />
@@ -25,6 +52,7 @@ export const StudentDashboard: React.FC = () => {
 
             <div className="space-y-6">
               <ProgressStats />
+              <BadgesDisplay badges={badges || []} isLoading={isLoading} />
               <RecentActivity />
             </div>
           </div>

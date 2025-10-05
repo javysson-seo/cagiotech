@@ -72,6 +72,59 @@ export type Database = {
           },
         ]
       }
+      athlete_badges: {
+        Row: {
+          athlete_id: string
+          badge_id: string
+          company_id: string
+          earned_at: string | null
+          id: string
+        }
+        Insert: {
+          athlete_id: string
+          badge_id: string
+          company_id: string
+          earned_at?: string | null
+          id?: string
+        }
+        Update: {
+          athlete_id?: string
+          badge_id?: string
+          company_id?: string
+          earned_at?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_badges_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badge_definitions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_badges_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_badges_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       athlete_check_ins: {
         Row: {
           athlete_id: string
@@ -282,6 +335,67 @@ export type Database = {
           },
         ]
       }
+      athlete_levels: {
+        Row: {
+          athlete_id: string
+          best_streak: number
+          company_id: string
+          current_level: string
+          current_streak: number
+          last_check_in_date: string | null
+          total_classes: number
+          total_points: number
+          total_referrals: number
+          updated_at: string | null
+        }
+        Insert: {
+          athlete_id: string
+          best_streak?: number
+          company_id: string
+          current_level?: string
+          current_streak?: number
+          last_check_in_date?: string | null
+          total_classes?: number
+          total_points?: number
+          total_referrals?: number
+          updated_at?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          best_streak?: number
+          company_id?: string
+          current_level?: string
+          current_streak?: number
+          last_check_in_date?: string | null
+          total_classes?: number
+          total_points?: number
+          total_referrals?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_levels_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: true
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_levels_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_levels_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       athlete_payments: {
         Row: {
           amount: number
@@ -348,6 +462,64 @@ export type Database = {
           },
           {
             foreignKeyName: "athlete_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      athlete_points: {
+        Row: {
+          athlete_id: string
+          awarded_by: string | null
+          company_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          points: number
+          reason: string
+          reference_id: string | null
+        }
+        Insert: {
+          athlete_id: string
+          awarded_by?: string | null
+          company_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          points?: number
+          reason: string
+          reference_id?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          awarded_by?: string | null
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          points?: number
+          reason?: string
+          reference_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "athlete_points_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_points_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "athlete_points_company_id_fkey"
             columns: ["company_id"]
             isOneToOne: false
             referencedRelation: "company_financial_overview"
@@ -566,6 +738,42 @@ export type Database = {
             referencedColumns: ["company_id"]
           },
         ]
+      }
+      badge_definitions: {
+        Row: {
+          category: string
+          color: string
+          created_at: string | null
+          description: string | null
+          icon: string
+          id: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+        }
+        Insert: {
+          category: string
+          color?: string
+          created_at?: string | null
+          description?: string | null
+          icon: string
+          id?: string
+          name: string
+          requirement_type: string
+          requirement_value: number
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string | null
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+        }
+        Relationships: []
       }
       bd_ativo: {
         Row: {
@@ -1627,6 +1835,60 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      gamification_settings: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          enabled: boolean | null
+          points_per_attendance: number | null
+          points_per_personal_record: number | null
+          points_per_punctuality: number | null
+          points_per_referral: number | null
+          streak_bonus_enabled: boolean | null
+          streak_bonus_points: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          enabled?: boolean | null
+          points_per_attendance?: number | null
+          points_per_personal_record?: number | null
+          points_per_punctuality?: number | null
+          points_per_referral?: number | null
+          streak_bonus_enabled?: boolean | null
+          streak_bonus_points?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          enabled?: boolean | null
+          points_per_attendance?: number | null
+          points_per_personal_record?: number | null
+          points_per_punctuality?: number | null
+          points_per_referral?: number | null
+          streak_bonus_enabled?: boolean | null
+          streak_bonus_points?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gamification_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gamification_settings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
       }
       groups: {
         Row: {

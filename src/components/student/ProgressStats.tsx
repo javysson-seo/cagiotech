@@ -1,35 +1,57 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { 
   Target, 
   TrendingUp, 
-  Calendar, 
   Flame,
-  Award,
-  Activity
+  Award
 } from 'lucide-react';
+import { useGamification } from '@/hooks/useGamification';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export const ProgressStats: React.FC = () => {
-  // Mock data - em produção virá da API/Supabase
-  const stats = {
-    monthlyGoal: {
-      target: 15,
-      completed: 12,
-      percentage: 80
-    },
-    streak: {
-      current: 7,
-      best: 12
-    },
-    totalClasses: 147,
-    totalPoints: 1248,
-    currentRank: 'Gold',
-    nextRank: 'Platinum',
-    pointsToNext: 252
-  };
+  const { user } = useAuth();
+  const [athleteId, setAthleteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchAthleteId = async () => {
+      if (!user?.email) return;
+
+      const { data } = await supabase
+        .from('athletes')
+        .select('id')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (data) {
+        setAthleteId(data.id);
+      }
+    };
+
+    fetchAthleteId();
+  }, [user?.email]);
+
+  const { athleteLevel, isLoading, getNextLevel } = useGamification(athleteId || undefined);
+
+  if (isLoading || !athleteLevel) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground">Carregando estatísticas...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const nextLevel = getNextLevel(athleteLevel.current_level, athleteLevel.total_points);
+  const monthlyTarget = 15;
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
 
   return (
     <div className="space-y-6">
@@ -37,7 +59,7 @@ export const ProgressStats: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center">
-            <Target className="h-4 w-4 mr-2 text-blue-600" />
+            <Target className="h-4 w-4 mr-2 text-primary" />
             Meta Mensal
           </CardTitle>
         </CardHeader>
@@ -47,14 +69,16 @@ export const ProgressStats: React.FC = () => {
             <div className="flex items-center justify-between text-sm">
               <span>Progresso</span>
               <span className="font-medium">
-                {stats.monthlyGoal.completed}/{stats.monthlyGoal.target} aulas
+                {athleteLevel.total_classes}/{monthlyTarget} aulas
               </span>
             </div>
             
-            <Progress value={stats.monthlyGoal.percentage} className="h-2" />
+            <Progress value={(athleteLevel.total_classes / monthlyTarget) * 100} className="h-2" />
             
             <p className="text-xs text-muted-foreground">
-              Faltam {stats.monthlyGoal.target - stats.monthlyGoal.completed} aulas para atingir a meta
+              {athleteLevel.total_classes >= monthlyTarget 
+                ? '🎉 Meta atingida!' 
+                : `Faltam ${monthlyTarget - athleteLevel.total_classes} aulas para atingir a meta`}
             </p>
           </div>
         </CardContent>
@@ -64,21 +88,21 @@ export const ProgressStats: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center">
-            <Flame className="h-4 w-4 mr-2 text-orange-600" />
+            <Flame className="h-4 w-4 mr-2 text-orange-500" />
             Sequência
           </CardTitle>
         </CardHeader>
         
         <CardContent>
           <div className="text-center space-y-2">
-            <div className="text-2xl font-bold text-orange-600">
-              {stats.streak.current}
+            <div className="text-2xl font-bold text-orange-500">
+              {athleteLevel.current_streak} 🔥
             </div>
             <p className="text-sm text-muted-foreground">
               dias consecutivos
             </p>
             <Badge variant="outline" className="text-xs">
-              Recorde: {stats.streak.best} dias
+              Recorde: {athleteLevel.best_streak} dias
             </Badge>
           </div>
         </CardContent>
@@ -88,33 +112,42 @@ export const ProgressStats: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center">
-            <Award className="h-4 w-4 mr-2 text-purple-600" />
-            Classificação
+            <Award className="h-4 w-4 mr-2 text-primary" />
+            Nível
           </CardTitle>
         </CardHeader>
         
         <CardContent>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Badge className="bg-yellow-100 text-yellow-800">
-                {stats.currentRank}
+              <Badge variant="default">
+                {athleteLevel.current_level}
               </Badge>
-              <Badge variant="outline" className="text-xs">
-                → {stats.nextRank}
-              </Badge>
+              {nextLevel && (
+                <Badge variant="outline" className="text-xs">
+                  → {nextLevel.name}
+                </Badge>
+              )}
             </div>
             
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span>Pontos</span>
-                <span className="font-medium">{stats.totalPoints}</span>
+                <span>Pontos Totais</span>
+                <span className="font-medium">{athleteLevel.total_points}</span>
               </div>
               
-              <Progress value={75} className="h-2" />
-              
-              <p className="text-xs text-muted-foreground">
-                {stats.pointsToNext} pontos para {stats.nextRank}
-              </p>
+              {nextLevel ? (
+                <>
+                  <Progress value={nextLevel.progress} className="h-2" />
+                  <p className="text-xs text-muted-foreground">
+                    {nextLevel.pointsNeeded} pontos para {nextLevel.name}
+                  </p>
+                </>
+              ) : (
+                <p className="text-xs text-muted-foreground text-center">
+                  🏆 Nível máximo alcançado!
+                </p>
+              )}
             </div>
           </div>
         </CardContent>
@@ -124,7 +157,7 @@ export const ProgressStats: React.FC = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center">
-            <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
+            <TrendingUp className="h-4 w-4 mr-2 text-primary" />
             Estatísticas Gerais
           </CardTitle>
         </CardHeader>
@@ -132,8 +165,8 @@ export const ProgressStats: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <div className="text-lg font-bold text-green-600">
-                {stats.totalClasses}
+              <div className="text-lg font-bold text-primary">
+                {athleteLevel.total_classes}
               </div>
               <p className="text-xs text-muted-foreground">
                 Aulas Totais
@@ -141,8 +174,8 @@ export const ProgressStats: React.FC = () => {
             </div>
             
             <div>
-              <div className="text-lg font-bold text-purple-600">
-                {stats.totalPoints}
+              <div className="text-lg font-bold text-primary">
+                {athleteLevel.total_points}
               </div>
               <p className="text-xs text-muted-foreground">
                 Pontos Totais
