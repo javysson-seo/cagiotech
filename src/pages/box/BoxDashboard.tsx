@@ -21,6 +21,11 @@ import { useFinancialMetrics } from '@/hooks/useFinancialMetrics';
 import { useFinancialTransactions } from '@/hooks/useFinancialTransactions';
 import { useCompanyKPIs } from '@/hooks/useCompanyKPIs';
 import { AllKPIsGrid } from '@/components/box/dashboard/AllKPIsGrid';
+import { MemberGrowthChart } from '@/components/box/dashboard/MemberGrowthChart';
+import { CheckInsChart } from '@/components/box/dashboard/CheckInsChart';
+import { RevenueByCategory } from '@/components/box/dashboard/RevenueByCategory';
+import { ModalityPerformance } from '@/components/box/dashboard/ModalityPerformance';
+import { PeakHoursChart } from '@/components/box/dashboard/PeakHoursChart';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -138,12 +143,24 @@ const BoxDashboardContent = () => {
               </div>
             )}
 
+            {/* Gráficos de Análise */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4">Análises & Tendências</h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <MemberGrowthChart companyId={currentCompany?.id || ''} />
+                <CheckInsChart companyId={currentCompany?.id || ''} />
+                <RevenueByCategory companyId={currentCompany?.id || ''} />
+                <ModalityPerformance companyId={currentCompany?.id || ''} />
+                <PeakHoursChart companyId={currentCompany?.id || ''} />
+                <RevenueExpenseChart transactions={transactions} />
+              </div>
+            </div>
+
             {/* Resumo Financeiro */}
             <div>
-              <h2 className="text-2xl font-bold mb-4">Financeiro</h2>
+              <h2 className="text-2xl font-bold mb-4">Financeiro Detalhado</h2>
               <div className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <RevenueExpenseChart transactions={transactions} />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <Card>
                     <CardHeader>
                       <CardTitle>Métricas Financeiras</CardTitle>
@@ -166,6 +183,60 @@ const BoxDashboardContent = () => {
                           <span className="text-sm font-medium">Lucro Líquido</span>
                           <span className="text-xl font-bold text-green-600">
                             €{financialMetrics?.currentProfit.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Resumo do Período</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">MRR</span>
+                          <span className="text-lg font-bold">
+                            €{companyKPIs?.mrr.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">Ticket Médio</span>
+                          <span className="text-lg font-bold">
+                            €{companyKPIs?.averageTicket.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between border-t pt-2">
+                          <span className="text-sm font-medium">Margem de Lucro</span>
+                          <span className="text-xl font-bold">
+                            {companyKPIs?.profitMargin.toFixed(1) || 0}%
+                          </span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Métricas de Crescimento</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">LTV</span>
+                          <span className="text-lg font-bold">
+                            €{companyKPIs?.ltv.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-muted-foreground">CAC</span>
+                          <span className="text-lg font-bold">
+                            €{companyKPIs?.cac.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between border-t pt-2">
+                          <span className="text-sm font-medium">LTV / CAC</span>
+                          <span className="text-xl font-bold text-green-600">
+                            {companyKPIs?.ltvCacRatio.toFixed(1) || 0}
                           </span>
                         </div>
                       </div>
