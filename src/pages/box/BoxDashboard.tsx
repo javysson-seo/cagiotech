@@ -12,13 +12,15 @@ import { ReceivablesList } from '@/components/financial/ReceivablesList';
 import { MembersTab } from '@/components/box/dashboard/MembersTab';
 import { ClassesTab } from '@/components/box/dashboard/ClassesTab';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertCircle, TrendingUp, Users, Calendar } from 'lucide-react';
+import { AlertCircle, TrendingUp, Users, Calendar, BarChart3 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useDashboardMetrics } from '@/hooks/useDashboardMetrics';
 import { useAthletesMetrics } from '@/hooks/useAthletesMetrics';
 import { useClassesMetrics } from '@/hooks/useClassesMetrics';
 import { useFinancialMetrics } from '@/hooks/useFinancialMetrics';
 import { useFinancialTransactions } from '@/hooks/useFinancialTransactions';
+import { useCompanyKPIs } from '@/hooks/useCompanyKPIs';
+import { AllKPIsGrid } from '@/components/box/dashboard/AllKPIsGrid';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -46,6 +48,11 @@ const BoxDashboardContent = () => {
 
   const { data: financialMetrics, isLoading: isLoadingFinancial } = useFinancialMetrics(
     currentCompany?.id || ''
+  );
+
+  const { data: companyKPIs, isLoading: isLoadingKPIs } = useCompanyKPIs(
+    currentCompany?.id || '',
+    dateRange
   );
 
   const { transactions } = useFinancialTransactions(currentCompany?.id || '');
@@ -112,10 +119,14 @@ const BoxDashboardContent = () => {
             )}
 
             <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-6">
                 <TabsTrigger value="overview">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   Visão Geral
+                </TabsTrigger>
+                <TabsTrigger value="kpis">
+                  <BarChart3 className="h-4 w-4 mr-2" />
+                  Todos os KPIs
                 </TabsTrigger>
                 <TabsTrigger value="financial">
                   <TrendingUp className="h-4 w-4 mr-2" />
@@ -134,6 +145,12 @@ const BoxDashboardContent = () => {
                   Operacional
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="kpis" className="space-y-6">
+                {companyKPIs && (
+                  <AllKPIsGrid kpis={companyKPIs} isLoading={isLoadingKPIs} />
+                )}
+              </TabsContent>
 
               <TabsContent value="overview" className="space-y-6">
                 <DashboardKPIs
