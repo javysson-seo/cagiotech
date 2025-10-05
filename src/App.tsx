@@ -40,8 +40,6 @@ import { Reports as BoxReports } from "./pages/box/Reports";
 import { BoxCRM } from "./pages/box/BoxCRM";
 import { BoxCommunication } from "./pages/box/BoxCommunication";
 import { BoxEquipment } from "./pages/box/BoxEquipment";
-import { BoxObservatory } from "./pages/box/BoxObservatory";
-import { BoxKPIs } from "./pages/box/BoxKPIs";
 import { Financial } from "./pages/box/Financial";
 import SubscriptionsManagement from "./pages/box/SubscriptionsManagement";
 
@@ -165,20 +163,6 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
-                  <Route path="/:companyId/observatory" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
-                      <CompanyProvider>
-                        <BoxObservatory />
-                      </CompanyProvider>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/:companyId/kpis" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
-                      <CompanyProvider>
-                        <BoxKPIs />
-                      </CompanyProvider>
-                    </ProtectedRoute>
-                  } />
                   <Route path="/:companyId/settings" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
@@ -269,20 +253,6 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxEquipment />
-                      </CompanyProvider>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/box/observatory" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
-                      <CompanyProvider>
-                        <BoxObservatory />
-                      </CompanyProvider>
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/box/kpis" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
-                      <CompanyProvider>
-                        <BoxKPIs />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />

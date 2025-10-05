@@ -17,51 +17,82 @@ import {
 } from 'lucide-react';
 
 interface DashboardKPIsProps {
-  filters: {
-    dateRange: any;
-    trainer: string;
-    modality: string;
-    room: string;
+  metrics: {
+    revenue: number;
+    revenueGrowth: number;
+    activeAthletes: number;
+    occupationRate: number;
+    totalClasses: number;
   };
+  isLoading?: boolean;
 }
 
-export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ filters }) => {
+export const DashboardKPIs: React.FC<DashboardKPIsProps> = ({ metrics, isLoading }) => {
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-PT', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const formatPercentage = (value: number) => {
+    return value >= 0 ? `+${value.toFixed(1)}%` : `${value.toFixed(1)}%`;
+  };
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i} className="animate-pulse">
+            <CardHeader className="space-y-2">
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-8 bg-muted rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
   const kpis = [
     {
       title: 'Receita Total',
-      value: '€8,750',
-      change: '+15.3%',
-      trend: 'up' as const,
+      value: `€${formatCurrency(metrics.revenue)}`,
+      change: formatPercentage(metrics.revenueGrowth),
+      trend: metrics.revenueGrowth >= 0 ? 'up' as const : 'down' as const,
       icon: Euro,
       description: 'vs. período anterior',
-      progress: 87
+      progress: Math.min(100, Math.max(0, metrics.revenueGrowth + 50))
     },
     {
       title: 'Membros Ativos',
-      value: '147',
-      change: '+8.2%',
+      value: metrics.activeAthletes.toString(),
+      change: '+0%',
       trend: 'up' as const,
       icon: Users,
       description: 'este período',
-      progress: 92
+      progress: 85
     },
     {
       title: 'Taxa de Ocupação',
-      value: '78%',
-      change: '+5.1%',
+      value: `${metrics.occupationRate.toFixed(1)}%`,
+      change: '+0%',
       trend: 'up' as const,
       icon: Activity,
       description: 'média das salas',
-      progress: 78
+      progress: metrics.occupationRate
     },
     {
       title: 'Aulas Realizadas',
-      value: '156',
-      change: '+12.4%',
+      value: metrics.totalClasses.toString(),
+      change: '+0%',
       trend: 'up' as const,
       icon: Calendar,
       description: 'este período',
-      progress: 86
+      progress: 80
     }
   ];
 
