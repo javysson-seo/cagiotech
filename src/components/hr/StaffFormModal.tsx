@@ -221,31 +221,25 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role_id">Cargo</Label>
+              <Label htmlFor="role_id">Permissão</Label>
               <Select
                 value={formData.role_id || ''}
                 onValueChange={(value) => setFormData({ ...formData, role_id: value || undefined })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Selecione um cargo" />
+                  <SelectValue placeholder="Selecione permissão" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Sem cargo</SelectItem>
+                  <SelectItem value="">Sem permissão</SelectItem>
                   {roles.map((role) => (
                     <SelectItem key={role.id} value={role.id}>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: role.color }}
-                        />
-                        {role.name}
-                      </div>
+                      {role.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                O cargo define as permissões que o funcionário terá no sistema
+                Define as permissões que o funcionário terá no sistema
               </p>
             </div>
           </div>

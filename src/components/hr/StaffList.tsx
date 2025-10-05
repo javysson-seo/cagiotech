@@ -1,0 +1,251 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { 
+  MoreVertical, 
+  Pencil, 
+  Trash2, 
+  Mail, 
+  Phone,
+  Search,
+  UserPlus,
+  Filter
+} from 'lucide-react';
+import { useStaff, type Staff } from '@/hooks/useStaff';
+import { StaffFormModal } from './StaffFormModal';
+import { Loading } from '@/components/ui/loading';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+export const StaffList: React.FC = () => {
+  const { staff, loading, saveStaff, deleteStaff } = useStaff();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [staffToDelete, setStaffToDelete] = useState<string | null>(null);
+
+  const filteredStaff = staff.filter(member =>
+    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    member.position.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const handleEdit = (member: Staff) => {
+    setSelectedStaff(member);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (staffToDelete) {
+      await deleteStaff(staffToDelete);
+      setDeleteDialogOpen(false);
+      setStaffToDelete(null);
+    }
+  };
+
+  const getStatusBadge = (status?: string) => {
+    const statusConfig: Record<string, { label: string; variant: any }> = {
+      active: { label: 'Ativo', variant: 'default' },
+      inactive: { label: 'Inativo', variant: 'secondary' },
+      vacation: { label: 'Férias', variant: 'outline' },
+      sick_leave: { label: 'Baixa', variant: 'destructive' }
+    };
+
+    const config = statusConfig[status || 'active'] || statusConfig.active;
+    return <Badge variant={config.variant}>{config.label}</Badge>;
+  };
+
+  const formatDate = (date?: string) => {
+    if (!date) return '-';
+    return new Date(date).toLocaleDateString('pt-PT');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loading size="lg" text="Carregando funcionários..." />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle>Funcionários</CardTitle>
+            <Button 
+              onClick={() => {
+                setSelectedStaff(null);
+                setIsModalOpen(true);
+              }}
+              className="bg-cagio-green hover:bg-cagio-green-dark"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Novo Funcionário
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 mb-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Pesquisar funcionários..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button variant="outline">
+              <Filter className="h-4 w-4 mr-2" />
+              Filtrar
+            </Button>
+          </div>
+
+          {filteredStaff.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">
+                {searchTerm ? 'Nenhum funcionário encontrado.' : 'Ainda não há funcionários cadastrados.'}
+              </p>
+              <Button 
+                onClick={() => setIsModalOpen(true)}
+                className="bg-cagio-green hover:bg-cagio-green-dark"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Adicionar Primeiro Funcionário
+              </Button>
+            </div>
+          ) : (
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Cargo</TableHead>
+                    <TableHead>Departamento</TableHead>
+                    <TableHead>Contato</TableHead>
+                    <TableHead>Data Admissão</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredStaff.map((member) => (
+                    <TableRow key={member.id}>
+                      <TableCell className="font-medium">{member.name}</TableCell>
+                      <TableCell>{member.position}</TableCell>
+                      <TableCell>{member.department}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col space-y-1">
+                          {member.email && (
+                            <div className="flex items-center text-sm">
+                              <Mail className="h-3 w-3 mr-1 text-muted-foreground" />
+                              {member.email}
+                            </div>
+                          )}
+                          {member.phone && (
+                            <div className="flex items-center text-sm">
+                              <Phone className="h-3 w-3 mr-1 text-muted-foreground" />
+                              {member.phone}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>{formatDate(member.hire_date)}</TableCell>
+                      <TableCell>{getStatusBadge(member.status)}</TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleEdit(member)}>
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                setStaffToDelete(member.id!);
+                                setDeleteDialogOpen(true);
+                              }}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <StaffFormModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedStaff(null);
+        }}
+        staff={selectedStaff}
+        onSave={async (staffData) => {
+          await saveStaff(staffData);
+          setIsModalOpen(false);
+          setSelectedStaff(null);
+        }}
+      />
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir este funcionário? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};

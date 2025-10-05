@@ -14,46 +14,54 @@ import {
   CheckCircle,
   DollarSign
 } from 'lucide-react';
-import { StaffFormModal } from './StaffFormModal';
+import { StaffList } from './StaffList';
 import { PayrollManagement } from './PayrollManagement';
 import { useStaff } from '@/hooks/useStaff';
 
 export const HRDashboard: React.FC = () => {
-  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
-  const { saveStaff } = useStaff();
-  // Mock data para KPIs
+  const { staff, loading } = useStaff();
+  
+  // Calculate real KPIs from staff data
+  const activeStaff = staff.filter(s => s.status === 'active').length;
+  const thisMonthHires = staff.filter(s => {
+    if (!s.hire_date) return false;
+    const hireDate = new Date(s.hire_date);
+    const now = new Date();
+    return hireDate.getMonth() === now.getMonth() && hireDate.getFullYear() === now.getFullYear();
+  }).length;
+
   const stats = [
     {
       title: 'Total Funcionários',
-      value: '15',
-      change: '+2',
-      trend: 'up',
+      value: staff.length.toString(),
+      change: `+${thisMonthHires}`,
+      trend: 'up' as const,
       icon: Users,
-      description: 'vs mês anterior'
+      description: 'ativos'
     },
     {
-      title: 'Novos Contratados',
-      value: '3',
-      change: '+1',
-      trend: 'up',
+      title: 'Funcionários Ativos',
+      value: activeStaff.toString(),
+      change: '+2',
+      trend: 'up' as const,
+      icon: CheckCircle,
+      description: 'este mês'
+    },
+    {
+      title: 'Novos Este Mês',
+      value: thisMonthHires.toString(),
+      change: `${thisMonthHires > 0 ? '+' : ''}${thisMonthHires}`,
+      trend: 'up' as const,
       icon: UserPlus,
-      description: 'este mês'
+      description: 'contratados'
     },
     {
-      title: 'Horas Trabalhadas',
-      value: '1,240h',
-      change: '+5%',
-      trend: 'up',
-      icon: Clock,
-      description: 'este mês'
-    },
-    {
-      title: 'Performance Média',
-      value: '94%',
-      change: '+3%',
-      trend: 'up',
+      title: 'Departamentos',
+      value: new Set(staff.map(s => s.department)).size.toString(),
+      change: '',
+      trend: 'up' as const,
       icon: TrendingUp,
-      description: 'satisfação'
+      description: 'diferentes'
     }
   ];
 
@@ -129,19 +137,10 @@ export const HRDashboard: React.FC = () => {
             Gestão de pessoal e recursos humanos
           </p>
         </div>
-        <div className="flex items-center space-x-3">
-          <Button variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
-            Relatórios
-          </Button>
-          <Button 
-            className="bg-green-600 hover:bg-green-700"
-            onClick={() => setIsStaffModalOpen(true)}
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Novo Funcionário
-          </Button>
-        </div>
+        <Button variant="outline">
+          <FileText className="h-4 w-4 mr-2" />
+          Relatórios
+        </Button>
       </div>
 
       {/* KPI Cards */}
@@ -242,22 +241,7 @@ export const HRDashboard: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="staff">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  Gestão de Pessoal
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  Lista completa de funcionários, contratos e informações pessoais
-                </p>
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Ver Lista de Funcionários
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <StaffList />
         </TabsContent>
 
         <TabsContent value="payroll">
@@ -302,15 +286,6 @@ export const HRDashboard: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      <StaffFormModal
-        isOpen={isStaffModalOpen}
-        onClose={() => setIsStaffModalOpen(false)}
-        onSave={async (staffData) => {
-          await saveStaff(staffData);
-          setIsStaffModalOpen(false);
-        }}
-      />
     </div>
   );
 };
