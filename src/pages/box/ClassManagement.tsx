@@ -48,61 +48,67 @@ const ClassManagementContent: React.FC = () => {
   const occupationRate = totalCapacity > 0 ? Math.round((totalBooked / totalCapacity) * 100) : 0;
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       <BoxSidebar />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-h-screen">
         <BoxHeader />
         
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto">
+          <div className="container max-w-7xl mx-auto p-6 space-y-6">
             {/* Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Gestão de Aulas</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Gestão de Aulas</h1>
+                <p className="text-sm text-muted-foreground mt-1">
                   Gerir aulas, horários e modalidades
                 </p>
               </div>
-              <Button onClick={handleCreateClass} className="bg-cagiogreen-500 hover:bg-cagiogreen-600">
+              <Button onClick={handleCreateClass} className="shrink-0">
                 <Plus className="h-4 w-4 mr-2" />
                 Nova Aula
               </Button>
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <Calendar className="h-8 w-8 text-primary" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Aulas Hoje</p>
-                      <p className="text-2xl font-bold">{todayClasses.length}</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Calendar className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Aulas Hoje</p>
+                      <p className="text-xl font-bold">{todayClasses.length}</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <Users className="h-8 w-8 text-primary" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Taxa Ocupação</p>
-                      <p className="text-2xl font-bold">{occupationRate}%</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Users className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Taxa Ocupação</p>
+                      <p className="text-xl font-bold">{occupationRate}%</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center">
-                    <List className="h-8 w-8 text-primary" />
-                    <div className="ml-4">
-                      <p className="text-sm font-medium text-muted-foreground">Total Aulas</p>
-                      <p className="text-2xl font-bold">{classes.length}</p>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <List className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground">Total Aulas</p>
+                      <p className="text-xl font-bold">{classes.length}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -142,23 +148,23 @@ const ClassManagementContent: React.FC = () => {
             </Card>
 
             {/* Main Content */}
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="list">
-                  <List className="h-4 w-4 mr-2" />
-                  Lista
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+              <TabsList className="grid w-full grid-cols-3 h-auto">
+                <TabsTrigger value="list" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <List className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Lista</span>
                 </TabsTrigger>
-                <TabsTrigger value="calendar">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Calendário
+                <TabsTrigger value="calendar" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Calendar className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Calendário</span>
                 </TabsTrigger>
-                <TabsTrigger value="settings">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Configurações
+                <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                  <Settings className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Config</span>
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="list" className="space-y-4">
+              <TabsContent value="list" className="mt-4 space-y-4">
                 <ClassList 
                   searchTerm={searchTerm}
                   modalityFilter={modalityFilter}
@@ -166,31 +172,31 @@ const ClassManagementContent: React.FC = () => {
                 />
               </TabsContent>
 
-              <TabsContent value="calendar" className="space-y-4">
+              <TabsContent value="calendar" className="mt-4 space-y-4">
                 <ClassCalendar onEdit={handleEditClass} />
               </TabsContent>
 
-              <TabsContent value="settings" className="space-y-4">
+              <TabsContent value="settings" className="mt-4 space-y-4">
                 <ModalitiesRoomsManagement />
               </TabsContent>
             </Tabs>
-
-            {/* Form Modal */}
-            {showForm && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                <div className="bg-background rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                  <ClassForm 
-                    classData={selectedClass}
-                    onClose={handleCloseForm}
-                  />
-                </div>
-              </div>
-            )}
           </div>
         </main>
         
         <Footer />
       </div>
+
+      {/* Form Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+          <div className="bg-background rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <ClassForm 
+              classData={selectedClass}
+              onClose={handleCloseForm}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

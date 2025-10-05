@@ -51,69 +51,70 @@ export const BoxSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col w-64 bg-card border-r border-border">
+    <aside className="flex flex-col w-64 bg-card border-r border-border h-screen sticky top-0">
       {/* Logo */}
-      <div className="flex items-center h-16 px-6 border-b border-border">
+      <div className="flex items-center h-16 px-4 border-b border-border shrink-0">
         <div className="flex items-center space-x-2">
-          <Logo size="md" />
-          <span className="text-xl font-bold text-foreground">CAGIO</span>
-          <Badge className="bg-[#bed700] text-black text-xs font-medium">{currentCompany.name}</Badge>
+          <Logo size="sm" />
+          <span className="text-lg font-bold text-foreground">CAGIO</span>
         </div>
       </div>
 
       {/* User Info */}
-      <div className="p-6 border-b border-border">
+      <div className="p-4 border-b border-border shrink-0">
         <div className="space-y-1">
-          <p className="font-medium text-foreground">{currentCompany.name}</p>
-          <p className="text-sm text-muted-foreground">{user?.name}</p>
-          <Badge variant="outline" className="text-xs">
-            BOX Administrator
+          <p className="font-semibold text-sm text-foreground truncate">{currentCompany.name}</p>
+          <p className="text-xs text-muted-foreground truncate">{user?.name}</p>
+          <Badge variant="outline" className="text-xs mt-1">
+            Administrador
           </Badge>
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
         {navigation.map((item) => (
           <NavLink
             key={item.name}
             to={item.href}
+            end={item.href === `/${companyId}`}
             className={({ isActive }) =>
               cn(
-                'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                'flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
                 isActive
-                  ? 'bg-[#bed700] text-black'
+                  ? 'bg-primary text-primary-foreground'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent'
               )
             }
           >
-            <item.icon className="mr-3 h-5 w-5" />
-            {item.name}
+            <item.icon className="mr-3 h-4 w-4 shrink-0" />
+            <span className="truncate">{item.name}</span>
           </NavLink>
         ))}
       </nav>
 
       {/* Quick Stats */}
-      <div className="p-3 border-t border-border">
-        <div className="bg-[#bed700]/10 p-3 rounded-lg mb-3">
-          <div className="flex items-center space-x-2">
-            <Dumbbell className="h-4 w-4 text-[#bed700]" />
-            <span className="text-sm font-medium text-foreground">Status - {currentCompany.name}</span>
-          </div>
-          <div className="mt-2 text-xs">
-            <span className="text-[#bed700] font-medium">{activeAthletes} Atletas Ativos</span>
+      <div className="p-3 border-t border-border shrink-0">
+        <div className="bg-primary/10 p-3 rounded-lg mb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium">Atletas</span>
+            </div>
+            <span className="text-sm font-bold text-primary">{activeAthletes}</span>
           </div>
         </div>
         
         <Button
           variant="ghost"
+          size="sm"
           className="w-full justify-start text-muted-foreground hover:text-foreground"
           onClick={logout}
         >
-          <LogOut className="mr-3 h-5 w-5" />
+          <LogOut className="mr-2 h-4 w-4" />
           Sair
         </Button>
       </div>
-    </div>
+    </aside>
   );
 };

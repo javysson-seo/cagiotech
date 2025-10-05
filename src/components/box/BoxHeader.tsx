@@ -45,15 +45,14 @@ export const BoxHeader: React.FC = () => {
   };
 
   return (
-    <header className="bg-card border-b border-border px-6 py-4">
+    <header className="sticky top-0 z-40 bg-card border-b border-border px-6 py-3">
       <div className="flex items-center justify-between">
-        {/* Logo + Search */}
-        <div className="flex items-center space-x-4 flex-1">
-          <Logo size="md" />
-          <div className="relative max-w-sm">
+        {/* Search */}
+        <div className="flex items-center space-x-4 flex-1 max-w-md">
+          <div className="relative w-full">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
-              placeholder="Pesquisar atletas, aulas..."
+              placeholder="Pesquisar..."
               className="pl-10 bg-muted/50"
             />
           </div>
