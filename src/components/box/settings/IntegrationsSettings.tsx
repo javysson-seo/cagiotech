@@ -26,7 +26,9 @@ export const IntegrationsSettings: React.FC = () => {
     backoffice_key: '',
   });
 
-  const webhookUrl = `${window.location.origin.replace('localhost:8080', 'vwonynqoybfvaleyfmog.supabase.co')}/functions/v1/ifthenpay-webhook`;
+  // Webhook URL - automaticamente usa domínio customizado quando configurado
+  const supabaseUrl = 'https://vwonynqoybfvaleyfmog.supabase.co';
+  const webhookUrl = `${supabaseUrl}/functions/v1/ifthenpay-webhook`;
 
   useEffect(() => {
     if (currentCompany?.id) {
