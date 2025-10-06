@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loading } from '@/components/ui/loading';
@@ -19,7 +20,8 @@ export const Login: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   });
 
   useEffect(() => {
@@ -135,9 +137,9 @@ export const Login: React.FC = () => {
 
         <Card className="shadow-xl border-0">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl font-bold text-center">Entrar</CardTitle>
-            <CardDescription className="text-center">
-              Entre com suas credenciais para acessar o sistema
+            <CardTitle className="text-2xl font-bold text-center">Entrar na Conta</CardTitle>
+            <CardDescription className="text-center text-muted-foreground">
+              Entre com as suas credenciais
             </CardDescription>
           </CardHeader>
 
@@ -165,12 +167,12 @@ export const Login: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Senha</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Sua password"
+                    placeholder="Sua senha"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     disabled={loading}
@@ -194,6 +196,29 @@ export const Login: React.FC = () => {
                 </div>
               </div>
 
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="remember" 
+                    checked={formData.rememberMe}
+                    onCheckedChange={(checked) => setFormData({ ...formData, rememberMe: checked as boolean })}
+                    disabled={loading}
+                  />
+                  <Label 
+                    htmlFor="remember" 
+                    className="text-sm font-normal cursor-pointer"
+                  >
+                    Lembrar-me
+                  </Label>
+                </div>
+                <Link 
+                  to="/auth/password-recovery" 
+                  className="text-sm text-cagio-green hover:underline font-medium"
+                >
+                  Esqueci a senha
+                </Link>
+              </div>
+
               <Button 
                 type="submit" 
                 className="w-full h-11 bg-cagio-green hover:bg-cagio-green-dark text-primary-foreground" 
@@ -204,17 +229,21 @@ export const Login: React.FC = () => {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Não tem conta? </span>
+              <span className="text-muted-foreground">Empresa não registrada? </span>
               <Link to="/auth/box-register" className="text-cagio-green hover:underline font-medium">
-                Registrar
+                Registrar Empresa
               </Link>
             </div>
           </CardContent>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          O sistema identifica automaticamente o seu tipo de acesso
-        </p>
+        <Link 
+          to="/" 
+          className="flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mt-6"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar à página inicial
+        </Link>
       </div>
     </div>
   );
