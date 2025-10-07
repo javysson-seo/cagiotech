@@ -44,48 +44,54 @@ export const DashboardMetrics: React.FC = () => {
       value: stats?.companies.toString() || '0', 
       icon: Building2, 
       description: 'boxes registadas',
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
+      color: 'text-[#16ff00]',
+      bgColor: 'bg-[#16ff00]/10',
+      borderColor: 'border-[#16ff00]'
     },
     { 
       title: 'Total de Atletas', 
       value: stats?.athletes.toString() || '0', 
       icon: Users, 
       description: 'atletas no sistema',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
+      color: 'text-[#0ea5e9]',
+      bgColor: 'bg-[#0ea5e9]/10',
+      borderColor: 'border-[#0ea5e9]'
     },
     { 
       title: 'Treinadores Ativos', 
       value: stats?.trainers.toString() || '0', 
       icon: UserCheck, 
       description: 'treinadores',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
+      color: 'text-[#1a1a2e]',
+      bgColor: 'bg-gray-100',
+      borderColor: 'border-[#1a1a2e]'
     },
     { 
       title: 'Receita (30 dias)', 
       value: `€${stats?.revenue.toFixed(2) || '0.00'}`, 
       icon: DollarSign, 
       description: 'receita total',
-      color: 'text-emerald-600',
-      bgColor: 'bg-emerald-50'
+      color: 'text-[#16ff00]',
+      bgColor: 'bg-[#16ff00]/10',
+      borderColor: 'border-[#16ff00]'
     },
     { 
       title: 'Check-ins (30 dias)', 
       value: stats?.checkIns.toString() || '0', 
       icon: Activity, 
       description: 'check-ins realizados',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
+      color: 'text-[#0ea5e9]',
+      bgColor: 'bg-[#0ea5e9]/10',
+      borderColor: 'border-[#0ea5e9]'
     },
     { 
       title: 'Subscrições Ativas', 
       value: stats?.activeSubscriptions.toString() || '0', 
       icon: CheckCircle, 
       description: 'subscrições ativas',
-      color: 'text-indigo-600',
-      bgColor: 'bg-indigo-50'
+      color: 'text-[#1a1a2e]',
+      bgColor: 'bg-gray-100',
+      borderColor: 'border-[#1a1a2e]'
     },
   ];
 
@@ -110,7 +116,7 @@ export const DashboardMetrics: React.FC = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {metrics.map((metric) => (
-        <Card key={metric.title} className="hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: metric.color.replace('text-', '') }}>
+        <Card key={metric.title} className="hover:shadow-lg transition-shadow border-l-4" style={{ borderLeftColor: metric.color.replace('text-', '').replace('[', '').replace(']', '') }}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {metric.title}

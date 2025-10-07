@@ -10,7 +10,6 @@ import {
   Settings, 
   HelpCircle,
   LogOut,
-  Dumbbell,
   CreditCard,
   MessageSquare,
   Shield,
@@ -34,28 +33,31 @@ export const AdminSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col w-64 bg-gradient-to-b from-purple-900 via-purple-800 to-blue-900 text-white shadow-xl">
+    <div className="flex flex-col w-64 bg-[#1a1a2e] text-white shadow-xl">
       {/* Logo */}
-      <div className="flex items-center h-16 px-6 border-b border-purple-700">
-        <div className="flex items-center space-x-2">
-          <Dumbbell className="h-8 w-8 text-blue-300" />
-          <span className="text-xl font-bold">CAGIO</span>
-          <Badge className="bg-blue-500 text-white text-xs">ADMIN</Badge>
+      <div className="flex items-center h-16 px-6 border-b border-white/10">
+        <div className="flex items-center space-x-3">
+          <img 
+            src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" 
+            alt="CagioTech Logo" 
+            className="h-10 w-auto"
+          />
+          <Badge className="bg-[#16ff00] text-[#1a1a2e] text-xs font-bold">ADMIN</Badge>
         </div>
       </div>
 
       {/* User Info */}
-      <div className="p-6 border-b border-purple-700">
+      <div className="p-6 border-b border-white/10">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center ring-2 ring-white/20">
-            <span className="text-white font-medium">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#16ff00] to-[#0ea5e9] flex items-center justify-center ring-2 ring-[#16ff00]/20">
+            <span className="text-[#1a1a2e] font-bold">
               {user?.name?.charAt(0)}
             </span>
           </div>
           <div>
             <p className="font-medium text-white">{user?.name}</p>
-            <p className="text-sm text-purple-200">
-              Administrador Cagio
+            <p className="text-sm text-gray-400">
+              Administrador CagioTech
             </p>
           </div>
         </div>
@@ -71,8 +73,8 @@ export const AdminSidebar: React.FC = () => {
               cn(
                 'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all',
                 isActive
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                  : 'text-purple-100 hover:text-white hover:bg-white/10'
+                  ? 'bg-[#16ff00] text-[#1a1a2e] shadow-lg shadow-[#16ff00]/20'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
               )
             }
           >
@@ -83,20 +85,20 @@ export const AdminSidebar: React.FC = () => {
       </nav>
 
       {/* System Status */}
-      <div className="p-3 border-t border-purple-700">
-        <div className="bg-green-500/20 p-3 rounded-lg mb-3 border border-green-400/30">
+      <div className="p-3 border-t border-white/10">
+        <div className="bg-[#16ff00]/10 p-3 rounded-lg mb-3 border border-[#16ff00]/30">
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium text-green-300">Sistema Online</span>
+            <div className="w-2 h-2 bg-[#16ff00] rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-[#16ff00]">Sistema Online</span>
           </div>
-          <p className="text-xs text-green-200 mt-1">
+          <p className="text-xs text-gray-400 mt-1">
             Todos os serviços funcionais
           </p>
         </div>
         
         <Button
           variant="ghost"
-          className="w-full justify-start text-purple-100 hover:text-white hover:bg-white/10"
+          className="w-full justify-start text-gray-300 hover:text-white hover:bg-white/5"
           onClick={logout}
         >
           <LogOut className="mr-3 h-5 w-5" />

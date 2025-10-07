@@ -81,7 +81,7 @@ export const NotificationCenter: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Bell className="h-5 w-5 text-purple-600" />
+          <Bell className="h-5 w-5 text-[#16ff00]" />
           Centro de Notificações
         </CardTitle>
         <CardDescription>
@@ -139,7 +139,7 @@ export const NotificationCenter: React.FC = () => {
         <Button
           onClick={() => sendNotification.mutate()}
           disabled={sendNotification.isPending || !title || !message}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="w-full bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] hover:from-[#0f3460] hover:to-[#1a1a2e] text-white border border-[#16ff00]/20"
         >
           <Send className="mr-2 h-4 w-4" />
           {sendNotification.isPending ? 'Enviando...' : 'Enviar Notificação'}

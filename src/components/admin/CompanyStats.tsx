@@ -76,7 +76,7 @@ export const CompanyStats: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-purple-600" />
+          <Building2 className="h-5 w-5 text-[#16ff00]" />
           Empresas - Estatísticas Detalhadas
         </CardTitle>
         <CardDescription>
@@ -89,17 +89,17 @@ export const CompanyStats: React.FC = () => {
             {companies?.map((company) => (
               <div
                 key={company.id}
-                className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-purple-50 to-blue-50"
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-gray-50 to-[#16ff00]/5 border-[#16ff00]/20"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg text-foreground">{company.name}</h3>
+                    <h3 className="font-semibold text-lg text-[#1a1a2e]">{company.name}</h3>
                     <p className="text-sm text-muted-foreground">{company.city || 'Localização não definida'}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Registado em {new Date(company.created_at).toLocaleDateString('pt-PT')}
                     </p>
                   </div>
-                  <Badge variant="outline" className="bg-purple-100 text-purple-700 border-purple-300">
+                  <Badge variant="outline" className="bg-[#16ff00]/10 text-[#1a1a2e] border-[#16ff00]/30">
                     Ativo
                   </Badge>
                 </div>

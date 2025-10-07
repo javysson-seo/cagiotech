@@ -13,7 +13,7 @@ import { Footer } from '@/components/Footer';
 export const CagioAdminDashboard: React.FC = () => {
   return (
     <MobileAdminRedirect>
-      <div className="flex h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <div className="flex h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
         <AdminSidebar />
         
         <div className="flex-1 flex flex-col min-w-0">
@@ -21,9 +21,9 @@ export const CagioAdminDashboard: React.FC = () => {
           
           <main className="flex-1 p-6 overflow-auto">
             <div className="max-w-7xl mx-auto space-y-8">
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl p-6 text-white shadow-xl">
+              <div className="bg-gradient-to-r from-[#1a1a2e] to-[#0f3460] rounded-xl p-6 text-white shadow-xl border border-[#16ff00]/20">
                 <h1 className="text-3xl font-bold">Dashboard CagioTech</h1>
-                <p className="text-purple-100 mt-2">
+                <p className="text-gray-300 mt-2">
                   Visão geral completa do sistema e gestão de empresas
                 </p>
               </div>
