@@ -138,9 +138,9 @@ export const Login: React.FC = () => {
 
         <Card className="shadow-xl border-0">
           <CardHeader className="space-y-1 pb-6">
-            <CardTitle className="text-2xl font-bold text-center">Entrar na Conta</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">Entrar</CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Entre com as suas credenciais
+              Entre com suas credenciais para acessar o sistema
             </CardDescription>
           </CardHeader>
 
@@ -168,12 +168,12 @@ export const Login: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Senha</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Sua senha"
+                    placeholder="Sua password"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     disabled={loading}
@@ -223,7 +223,7 @@ export const Login: React.FC = () => {
 
               <Button 
                 type="submit" 
-                className="w-full h-11 text-white hover:opacity-90" 
+                className="w-full h-11 text-white hover:opacity-90 transition-opacity" 
                 style={{ backgroundColor: '#aeca12' }}
                 disabled={loading}
               >
@@ -232,13 +232,13 @@ export const Login: React.FC = () => {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Empresa não registrada? </span>
+              <span className="text-muted-foreground">Não tem conta? </span>
               <Link 
                 to="/auth/box-register" 
                 className="hover:underline font-medium"
                 style={{ color: '#aeca12' }}
               >
-                Registrar Empresa
+                Registrar BOX
               </Link>
             </div>
           </CardContent>
