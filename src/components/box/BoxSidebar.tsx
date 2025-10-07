@@ -14,7 +14,10 @@ import {
   Dumbbell,
   UserPlus,
   Euro,
-  CreditCard
+  CreditCard,
+  Package,
+  CalendarDays,
+  Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,10 +43,13 @@ export const BoxSidebar: React.FC = () => {
     { name: 'Atletas', href: `/${companyId}/athletes`, icon: Users },
     { name: 'Recursos humanos', href: `/${companyId}/hr`, icon: UserCheck },
     { name: 'Aulas / Serviços', href: `/${companyId}/classes`, icon: Calendar },
+    { name: 'Treinos', href: `/${companyId}/workouts`, icon: Trophy },
     { name: 'CRM', href: `/${companyId}/crm`, icon: UserPlus },
     { name: 'Comunicação', href: `/${companyId}/communication`, icon: MessageSquare },
     { name: 'Financeiro', href: `/${companyId}/financial`, icon: Euro },
     { name: 'Material deportivo', href: `/${companyId}/equipment`, icon: Dumbbell },
+    { name: 'Loja', href: `/${companyId}/store`, icon: Package },
+    { name: 'Eventos', href: `/${companyId}/events`, icon: CalendarDays },
     { name: 'Configurações', href: `/${companyId}/settings`, icon: Settings },
   ];
 

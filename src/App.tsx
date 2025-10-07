@@ -60,6 +60,7 @@ import { TrainerNutritionPlans } from "./pages/trainer/TrainerNutritionPlans";
 import { TrainerWorkouts } from "./pages/trainer/TrainerWorkouts";
 import { Store } from "./pages/box/Store";
 import { Events } from "./pages/box/Events";
+import { Workouts as BoxWorkouts } from "./pages/box/Workouts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -133,6 +134,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <ClassManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companyId/workouts" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxWorkouts />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
@@ -240,6 +248,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
                         <ClassManagement />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/workouts" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <BoxWorkouts />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
