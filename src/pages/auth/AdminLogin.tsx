@@ -118,17 +118,17 @@ export const AdminLogin = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Nome de Usuário</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="username"
-                  type="text"
-                  placeholder="cagiotech.pt"
+                  id="email"
+                  type="email"
+                  placeholder="admin@cagiotech.pt"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={loading}
                   required
                   className="h-11"
-                  autoComplete="username"
+                  autoComplete="email"
                 />
               </div>
 
@@ -171,13 +171,13 @@ export const AdminLogin = () => {
 
             <div className="mt-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
               <p className="text-sm text-purple-900 font-medium">
-                Credenciais padrão:
+                Credenciais de teste:
               </p>
               <p className="text-xs text-purple-700 mt-1">
-                Email: cagiotech.pt
+                Use qualquer email cadastrado com role de admin
               </p>
               <p className="text-xs text-purple-700">
-                Senha: cagiotech
+                Email: movimentopresente@gmail.com
               </p>
             </div>
           </CardContent>
