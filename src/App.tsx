@@ -57,6 +57,9 @@ import { TrainerDashboard } from "./pages/trainer/TrainerDashboard";
 import { TrainerStudents } from "./pages/trainer/TrainerStudents";
 import { TrainerWorkoutPlans } from "./pages/trainer/TrainerWorkoutPlans";
 import { TrainerNutritionPlans } from "./pages/trainer/TrainerNutritionPlans";
+import { TrainerWorkouts } from "./pages/trainer/TrainerWorkouts";
+import { Store } from "./pages/box/Store";
+import { Events } from "./pages/box/Events";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -168,6 +171,20 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
+                  <Route path="/:companyId/store" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <Store />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/:companyId/events" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <Events />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
                   <Route path="/:companyId/settings" element={
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
@@ -275,6 +292,20 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
+                  <Route path="/box/store" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <Store />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/events" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <Events />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
 
                   {/* Student Routes */}
                   <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
@@ -290,6 +321,7 @@ function App() {
                   <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerStudents /></ProtectedRoute>} />
                   <Route path="/trainer/workout-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
                   <Route path="/trainer/nutrition-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerNutritionPlans /></ProtectedRoute>} />
+                  <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerWorkouts /></ProtectedRoute>} />
 
                   {/* Landing Page */}
                   <Route path="/landing" element={<LandingPage />} />

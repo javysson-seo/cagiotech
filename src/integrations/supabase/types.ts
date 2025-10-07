@@ -1361,6 +1361,72 @@ export type Database = {
           },
         ]
       }
+      company_events: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          created_by: string | null
+          current_participants: number | null
+          description: string | null
+          end_date: string | null
+          event_date: string
+          id: string
+          is_active: boolean | null
+          location: string | null
+          max_participants: number | null
+          price: number | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date?: string | null
+          event_date: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          price?: number | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          current_participants?: number | null
+          description?: string | null
+          end_date?: string | null
+          event_date?: string
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          price?: number | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_events_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       company_messages: {
         Row: {
           company_id: string
@@ -1898,6 +1964,48 @@ export type Database = {
           warranty_expiry?: string | null
         }
         Relationships: []
+      }
+      event_registrations: {
+        Row: {
+          athlete_id: string
+          event_id: string
+          id: string
+          notes: string | null
+          payment_status: string | null
+          registration_date: string | null
+        }
+        Insert: {
+          athlete_id: string
+          event_id: string
+          id?: string
+          notes?: string | null
+          payment_status?: string | null
+          registration_date?: string | null
+        }
+        Update: {
+          athlete_id?: string
+          event_id?: string
+          id?: string
+          notes?: string | null
+          payment_status?: string | null
+          registration_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "company_events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       financial_transactions: {
         Row: {
@@ -3376,6 +3484,140 @@ export type Database = {
           },
         ]
       }
+      store_products: {
+        Row: {
+          category: string | null
+          company_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          price: number
+          sku: string | null
+          stock_quantity: number
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          price: number
+          sku?: string | null
+          stock_quantity?: number
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          price?: number
+          sku?: string | null
+          stock_quantity?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      store_sales: {
+        Row: {
+          athlete_id: string | null
+          company_id: string
+          created_at: string | null
+          id: string
+          notes: string | null
+          payment_method: string | null
+          product_id: string
+          quantity: number
+          sale_date: string | null
+          sold_by: string | null
+          total_price: number
+          unit_price: number
+        }
+        Insert: {
+          athlete_id?: string | null
+          company_id: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_id: string
+          quantity: number
+          sale_date?: string | null
+          sold_by?: string | null
+          total_price: number
+          unit_price: number
+        }
+        Update: {
+          athlete_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          payment_method?: string | null
+          product_id?: string
+          quantity?: number
+          sale_date?: string | null
+          sold_by?: string | null
+          total_price?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "store_sales_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_sales_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "store_sales_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "store_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "store_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscription_payments: {
         Row: {
           amount: number
@@ -3677,6 +3919,83 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "company_financial_overview"
             referencedColumns: ["company_id"]
+          },
+        ]
+      }
+      workout_plans: {
+        Row: {
+          athlete_id: string | null
+          company_id: string
+          created_at: string | null
+          description: string | null
+          difficulty: string | null
+          duration_weeks: number | null
+          exercises: Json | null
+          frequency_per_week: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          trainer_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          athlete_id?: string | null
+          company_id: string
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_weeks?: number | null
+          exercises?: Json | null
+          frequency_per_week?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          trainer_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          athlete_id?: string | null
+          company_id?: string
+          created_at?: string | null
+          description?: string | null
+          difficulty?: string | null
+          duration_weeks?: number | null
+          exercises?: Json | null
+          frequency_per_week?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          trainer_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workout_plans_athlete_id_fkey"
+            columns: ["athlete_id"]
+            isOneToOne: false
+            referencedRelation: "athletes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workout_plans_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "workout_plans_trainer_id_fkey"
+            columns: ["trainer_id"]
+            isOneToOne: false
+            referencedRelation: "trainers"
+            referencedColumns: ["id"]
           },
         ]
       }
