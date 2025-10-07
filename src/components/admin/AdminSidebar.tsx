@@ -25,15 +25,12 @@ export const AdminSidebar: React.FC = () => {
 
   const navigation = [
     { name: 'Dashboard', href: '/admin/dashboard', icon: Home },
+    { name: 'Empresas', href: '/admin/companies', icon: Building2 },
+    { name: 'Todos os Atletas', href: '/admin/athletes', icon: Users },
     { name: 'Gestão de BOX', href: '/admin/boxes', icon: Building2 },
     { name: 'Utilizadores', href: '/admin/users', icon: Users },
     { name: 'Relatórios', href: '/admin/reports', icon: BarChart3 },
-    { name: 'Financeiro', href: '/admin/financial', icon: CreditCard },
-    { name: 'Comunicação', href: '/admin/communication', icon: MessageSquare },
-    { name: 'Sistema', href: '/admin/system', icon: Database },
-    { name: 'Segurança', href: '/admin/security', icon: Shield },
     { name: 'Configurações', href: '/admin/settings', icon: Settings },
-    { name: 'Suporte', href: '/admin/support', icon: HelpCircle },
   ];
 
   return (

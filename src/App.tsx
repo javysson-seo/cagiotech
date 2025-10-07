@@ -23,11 +23,14 @@ import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
+import { AdminLogin } from "./pages/auth/AdminLogin";
 import { CagioAdminDashboard } from "./pages/admin/CagioAdminDashboard";
 import { BoxManagement } from "./pages/admin/BoxManagement";
 import { UserManagement } from "./pages/admin/UserManagement";
 import { BoxOnboarding } from "./pages/admin/BoxOnboarding";
 import { Reports as AdminReports } from "./pages/admin/Reports";
+import { CompanyManagement } from "./pages/admin/CompanyManagement";
+import { AllAthletesManagement } from "./pages/admin/AllAthletesManagement";
 
 // Box Pages
 import { BoxDashboard } from "./pages/box/BoxDashboard";
@@ -84,10 +87,15 @@ function App() {
                   <Route path="/auth/student-register" element={<StudentRegister />} />
                   <Route path="/auth/email-verification" element={<EmailVerification />} />
                   <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
+                  
+                  {/* Admin Login */}
+                  <Route path="/admin/login" element={<AdminLogin />} />
 
                   {/* Admin Routes */}
                   <Route path="/admin" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />
                   <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />
+                  <Route path="/admin/companies" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CompanyManagement /></MobileAdminRedirect></ProtectedRoute>} />
+                  <Route path="/admin/athletes" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><AllAthletesManagement /></MobileAdminRedirect></ProtectedRoute>} />
                   <Route path="/admin/boxes" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><BoxManagement /></MobileAdminRedirect></ProtectedRoute>} />
                   <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><UserManagement /></MobileAdminRedirect></ProtectedRoute>} />
                   <Route path="/admin/boxes/onboard" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><BoxOnboarding /></MobileAdminRedirect></ProtectedRoute>} />
