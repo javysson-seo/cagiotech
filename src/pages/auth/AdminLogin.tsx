@@ -118,16 +118,17 @@ export const AdminLogin = () => {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="username">Nome de Usuário</Label>
                 <Input
-                  id="email"
-                  type="email"
-                  placeholder="admin@cagiotech.pt"
+                  id="username"
+                  type="text"
+                  placeholder="cagiotech.pt"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   disabled={loading}
                   required
                   className="h-11"
+                  autoComplete="username"
                 />
               </div>
 
