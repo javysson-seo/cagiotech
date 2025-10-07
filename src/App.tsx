@@ -23,7 +23,6 @@ import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
-import { AdminLogin } from "./pages/auth/AdminLogin";
 import { CagioAdminDashboard } from "./pages/admin/CagioAdminDashboard";
 import { BoxManagement } from "./pages/admin/BoxManagement";
 import { UserManagement } from "./pages/admin/UserManagement";
@@ -88,18 +87,15 @@ function App() {
                   <Route path="/auth/email-verification" element={<EmailVerification />} />
                   <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
                   
-                  {/* Admin Login */}
-                  <Route path="/admin/login" element={<AdminLogin />} />
-
-                  {/* Admin Routes */}
-                  <Route path="/admin" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/companies" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><CompanyManagement /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/athletes" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><AllAthletesManagement /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/boxes" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><BoxManagement /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><UserManagement /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/boxes/onboard" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><BoxOnboarding /></MobileAdminRedirect></ProtectedRoute>} />
-                  <Route path="/admin/reports" element={<ProtectedRoute allowedRoles={["cagio_admin"]}><MobileAdminRedirect><AdminReports /></MobileAdminRedirect></ProtectedRoute>} />
+                  {/* Admin Routes - Sem autenticação */}
+                  <Route path="/admin" element={<MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect>} />
+                  <Route path="/admin/dashboard" element={<MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect>} />
+                  <Route path="/admin/companies" element={<MobileAdminRedirect><CompanyManagement /></MobileAdminRedirect>} />
+                  <Route path="/admin/athletes" element={<MobileAdminRedirect><AllAthletesManagement /></MobileAdminRedirect>} />
+                  <Route path="/admin/boxes" element={<MobileAdminRedirect><BoxManagement /></MobileAdminRedirect>} />
+                  <Route path="/admin/users" element={<MobileAdminRedirect><UserManagement /></MobileAdminRedirect>} />
+                  <Route path="/admin/boxes/onboard" element={<MobileAdminRedirect><BoxOnboarding /></MobileAdminRedirect>} />
+                  <Route path="/admin/reports" element={<MobileAdminRedirect><AdminReports /></MobileAdminRedirect>} />
 
                   {/* Company-specific Routes */}
                   <Route path="/:companyId" element={
