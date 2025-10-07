@@ -120,16 +120,17 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cagio-green-light via-background to-cagio-green-muted p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
-            <Logo size="lg" />
+            <img 
+              src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" 
+              alt="CagioTech Logo" 
+              className="h-24 w-auto"
+            />
           </div>
-          <h1 className="text-3xl font-bold text-cagio-green">
-            CagioTech
-          </h1>
           <p className="text-muted-foreground mt-2">
             Sistema de Gestão Fitness & Wellness
           </p>
@@ -213,7 +214,8 @@ export const Login: React.FC = () => {
                 </div>
                 <Link 
                   to="/auth/password-recovery" 
-                  className="text-sm text-cagio-green hover:underline font-medium"
+                  className="text-sm hover:underline font-medium"
+                  style={{ color: '#aeca12' }}
                 >
                   Esqueci a senha
                 </Link>
@@ -221,7 +223,8 @@ export const Login: React.FC = () => {
 
               <Button 
                 type="submit" 
-                className="w-full h-11 bg-cagio-green hover:bg-cagio-green-dark text-primary-foreground" 
+                className="w-full h-11 text-white hover:opacity-90" 
+                style={{ backgroundColor: '#aeca12' }}
                 disabled={loading}
               >
                 {loading ? <Loading size="sm" text="Entrando..." /> : 'Entrar'}
@@ -230,7 +233,11 @@ export const Login: React.FC = () => {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Empresa não registrada? </span>
-              <Link to="/auth/box-register" className="text-cagio-green hover:underline font-medium">
+              <Link 
+                to="/auth/box-register" 
+                className="hover:underline font-medium"
+                style={{ color: '#aeca12' }}
+              >
                 Registrar Empresa
               </Link>
             </div>
