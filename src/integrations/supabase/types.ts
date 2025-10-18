@@ -3221,6 +3221,45 @@ export type Database = {
           },
         ]
       }
+      security_audit_log: {
+        Row: {
+          action: string
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          record_id: string | null
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          record_id?: string | null
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       staff: {
         Row: {
           birth_date: string | null
@@ -4037,6 +4076,10 @@ export type Database = {
       check_birthday_notifications: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      check_suspicious_activity: {
+        Args: { _action: string; _user_id: string }
+        Returns: boolean
       }
       get_company_financial_overview: {
         Args: { target_company_id: string }
