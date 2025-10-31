@@ -8,12 +8,22 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Search, Trophy, Calendar, Target, Users } from 'lucide-react';
 import { useCompany } from '@/contexts/CompanyContext';
-import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
+import { useWorkoutPlans, WorkoutPlan } from '@/hooks/useWorkoutPlans';
+import { WorkoutPlanFormModal } from '@/components/workouts/WorkoutPlanFormModal';
+import { WorkoutPlanDetailsModal } from '@/components/workouts/WorkoutPlanDetailsModal';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Workouts: React.FC = () => {
   const { currentCompany } = useCompany();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
-  const { workoutPlans, isLoading } = useWorkoutPlans(currentCompany?.id || '');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<WorkoutPlan | null>(null);
+  const [editingPlan, setEditingPlan] = useState<WorkoutPlan | null>(null);
+  
+  const { workoutPlans, isLoading, createWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan } = 
+    useWorkoutPlans(currentCompany?.id || '');
 
   const filteredPlans = workoutPlans.filter((plan) =>
     plan.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -26,6 +36,38 @@ export const Workouts: React.FC = () => {
       case 'advanced': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
+  };
+
+  const handleSavePlan = (data: any) => {
+    if (editingPlan) {
+      updateWorkoutPlan.mutate({ id: editingPlan.id, ...data });
+    } else {
+      createWorkoutPlan.mutate({
+        ...data,
+        company_id: currentCompany?.id || '',
+      });
+    }
+    setEditingPlan(null);
+  };
+
+  const handleEditPlan = (plan: WorkoutPlan) => {
+    setEditingPlan(plan);
+    setIsDetailsOpen(false);
+    setIsFormOpen(true);
+  };
+
+  const handleDeletePlan = (planId: string) => {
+    deleteWorkoutPlan.mutate(planId);
+  };
+
+  const handleViewDetails = (plan: WorkoutPlan) => {
+    setSelectedPlan(plan);
+    setIsDetailsOpen(true);
+  };
+
+  const handleNewPlan = () => {
+    setEditingPlan(null);
+    setIsFormOpen(true);
   };
 
   return (
@@ -42,7 +84,11 @@ export const Workouts: React.FC = () => {
                 <h1 className="text-3xl font-bold">Planos de Treino</h1>
                 <p className="text-muted-foreground">Gerencie os treinos dos seus alunos</p>
               </div>
-              <Button style={{ backgroundColor: '#aeca12' }} className="text-white">
+              <Button 
+                onClick={handleNewPlan}
+                style={{ backgroundColor: '#aeca12' }} 
+                className="text-white"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 Novo Plano
               </Button>
@@ -121,7 +167,11 @@ export const Workouts: React.FC = () => {
                 <div className="text-center py-12">
                   <Trophy className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground">Nenhum plano de treino encontrado</p>
-                  <Button className="mt-4" style={{ backgroundColor: '#aeca12' }}>
+                  <Button 
+                    onClick={handleNewPlan}
+                    className="mt-4" 
+                    style={{ backgroundColor: '#aeca12' }}
+                  >
                     <Plus className="mr-2 h-4 w-4" />
                     Criar Primeiro Plano
                   </Button>
@@ -159,7 +209,11 @@ export const Workouts: React.FC = () => {
                           )}
                         </div>
 
-                        <Button variant="outline" className="w-full">
+                        <Button 
+                          onClick={() => handleViewDetails(plan)}
+                          variant="outline" 
+                          className="w-full"
+                        >
                           Ver Detalhes
                         </Button>
                       </div>
@@ -173,6 +227,21 @@ export const Workouts: React.FC = () => {
 
         <Footer />
       </div>
+
+      <WorkoutPlanFormModal
+        open={isFormOpen}
+        onOpenChange={setIsFormOpen}
+        workoutPlan={editingPlan}
+        onSave={handleSavePlan}
+      />
+
+      <WorkoutPlanDetailsModal
+        open={isDetailsOpen}
+        onOpenChange={setIsDetailsOpen}
+        workoutPlan={selectedPlan}
+        onEdit={handleEditPlan}
+        onDelete={handleDeletePlan}
+      />
     </div>
   );
 };
