@@ -13,7 +13,7 @@ import { WorkoutPlanFormModal } from '@/components/workouts/WorkoutPlanFormModal
 import { WorkoutPlanDetailsModal } from '@/components/workouts/WorkoutPlanDetailsModal';
 import { useAuth } from '@/hooks/useAuth';
 
-export const TrainerWorkouts: React.FC = () => {
+const TrainerWorkouts: React.FC = () => {
   const { currentCompany } = useCompany();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +24,14 @@ export const TrainerWorkouts: React.FC = () => {
   
   const { workoutPlans, isLoading, createWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan } = 
     useWorkoutPlans(currentCompany?.id || '');
+
+  if (!currentCompany) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">Carregando...</p>
+      </div>
+    );
+  }
 
   const filteredPlans = workoutPlans.filter((plan) =>
     plan.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -40,14 +48,28 @@ export const TrainerWorkouts: React.FC = () => {
 
   const handleSavePlan = (data: any) => {
     if (editingPlan) {
-      updateWorkoutPlan.mutate({ id: editingPlan.id, ...data });
+      updateWorkoutPlan.mutate(
+        { id: editingPlan.id, ...data },
+        {
+          onSuccess: () => {
+            setIsFormOpen(false);
+            setEditingPlan(null);
+          },
+        }
+      );
     } else {
-      createWorkoutPlan.mutate({
-        ...data,
-        company_id: currentCompany?.id || '',
-      });
+      createWorkoutPlan.mutate(
+        {
+          ...data,
+          company_id: currentCompany.id,
+        },
+        {
+          onSuccess: () => {
+            setIsFormOpen(false);
+          },
+        }
+      );
     }
-    setEditingPlan(null);
   };
 
   const handleEditPlan = (plan: WorkoutPlan) => {
@@ -57,7 +79,12 @@ export const TrainerWorkouts: React.FC = () => {
   };
 
   const handleDeletePlan = (planId: string) => {
-    deleteWorkoutPlan.mutate(planId);
+    deleteWorkoutPlan.mutate(planId, {
+      onSuccess: () => {
+        setIsDetailsOpen(false);
+        setSelectedPlan(null);
+      },
+    });
   };
 
   const handleViewDetails = (plan: WorkoutPlan) => {
@@ -246,4 +273,5 @@ export const TrainerWorkouts: React.FC = () => {
   );
 };
 
+export { TrainerWorkouts };
 export default TrainerWorkouts;

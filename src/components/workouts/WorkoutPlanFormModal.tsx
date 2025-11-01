@@ -132,7 +132,6 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
     }
 
     onSave(formData);
-    onOpenChange(false);
   };
 
   const addExercise = () => {
@@ -228,11 +227,17 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
                     <SelectValue placeholder="Selecione o treinador" />
                   </SelectTrigger>
                   <SelectContent>
-                    {trainers.map((trainer) => (
-                      <SelectItem key={trainer.id} value={trainer.id}>
-                        {trainer.name}
-                      </SelectItem>
-                    ))}
+                    {trainers.length === 0 ? (
+                      <div className="p-2 text-sm text-muted-foreground">
+                        Nenhum treinador cadastrado
+                      </div>
+                    ) : (
+                      trainers.map((trainer) => (
+                        <SelectItem key={trainer.id} value={trainer.id}>
+                          {trainer.name}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
