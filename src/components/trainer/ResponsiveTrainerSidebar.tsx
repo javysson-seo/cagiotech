@@ -59,10 +59,10 @@ export const ResponsiveTrainerSidebar: React.FC = () => {
       path: '/trainer/schedule'
     },
     {
-      id: 'workout-plans',
+      id: 'workouts',
       label: 'Planos de Treino',
       icon: Dumbbell,
-      path: '/trainer/workout-plans'
+      path: '/trainer/workouts'
     },
     {
       id: 'nutrition-plans',
