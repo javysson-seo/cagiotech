@@ -6,7 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { X, Plus } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, X, Plus } from 'lucide-react';
+import { subscriptionPlanSchema } from '@/lib/validation-schemas';
+import { z } from 'zod';
+import { toast } from 'sonner';
 
 interface SubscriptionPlanFormProps {
   open: boolean;
@@ -31,20 +35,36 @@ export const SubscriptionPlanForm = ({
   const [isActive, setIsActive] = useState(initialData?.is_active ?? true);
   const [features, setFeatures] = useState<string[]>(initialData?.features || []);
   const [newFeature, setNewFeature] = useState('');
+  const [validationErrors, setValidationErrors] = useState<z.ZodError | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validate with Zod schema
+    const planData = {
+      name,
+      price: parseFloat(price),
+      billing_period: billingPeriod as 'monthly' | 'quarterly' | 'yearly',
+      features,
+      is_active: isActive,
+    };
+
+    const validation = subscriptionPlanSchema.safeParse(planData);
+    
+    if (!validation.success) {
+      setValidationErrors(validation.error);
+      toast.error('Por favor, corrija os erros no formulário');
+      return;
+    }
+
+    setValidationErrors(null);
+
     onSubmit({
       ...(initialData?.id && { id: initialData.id }),
       company_id: companyId,
-      name,
+      ...validation.data,
       description: description || null,
-      price: parseFloat(price),
-      billing_period: billingPeriod,
       max_classes_per_week: maxClassesPerWeek ? parseInt(maxClassesPerWeek) : null,
-      is_active: isActive,
-      features,
     });
 
     onClose();
@@ -69,6 +89,21 @@ export const SubscriptionPlanForm = ({
             {initialData ? 'Editar Plano' : 'Novo Plano de Assinatura'}
           </DialogTitle>
         </DialogHeader>
+
+        {validationErrors && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <ul className="list-disc list-inside space-y-1">
+                {validationErrors.errors.map((error, index) => (
+                  <li key={index} className="text-sm">
+                    {error.path.join('.')}: {error.message}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

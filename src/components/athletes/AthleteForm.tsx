@@ -6,8 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { X, Plus } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, X, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { athleteSchema } from '@/lib/validation-schemas';
+import { z } from 'zod';
 
 interface AthleteFormProps {
   athlete?: any;
@@ -45,6 +48,7 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
 
   const [newGoal, setNewGoal] = useState('');
   const [newTag, setNewTag] = useState('');
+  const [validationErrors, setValidationErrors] = useState<z.ZodError | null>(null);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -87,15 +91,21 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email) {
-      toast.error('Nome e email são obrigatórios');
+    // Validate with Zod schema
+    const validation = athleteSchema.safeParse(formData);
+    
+    if (!validation.success) {
+      setValidationErrors(validation.error);
+      toast.error('Por favor, corrija os erros no formulário');
       return;
     }
 
+    setValidationErrors(null);
+
     // Include the ID if editing
     const dataToSave = athlete?.id 
-      ? { ...formData, id: athlete.id }
-      : formData;
+      ? { ...validation.data, id: athlete.id }
+      : validation.data;
 
     onSave(dataToSave);
   };
@@ -108,6 +118,20 @@ export const AthleteForm: React.FC<AthleteFormProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {validationErrors && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <ul className="list-disc list-inside space-y-1">
+                {validationErrors.errors.map((error, index) => (
+                  <li key={index} className="text-sm">
+                    {error.path.join('.')}: {error.message}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Dados Pessoais */}
           <div className="space-y-4">

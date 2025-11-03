@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,9 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { X, Plus, Eye, EyeOff, RefreshCw, Users } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { AlertCircle, X, Plus, Eye, EyeOff, RefreshCw, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTrainers } from '@/hooks/useTrainers';
+import { trainerSchema } from '@/lib/validation-schemas';
+import { z } from 'zod';
 
 interface TrainerFormProps {
   trainer?: any;
@@ -69,6 +71,7 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const [newSpecialty, setNewSpecialty] = useState('');
   const [newCertification, setNewCertification] = useState('');
   const [newExerciseCategory, setNewExerciseCategory] = useState('');
+  const [validationErrors, setValidationErrors] = useState<z.ZodError | null>(null);
 
   // Categorias de exercícios predefinidas
   const exerciseCategoriesOptions = [
@@ -181,22 +184,34 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.email) {
-      toast.error('Nome e email são obrigatórios');
-      return;
-    }
-
+    // Validate with Zod schema
     const trainerData = {
-      id: trainer?.id,
       name: formData.name,
       email: formData.email,
-      phone: formData.phone,
-      birth_date: formData.dateOfBirth,
+      phone: formData.phone || undefined,
       specialties: formData.specialties,
       status: formData.status,
     };
 
-    const success = await saveTrainer(trainerData);
+    const validation = trainerSchema.safeParse(trainerData);
+    
+    if (!validation.success) {
+      setValidationErrors(validation.error);
+      toast.error('Por favor, corrija os erros no formulário');
+      return;
+    }
+
+    setValidationErrors(null);
+
+    const success = await saveTrainer({
+      name: validation.data.name,
+      email: validation.data.email,
+      phone: validation.data.phone,
+      specialties: validation.data.specialties,
+      status: validation.data.status,
+      id: trainer?.id,
+      birth_date: formData.dateOfBirth,
+    });
     
     if (success) {
       onSave();
@@ -221,6 +236,20 @@ export const TrainerForm: React.FC<TrainerFormProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {validationErrors && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <ul className="list-disc list-inside space-y-1">
+                {validationErrors.errors.map((error, index) => (
+                  <li key={index} className="text-sm">
+                    {error.path.join('.')}: {error.message}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Dados Pessoais */}
           <div className="space-y-4">

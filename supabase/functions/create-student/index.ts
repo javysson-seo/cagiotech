@@ -1,11 +1,23 @@
 // deno-lint-ignore-file no-explicit-any
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2?target=deno";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Validation schema
+const createStudentSchema = z.object({
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(128)
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+  name: z.string().trim().min(2).max(100),
+  role: z.enum(['student', 'personal_trainer', 'staff_member']).optional(),
+});
 
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -20,14 +32,25 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { email, password, name, role } = await req.json();
+    const requestData = await req.json();
 
-    if (!email || !password || !name) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      });
+    // Validate input with Zod
+    const validation = createStudentSchema.safeParse(requestData);
+    
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Validation failed", 
+          issues: validation.error.issues 
+        }), 
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
+
+    const { email, password, name, role } = validation.data;
 
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");

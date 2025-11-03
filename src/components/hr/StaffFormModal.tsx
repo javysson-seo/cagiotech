@@ -6,9 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Copy } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRoles } from '@/hooks/useRoles';
+import { staffSchema } from '@/lib/validation-schemas';
+import { z } from 'zod';
 
 interface StaffMember {
   id?: string;
@@ -50,6 +52,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   });
 
   const [showCredentials, setShowCredentials] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<z.ZodError | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -74,12 +77,25 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.email.trim() || !formData.position.trim()) {
-      toast.error('Por favor, preencha todos os campos obrigatórios.');
+    // Validate with Zod schema
+    const validation = staffSchema.safeParse({
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone || undefined,
+      position: formData.position,
+      department: formData.department,
+      hire_date: formData.hire_date,
+      salary: undefined, // Not in this form
+    });
+    
+    if (!validation.success) {
+      setValidationErrors(validation.error);
+      toast.error('Por favor, corrija os erros no formulário');
       return;
     }
 
-    onSave(formData);
+    setValidationErrors(null);
+    onSave({ ...formData, ...validation.data });
   };
 
   const generatePasswordFromDate = (date: string): string => {
@@ -106,6 +122,21 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
             {staff ? 'Editar Funcionário' : 'Novo Funcionário'}
           </DialogTitle>
         </DialogHeader>
+
+        {validationErrors && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <ul className="list-disc list-inside space-y-1">
+                {validationErrors.errors.map((error, index) => (
+                  <li key={index} className="text-sm">
+                    {error.path.join('.')}: {error.message}
+                  </li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

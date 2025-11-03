@@ -1,10 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Validation schema
+const createStaffSchema = z.object({
+  email: z.string().email().max(255),
+  password: z.string().min(8).max(128)
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
+  name: z.string().trim().min(2).max(100),
+  position: z.string().min(1).max(100),
+  company_id: z.string().uuid(),
+});
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -25,11 +38,24 @@ serve(async (req) => {
     }
 
     const { data: requestBody } = await req.json();
-    const { email, password, name, position, company_id } = requestBody;
-
-    if (!email || !password || !name || !company_id) {
-      throw new Error("Missing required fields: email, password, name, company_id");
+    
+    // Validate input with Zod
+    const validation = createStaffSchema.safeParse(requestBody);
+    
+    if (!validation.success) {
+      return new Response(
+        JSON.stringify({ 
+          error: "Validation failed", 
+          issues: validation.error.issues 
+        }), 
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
     }
+
+    const { email, password, name, position, company_id } = validation.data;
 
     console.log("Creating user for staff:", email);
 
