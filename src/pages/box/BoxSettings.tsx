@@ -41,7 +41,6 @@ import { ModalitiesSettings } from '@/components/box/settings/ModalitiesSettings
 import { IntegrationsSettings } from '@/components/box/settings/IntegrationsSettings';
 import { RegistrationLinkSettings } from '@/components/box/settings/RegistrationLinkSettings';
 import { DiscountCouponsSettings } from '@/components/box/settings/DiscountCouponsSettings';
-import { PlansManagementSettings } from '@/components/box/settings/PlansManagementSettings';
 
 
 const BoxSettingsContent: React.FC = () => {
@@ -82,13 +81,6 @@ const BoxSettingsContent: React.FC = () => {
       icon: Clock,
       component: ScheduleRulesSettings,
       description: 'Grade de horários'
-    },
-    {
-      id: 'plans',
-      label: 'Planos',
-      icon: Euro,
-      component: PlansManagementSettings,
-      description: 'Assinaturas e preços'
     },
     {
       id: 'financial',

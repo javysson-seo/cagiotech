@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Check } from 'lucide-react';
 import { useSubscriptionPlans, SubscriptionPlan } from '@/hooks/useSubscriptionPlans';
-import { SubscriptionPlanForm } from './SubscriptionPlanForm';
+import { SubscriptionPlanFormEnhanced } from './SubscriptionPlanFormEnhanced';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -156,7 +156,7 @@ export const SubscriptionPlansList = ({ companyId }: SubscriptionPlansListProps)
         </Card>
       )}
 
-      <SubscriptionPlanForm
+      <SubscriptionPlanFormEnhanced
         open={formOpen}
         onClose={() => {
           setFormOpen(false);

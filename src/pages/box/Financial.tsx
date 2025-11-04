@@ -17,6 +17,7 @@ import { ExpensesList } from '@/components/financial/ExpensesList';
 import { TransactionForm } from '@/components/financial/TransactionForm';
 import { TransactionFiltersComponent, TransactionFilters } from '@/components/financial/TransactionFilters';
 import { TransactionsTable } from '@/components/financial/TransactionsTable';
+import { SubscriptionPlansList } from '@/components/subscriptions/SubscriptionPlansList';
 import { Button } from '@/components/ui/button';
 import { Plus, TrendingUp, TrendingDown, Filter } from 'lucide-react';
 import { toast } from 'sonner';
@@ -173,11 +174,12 @@ const FinancialContent: React.FC = () => {
             </div>
 
             <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="all">Todas</TabsTrigger>
                 <TabsTrigger value="income">Receitas</TabsTrigger>
                 <TabsTrigger value="expenses">Despesas</TabsTrigger>
                 <TabsTrigger value="receivables">Recebíveis</TabsTrigger>
+                <TabsTrigger value="plans">Planos</TabsTrigger>
               </TabsList>
 
               <TabsContent value="all" className="space-y-4">
@@ -209,6 +211,10 @@ const FinancialContent: React.FC = () => {
                   payments={payments} 
                   onMarkAsPaid={(id) => markAsPaid.mutate(id)}
                 />
+              </TabsContent>
+
+              <TabsContent value="plans" className="space-y-4">
+                {currentCompany && <SubscriptionPlansList companyId={currentCompany.id} />}
               </TabsContent>
             </Tabs>
           </div>
