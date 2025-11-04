@@ -16,6 +16,12 @@ import { useAuth } from '@/hooks/useAuth';
 const Workouts: React.FC = () => {
   const { currentCompany } = useCompany();
   const { user } = useAuth();
+  
+  console.log('[Workouts] Component mounted', { 
+    currentCompany: currentCompany?.id, 
+    companyName: currentCompany?.name 
+  });
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -25,10 +31,10 @@ const Workouts: React.FC = () => {
   const { workoutPlans, isLoading, createWorkoutPlan, updateWorkoutPlan, deleteWorkoutPlan } = 
     useWorkoutPlans(currentCompany?.id || '');
 
-  if (!currentCompany) {
+  if (!currentCompany || !currentCompany.id) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-muted-foreground">Carregando...</p>
+        <p className="text-muted-foreground">Carregando empresa...</p>
       </div>
     );
   }
