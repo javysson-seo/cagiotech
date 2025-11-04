@@ -136,79 +136,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Fetching profile for user ID:', supabaseUser.id.substring(0, 8) + '...');
       }
       
+      // Fetch profile data
       const { data: profile, error } = await supabase
         .from('profiles')
+        .select('id, name, email, avatar_url, is_approved')
+        .eq('id', supabaseUser.id)
+        .single();
+      
+      // Fetch user roles from user_roles table (proper authorization source)
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
         .select(`
-          *,
+          role,
+          company_id,
           companies (
             id,
             name
           )
         `)
-        .eq('id', supabaseUser.id)
-        .single();
+        .eq('user_id', supabaseUser.id);
 
-      if (error) {
-        console.error('Error fetching profile:', error.message);
-        // Create profile if it doesn't exist
-        if (error.code === 'PGRST116') {
-          if (import.meta.env.DEV) {
-            console.log('Profile not found, creating one...');
-          }
-          const newProfile = {
-            id: supabaseUser.id,
-            name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'User',
-            email: supabaseUser.email!,
-            role: (supabaseUser.user_metadata?.role as UserRole) || 'box_admin',
-            company_name: supabaseUser.user_metadata?.company_name,
-            phone: supabaseUser.user_metadata?.phone,
-            is_approved: true
-          };
-
-          const { data: createdProfile, error: createError } = await supabase
-            .from('profiles')
-            .insert(newProfile)
-            .select()
-            .single();
-
-          if (createError) {
-            console.error('Error creating profile:', createError.message);
-            setIsLoading(false);
-            return;
-          }
-
-          // Create company if user is box_admin and has company_name
-          if (newProfile.role === 'box_admin' && newProfile.company_name) {
-            const { data: company, error: companyError } = await supabase
-              .from('companies')
-              .insert({
-                name: newProfile.company_name,
-                owner_id: supabaseUser.id
-              })
-              .select()
-              .single();
-
-            if (companyError) {
-              console.error('Error creating company:', companyError.message);
-            } else if (import.meta.env.DEV) {
-              console.log('Company created successfully');
-            }
-          }
-
-          const authUser: User = {
-            id: createdProfile.id,
-            name: createdProfile.name,
-            email: createdProfile.email,
-            role: createdProfile.role as UserRole,
-            isApproved: createdProfile.is_approved,
-            permissions: getDefaultPermissions(createdProfile.role as UserRole),
-            avatar: createdProfile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(createdProfile.email)}`
-          };
-
-          setUser(authUser);
-          setIsLoading(false);
-          return;
-        }
+      if (error || rolesError) {
+        console.error('Error fetching profile or roles:', error?.message || rolesError?.message);
         setIsLoading(false);
         return;
       }
@@ -219,19 +168,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Handle the company relationship correctly
-      const companies = profile.companies;
-      const company = Array.isArray(companies) ? companies[0] : companies;
+      // Get primary role from user_roles table (secure authorization source)
+      if (!userRoles || userRoles.length === 0) {
+        console.error('No roles found for user - user may need approval');
+        setIsLoading(false);
+        return;
+      }
+
+      // Use first role as primary (users typically have one role per company)
+      const primaryRole = userRoles[0];
+      const company = primaryRole.companies;
+
+      // Map database role to UserRole type
+      const mapRole = (dbRole: string): UserRole => {
+        const roleMap: Record<string, UserRole> = {
+          'cagio_admin': 'cagio_admin',
+          'box_owner': 'box_admin',
+          'box_admin': 'box_admin',
+          'personal_trainer': 'trainer',
+          'trainer': 'trainer',
+          'student': 'student',
+        };
+        return roleMap[dbRole] || 'student';
+      };
 
       const authUser: User = {
         id: profile.id,
         name: profile.name,
         email: profile.email,
-        role: profile.role as UserRole,
+        role: mapRole(primaryRole.role),
         boxId: company?.id,
         boxName: company?.name,
         isApproved: profile.is_approved,
-        permissions: getDefaultPermissions(profile.role as UserRole),
+        permissions: getDefaultPermissions(mapRole(primaryRole.role)),
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`
       };
 
