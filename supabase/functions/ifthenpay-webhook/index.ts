@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { createHmac } from "https://deno.land/std@0.224.0/node/crypto.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -27,10 +26,30 @@ const checkRateLimit = (ip: string): boolean => {
   return true;
 };
 
-const validateIfthenPaySignature = (
+// Helper function to create HMAC signature using Web Crypto API
+const createHmacSignature = async (key: string, data: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(key);
+  const messageData = encoder.encode(data);
+  
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  const hashArray = Array.from(new Uint8Array(signature));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return hashHex;
+};
+
+const validateIfthenPaySignature = async (
   payload: any,
   antiPhishingKey: string
-): boolean => {
+): Promise<boolean> => {
   if (!payload.key || !antiPhishingKey) {
     return false;
   }
@@ -38,9 +57,7 @@ const validateIfthenPaySignature = (
   // Multibanco signature: entity + reference + value + key
   if (payload.reference && payload.value) {
     const dataToSign = `${payload.reference}${payload.value}`;
-    const expectedKey = createHmac("sha256", antiPhishingKey)
-      .update(dataToSign)
-      .digest("hex");
+    const expectedKey = await createHmacSignature(antiPhishingKey, dataToSign);
     
     return payload.key === expectedKey;
   }
@@ -48,9 +65,7 @@ const validateIfthenPaySignature = (
   // MBWay signature validation (if applicable)
   if (payload.orderId && payload.amount) {
     const dataToSign = `${payload.orderId}${payload.amount}`;
-    const expectedKey = createHmac("sha256", antiPhishingKey)
-      .update(dataToSign)
-      .digest("hex");
+    const expectedKey = await createHmacSignature(antiPhishingKey, dataToSign);
     
     return payload.key === expectedKey;
   }
@@ -129,7 +144,7 @@ serve(async (req) => {
     }
 
     // Validate webhook signature
-    if (!validateIfthenPaySignature(payload, antiPhishingKey)) {
+    if (!(await validateIfthenPaySignature(payload, antiPhishingKey))) {
       console.error("Invalid webhook signature", { payload });
       
       // Log suspicious activity
@@ -151,7 +166,7 @@ serve(async (req) => {
         }
       );
     }
-
+    
     console.log("Webhook signature validated successfully");
 
     // Identificar tipo de callback (Multibanco ou MBWay)
