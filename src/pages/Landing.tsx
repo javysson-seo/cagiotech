@@ -90,7 +90,7 @@ export const Landing = () => {
       name: "Starter",
       price: "69,90",
       period: "/mês",
-      color: "bg-green-500",
+      color: "bg-cagio-green",
       description: "Ideal para estúdios e negócios em crescimento.",
       features: [
         "Até 100 clientes activos",
@@ -110,7 +110,7 @@ export const Landing = () => {
       name: "Professional",
       price: "179,90",
       period: "/mês",
-      color: "bg-blue-500",
+      color: "bg-cagio-green-dark",
       description: "Perfeito para empresas consolidadas.",
       features: [
         "Até 300 clientes activos",
@@ -132,7 +132,7 @@ export const Landing = () => {
       name: "Business",
       price: "229,90",
       period: "/mês",
-      color: "bg-purple-500",
+      color: "bg-cagio-green-dark",
       description: "Para redes, franchises e centros multiunidade.",
       features: [
         "Clientes e profissionais ilimitados",
