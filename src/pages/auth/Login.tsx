@@ -126,7 +126,7 @@ export const Login: React.FC = () => {
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
             <img 
-              src="/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png" 
+              src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
               alt="CagioTech Logo" 
               className="h-24 w-auto"
             />
