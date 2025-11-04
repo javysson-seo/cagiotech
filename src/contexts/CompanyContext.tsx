@@ -35,7 +35,8 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     const loadCompany = async () => {
-      if (!companyId || !user) {
+      const resolvedCompanyId = companyId || user?.boxId;
+      if (!resolvedCompanyId || !user) {
         setIsLoading(false);
         return;
       }
@@ -48,7 +49,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .select('*')
-          .eq('id', companyId)
+          .eq('id', resolvedCompanyId)
           .single();
 
         if (companyError || !company) {
@@ -78,7 +79,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     loadCompany();
-  }, [companyId, user, navigate]);
+  }, [companyId, user, user?.boxId, navigate]);
 
   const checkUserAccess = async (companyId: string, userId: string): Promise<boolean> => {
     try {

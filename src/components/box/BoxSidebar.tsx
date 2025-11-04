@@ -28,29 +28,31 @@ import { useAthletes } from '@/hooks/useAthletes';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
-  const { companyId } = useParams<{ companyId: string }>();
+  const { companyId: routeCompanyId } = useParams<{ companyId: string }>();
   const { currentCompany } = useCompany();
   const { athletes } = useAthletes();
 
-  if (!companyId || !currentCompany) {
+  const resolvedCompanyId = routeCompanyId || currentCompany?.id;
+
+  if (!resolvedCompanyId || !currentCompany) {
     return null;
   }
 
   const activeAthletes = athletes.filter(athlete => athlete.status === 'active').length;
 
   const navigation = [
-    { name: 'Dashboard', href: `/${companyId}`, icon: Home },
-    { name: 'Atletas', href: `/${companyId}/athletes`, icon: Users },
-    { name: 'Recursos humanos', href: `/${companyId}/hr`, icon: UserCheck },
-    { name: 'Aulas / Serviços', href: `/${companyId}/classes`, icon: Calendar },
-    { name: 'Treinos', href: `/${companyId}/workouts`, icon: Trophy },
-    { name: 'CRM', href: `/${companyId}/crm`, icon: UserPlus },
-    { name: 'Comunicação', href: `/${companyId}/communication`, icon: MessageSquare },
-    { name: 'Financeiro', href: `/${companyId}/financial`, icon: Euro },
-    { name: 'Material deportivo', href: `/${companyId}/equipment`, icon: Dumbbell },
-    { name: 'Loja', href: `/${companyId}/store`, icon: Package },
-    { name: 'Eventos', href: `/${companyId}/events`, icon: CalendarDays },
-    { name: 'Configurações', href: `/${companyId}/settings`, icon: Settings },
+    { name: 'Dashboard', href: `/${resolvedCompanyId}`, icon: Home },
+    { name: 'Atletas', href: `/${resolvedCompanyId}/athletes`, icon: Users },
+    { name: 'Recursos humanos', href: `/${resolvedCompanyId}/hr`, icon: UserCheck },
+    { name: 'Aulas / Serviços', href: `/${resolvedCompanyId}/classes`, icon: Calendar },
+    { name: 'Treinos', href: `/${resolvedCompanyId}/workouts`, icon: Trophy },
+    { name: 'CRM', href: `/${resolvedCompanyId}/crm`, icon: UserPlus },
+    { name: 'Comunicação', href: `/${resolvedCompanyId}/communication`, icon: MessageSquare },
+    { name: 'Financeiro', href: `/${resolvedCompanyId}/financial`, icon: Euro },
+    { name: 'Material deportivo', href: `/${resolvedCompanyId}/equipment`, icon: Dumbbell },
+    { name: 'Loja', href: `/${resolvedCompanyId}/store`, icon: Package },
+    { name: 'Eventos', href: `/${resolvedCompanyId}/events`, icon: CalendarDays },
+    { name: 'Configurações', href: `/${resolvedCompanyId}/settings`, icon: Settings },
   ];
 
   return (
@@ -80,7 +82,7 @@ export const BoxSidebar: React.FC = () => {
           <NavLink
             key={item.name}
             to={item.href}
-            end={item.href === `/${companyId}`}
+            end={item.href === `/${resolvedCompanyId}`}
             className={({ isActive }) =>
               cn(
                 'flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors',
