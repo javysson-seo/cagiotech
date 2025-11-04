@@ -25,13 +25,16 @@ import {
   History,
   CreditCard,
   Plus,
-  Trash2
+  Trash2,
+  Trophy
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NutritionalPlanModal } from './NutritionalPlanModal';
 import { CheckInDialog } from './CheckInDialog';
 import { BlockAthleteDialog } from './BlockAthleteDialog';
 import { PhysicalAssessmentModal } from './PhysicalAssessmentModal';
+import { WorkoutAssignmentDialog } from './WorkoutAssignmentDialog';
+import { AthleteWorkoutHistory } from './AthleteWorkoutHistory';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -54,6 +57,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   const [checkInDialogOpen, setCheckInDialogOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [physicalAssessmentOpen, setPhysicalAssessmentOpen] = useState(false);
+  const [workoutAssignmentOpen, setWorkoutAssignmentOpen] = useState(false);
 
   if (!athlete) return null;
 
@@ -172,6 +176,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
               Check-in
             </Button>
             
+            <Button onClick={() => setWorkoutAssignmentOpen(true)} variant="outline" size="sm" style={{ borderColor: '#aeca12', color: '#aeca12' }}>
+              <Trophy className="h-4 w-4 mr-2" />
+              Atribuir Treino
+            </Button>
+            
             <Button onClick={() => setPhysicalAssessmentOpen(true)} variant="outline" size="sm">
               <Activity className="h-4 w-4 mr-2" />
               Avaliação Física
@@ -215,8 +224,9 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
 
           {/* Tabs de Conteúdo */}
           <Tabs defaultValue="overview" className="w-full mt-4">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Resumo</TabsTrigger>
+              <TabsTrigger value="workouts">Treinos</TabsTrigger>
               <TabsTrigger value="documents">Documentos</TabsTrigger>
               <TabsTrigger value="history">Histórico</TabsTrigger>
               <TabsTrigger value="payments">Pagamentos</TabsTrigger>
@@ -381,6 +391,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            {/* Tab Treinos */}
+            <TabsContent value="workouts" className="space-y-6">
+              <AthleteWorkoutHistory athleteId={athlete.id} />
             </TabsContent>
 
             {/* Tab Documentos */}
@@ -659,6 +674,12 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
           setPhysicalAssessmentOpen(false);
           toast.success('Avaliação física salva com sucesso!');
         }}
+      />
+
+      <WorkoutAssignmentDialog
+        open={workoutAssignmentOpen}
+        onOpenChange={setWorkoutAssignmentOpen}
+        athleteId={athlete.id}
       />
     </Dialog>
   );
