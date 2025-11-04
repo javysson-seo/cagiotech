@@ -118,18 +118,19 @@ export const UnifiedLogin: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
-            <Dumbbell className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center mb-4">
+            <img 
+              src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
+              alt="CagioTech Logo" 
+              className="h-24 w-auto"
+            />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            CAGIO
-          </h1>
           <p className="text-muted-foreground mt-2">
-            Sistema de Gestão para BOX de CrossFit
+            Sistema de Gestão Fitness & Wellness
           </p>
         </div>
 
@@ -196,7 +197,8 @@ export const UnifiedLogin: React.FC = () => {
 
               <Button 
                 type="submit" 
-                className="w-full h-11 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+                className="w-full h-11 text-white hover:opacity-90 transition-opacity" 
+                style={{ backgroundColor: '#aeca12' }}
                 disabled={loading}
               >
                 {loading ? <Loading size="sm" text="Entrando..." /> : 'Entrar'}
@@ -205,7 +207,11 @@ export const UnifiedLogin: React.FC = () => {
 
             <div className="mt-6 text-center text-sm">
               <span className="text-muted-foreground">Não tem conta? </span>
-              <Link to="/auth/box-register" className="text-blue-600 hover:underline font-medium">
+              <Link 
+                to="/auth/box-register" 
+                className="hover:underline font-medium"
+                style={{ color: '#aeca12' }}
+              >
                 Registrar BOX
               </Link>
             </div>
