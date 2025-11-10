@@ -87,6 +87,21 @@ serve(async (req) => {
 
     if (authError) {
       console.error("Error creating auth user:", authError);
+      
+      // Handle email already exists error
+      if (authError.message?.includes('already been registered') || (authError as any).code === 'email_exists') {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: 'Este email já está registrado no sistema. Use outro email ou recupere a senha existente.'
+          }),
+          {
+            status: 422,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      
       throw authError;
     }
 

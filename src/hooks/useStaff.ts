@@ -126,7 +126,9 @@ export const useStaff = () => {
             }
           } catch (userError) {
             console.error('Error creating user account:', userError);
-            toast.warning('Funcionário criado, mas houve erro ao criar a conta de acesso.');
+            const errorMessage = userError instanceof Error ? userError.message : 'Erro desconhecido';
+            toast.error(`Erro ao criar conta de acesso: ${errorMessage}`);
+            return; // Don't show success if account creation failed
           }
         }
 
@@ -193,10 +195,12 @@ export const useStaff = () => {
 
     if (error) {
       console.error('Error creating user account:', error);
-      throw error;
+      // Show user-friendly error message
+      throw new Error(error.message || 'Erro ao criar conta de acesso');
     }
 
     if (!data?.success) {
+      // Show the error message from the edge function
       throw new Error(data?.error || 'Erro ao criar usuário');
     }
 
