@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Calendar, FileText } from 'lucide-react';
-import { toast } from 'sonner';
+import { usePayroll } from '@/hooks/usePayroll';
 
 interface GeneratePayrollModalProps {
   isOpen: boolean;
@@ -14,10 +14,14 @@ export const GeneratePayrollModal: React.FC<GeneratePayrollModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const { generatePayroll } = usePayroll();
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  const handleGenerate = () => {
-    toast.success('Folha de pagamento gerada com sucesso!');
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    await generatePayroll(month);
+    setIsGenerating(false);
     onClose();
   };
 
@@ -51,12 +55,12 @@ export const GeneratePayrollModal: React.FC<GeneratePayrollModalProps> = ({
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={isGenerating}>
               Cancelar
             </Button>
-            <Button onClick={handleGenerate} className="gap-2">
+            <Button onClick={handleGenerate} className="gap-2" disabled={isGenerating}>
               <FileText className="h-4 w-4" />
-              Gerar Folha
+              {isGenerating ? 'Gerando...' : 'Gerar Folha'}
             </Button>
           </div>
         </div>

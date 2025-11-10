@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Save } from 'lucide-react';
-import { toast } from 'sonner';
+import { useStaffPaymentConfig, type StaffPaymentConfig } from '@/hooks/useStaffPaymentConfig';
 
 interface PayrollConfigModalProps {
   isOpen: boolean;
@@ -19,7 +19,8 @@ export const PayrollConfigModal: React.FC<PayrollConfigModalProps> = ({
   onClose,
   staff
 }) => {
-  const [config, setConfig] = useState({
+  const { getConfigByStaffId, saveConfig } = useStaffPaymentConfig();
+  const [config, setConfig] = useState<Partial<StaffPaymentConfig>>({
     payment_type: 'monthly_salary',
     base_amount: 0,
     hourly_rate: 0,
@@ -31,8 +32,31 @@ export const PayrollConfigModal: React.FC<PayrollConfigModalProps> = ({
     notes: ''
   });
 
-  const handleSave = () => {
-    toast.success('Configuração salva com sucesso!');
+  useEffect(() => {
+    if (staff?.id) {
+      const existingConfig = getConfigByStaffId(staff.id);
+      if (existingConfig) {
+        setConfig(existingConfig);
+      } else {
+        setConfig({
+          staff_id: staff.id,
+          payment_type: 'monthly_salary',
+          base_amount: 0,
+          hourly_rate: 0,
+          per_class_rate: 0,
+          commission_percentage: 0,
+          payment_day: 25,
+          payment_frequency: 'monthly',
+          iban: '',
+          notes: ''
+        });
+      }
+    }
+  }, [staff, getConfigByStaffId]);
+
+  const handleSave = async () => {
+    if (!staff?.id) return;
+    await saveConfig({ ...config, staff_id: staff.id } as StaffPaymentConfig);
     onClose();
   };
 
@@ -49,7 +73,7 @@ export const PayrollConfigModal: React.FC<PayrollConfigModalProps> = ({
               <Label>Tipo de Pagamento *</Label>
               <Select 
                 value={config.payment_type}
-                onValueChange={(value) => setConfig({ ...config, payment_type: value })}
+                onValueChange={(value) => setConfig({ ...config, payment_type: value as StaffPaymentConfig['payment_type'] })}
               >
                 <SelectTrigger>
                   <SelectValue />
