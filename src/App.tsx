@@ -9,6 +9,7 @@ import { CompanyProvider } from "@/contexts/CompanyContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
+import { FirstLoginGuard } from "@/components/auth/FirstLoginGuard";
 
 // Pages
 import Index from "./pages/Index";
@@ -20,6 +21,7 @@ import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import { EmailVerification } from "./pages/auth/EmailVerification";
 import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
+import { BoxRegisterWithPlan } from "./pages/auth/BoxRegisterWithPlan";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -80,16 +82,18 @@ function App() {
             <LanguageProvider>
               <TooltipProvider>
                 <Toaster />
-                <Routes>
-                  {/* Public Routes */}
-                  <Route path="/" element={<Landing />} />
-                  <Route path="/old-landing" element={<Landing />} />
-                  <Route path="/auth/login" element={<UnifiedLogin />} />
-                  <Route path="/login" element={<UnifiedLogin />} />
-                  <Route path="/auth/box-register" element={<BoxRegister />} />
-                  <Route path="/auth/student-register" element={<StudentRegister />} />
-                  <Route path="/auth/email-verification" element={<EmailVerification />} />
-                  <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
+                <FirstLoginGuard>
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/" element={<Landing />} />
+                    <Route path="/old-landing" element={<Landing />} />
+                    <Route path="/auth/login" element={<UnifiedLogin />} />
+                    <Route path="/login" element={<UnifiedLogin />} />
+                    <Route path="/auth/box-register" element={<BoxRegister />} />
+                    <Route path="/register-with-plan" element={<BoxRegisterWithPlan />} />
+                    <Route path="/auth/student-register" element={<StudentRegister />} />
+                    <Route path="/auth/email-verification" element={<EmailVerification />} />
+                    <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
                   
                   {/* Admin Routes - Sem autenticação */}
                   <Route path="/admin" element={<MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect>} />
@@ -341,9 +345,10 @@ function App() {
                   {/* Landing Page */}
                   <Route path="/landing" element={<LandingPage />} />
 
-                  {/* Fallback */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+                    {/* Fallback */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </FirstLoginGuard>
               </TooltipProvider>
             </LanguageProvider>
           </ThemeProvider>

@@ -3267,9 +3267,11 @@ export type Database = {
           created_at: string | null
           department: string
           email: string | null
+          first_login: boolean | null
           hire_date: string | null
           id: string
           name: string
+          password_changed_at: string | null
           phone: string | null
           position: string
           role_id: string | null
@@ -3284,9 +3286,11 @@ export type Database = {
           created_at?: string | null
           department: string
           email?: string | null
+          first_login?: boolean | null
           hire_date?: string | null
           id?: string
           name: string
+          password_changed_at?: string | null
           phone?: string | null
           position: string
           role_id?: string | null
@@ -3301,9 +3305,11 @@ export type Database = {
           created_at?: string | null
           department?: string
           email?: string | null
+          first_login?: boolean | null
           hire_date?: string | null
           id?: string
           name?: string
+          password_changed_at?: string | null
           phone?: string | null
           position?: string
           role_id?: string | null
@@ -4073,10 +4079,7 @@ export type Database = {
         Args: { target_profile_id: string }
         Returns: boolean
       }
-      check_birthday_notifications: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      check_birthday_notifications: { Args: never; Returns: undefined }
       check_suspicious_activity: {
         Args: { _action: string; _user_id: string }
         Returns: boolean
@@ -4100,10 +4103,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      inserir_3x_e_parar: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      inserir_3x_e_parar: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role:
