@@ -241,19 +241,11 @@ export const StaffList: React.FC = () => {
         }}
         staff={selectedStaff}
         onSave={async (staffData) => {
-          // Se estiver criando um novo funcionário, verificar email duplicado
-          if (!staffData.id && staffData.email) {
-            const emailExists = await checkEmailExists(staffData.email);
-            if (emailExists) {
-              toast.error('Este email já está cadastrado no sistema. Use outro email ou edite o funcionário existente.');
-              return;
-            }
-          }
-          
           await saveStaff(staffData);
           setIsModalOpen(false);
           setSelectedStaff(null);
         }}
+        checkEmailExists={checkEmailExists}
       />
 
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

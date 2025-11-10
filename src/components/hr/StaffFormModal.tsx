@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Eye, EyeOff, Copy } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Copy, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRoles } from '@/hooks/useRoles';
 import { staffSchema } from '@/lib/validation-schemas';
@@ -30,13 +30,15 @@ interface StaffFormModalProps {
   onClose: () => void;
   staff?: StaffMember | null;
   onSave: (staff: StaffMember) => void;
+  checkEmailExists: (email: string) => Promise<boolean>;
 }
 
 export const StaffFormModal: React.FC<StaffFormModalProps> = ({
   isOpen,
   onClose,
   staff,
-  onSave
+  onSave,
+  checkEmailExists
 }) => {
   const { roles } = useRoles();
   const [formData, setFormData] = useState<StaffMember>({
@@ -53,11 +55,14 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
 
   const [showCredentials, setShowCredentials] = useState(false);
   const [validationErrors, setValidationErrors] = useState<z.ZodError | null>(null);
+  const [emailCheckStatus, setEmailCheckStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
+  const [emailCheckTimeout, setEmailCheckTimeout] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (isOpen) {
       if (staff) {
         setFormData(staff);
+        setEmailCheckStatus('idle');
       } else {
         setFormData({
           name: '',
@@ -70,12 +75,62 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
           status: 'active',
           role_id: undefined
         });
+        setEmailCheckStatus('idle');
       }
     }
   }, [staff, isOpen]);
 
+  useEffect(() => {
+    // Cleanup timeout on unmount
+    return () => {
+      if (emailCheckTimeout) {
+        clearTimeout(emailCheckTimeout);
+      }
+    };
+  }, [emailCheckTimeout]);
+
+  const checkEmail = useCallback(async (email: string) => {
+    if (!email || staff?.id) {
+      setEmailCheckStatus('idle');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailCheckStatus('idle');
+      return;
+    }
+
+    setEmailCheckStatus('checking');
+    const exists = await checkEmailExists(email);
+    setEmailCheckStatus(exists ? 'taken' : 'available');
+  }, [checkEmailExists, staff?.id]);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setFormData({ ...formData, email: newEmail });
+
+    // Clear previous timeout
+    if (emailCheckTimeout) {
+      clearTimeout(emailCheckTimeout);
+    }
+
+    // Set new timeout for debounced check
+    const timeout = setTimeout(() => {
+      checkEmail(newEmail);
+    }, 500);
+
+    setEmailCheckTimeout(timeout);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if email is taken
+    if (!staff?.id && emailCheckStatus === 'taken') {
+      toast.error('Este email já está em uso');
+      return;
+    }
     
     // Validate with Zod schema
     const validation = staffSchema.safeParse({
@@ -154,14 +209,40 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
 
             <div className="space-y-2">
               <Label htmlFor="email">Email *</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="funcionario@empresa.com"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleEmailChange}
+                  placeholder="funcionario@empresa.com"
+                  required
+                  className={
+                    emailCheckStatus === 'taken' 
+                      ? 'border-destructive focus-visible:ring-destructive' 
+                      : emailCheckStatus === 'available'
+                      ? 'border-green-500 focus-visible:ring-green-500'
+                      : ''
+                  }
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {emailCheckStatus === 'checking' && (
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  )}
+                  {emailCheckStatus === 'available' && (
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                  )}
+                  {emailCheckStatus === 'taken' && (
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  )}
+                </div>
+              </div>
+              {emailCheckStatus === 'taken' && (
+                <p className="text-sm text-destructive">Este email já está em uso</p>
+              )}
+              {emailCheckStatus === 'available' && (
+                <p className="text-sm text-green-600">Email disponível</p>
+              )}
             </div>
 
             <div className="space-y-2">
