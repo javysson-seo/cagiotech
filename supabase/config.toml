@@ -13,3 +13,7 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.create-staff-user]
+verify_jwt = true
+
+[functions.notify-staff-activation]
+verify_jwt = true

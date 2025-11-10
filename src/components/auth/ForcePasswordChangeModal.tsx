@@ -115,6 +115,29 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
         console.error('Error updating staff record:', staffError);
       }
 
+      // Get company_id to send notification
+      const { data: staffData } = await supabase
+        .from('staff')
+        .select('company_id')
+        .eq('id', staffId)
+        .single();
+
+      // Send notification email to admin
+      if (staffData?.company_id) {
+        try {
+          await supabase.functions.invoke('notify-staff-activation', {
+            body: {
+              staff_id: staffId,
+              company_id: staffData.company_id
+            }
+          });
+          console.log('Admin notification sent successfully');
+        } catch (emailError) {
+          console.error('Error sending admin notification:', emailError);
+          // Don't fail the password change if email fails
+        }
+      }
+
       toast.success('Senha alterada com sucesso!');
       onPasswordChanged();
 
