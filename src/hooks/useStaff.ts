@@ -86,19 +86,10 @@ export const useStaff = () => {
         toast.success('Funcionário atualizado com sucesso!');
       } else {
         // Create new staff
-        const { data: newStaff, error } = await (supabase as any)
-          .from('staff')
-          .insert([{ ...staffWithCompany, created_at: new Date().toISOString() }])
-          .select()
-          .single();
+        let userId: string | undefined;
+        let credentials: { email: string; password: string } | undefined;
 
-        if (error) {
-          console.error('Error creating staff:', error);
-          toast.error(`Erro ao criar funcionário: ${error.message || ''}`.trim());
-          return;
-        }
-
-        // Create user account if email and birth_date are provided
+        // Create user account FIRST if email and birth_date are provided
         if (staffData.email && staffData.birth_date) {
           try {
             const result = await createUserAccount(
@@ -109,30 +100,47 @@ export const useStaff = () => {
               staffData.role_id
             );
             
-            // Update staff with user_id
-            if (result?.userId && newStaff?.id) {
-              await (supabase as any)
-                .from('staff')
-                .update({ user_id: result.userId })
-                .eq('id', newStaff.id);
-            }
-
-            // Show credentials to admin
-            if (result?.credentials) {
-              toast.success(
-                `Funcionário criado! Email: ${result.credentials.email} | Senha: ${result.credentials.password}`,
-                { duration: 15000 }
-              );
-            }
+            userId = result?.userId;
+            credentials = result?.credentials;
           } catch (userError) {
             console.error('Error creating user account:', userError);
             const errorMessage = userError instanceof Error ? userError.message : 'Erro desconhecido';
             toast.error(`Erro ao criar conta de acesso: ${errorMessage}`);
-            return; // Don't show success if account creation failed
+            return; // Stop here if user creation fails
           }
         }
 
-        toast.success('Funcionário criado com sucesso!');
+        // Now create staff record with user_id
+        const staffDataWithUser = userId 
+          ? { ...staffWithCompany, user_id: userId, created_at: new Date().toISOString() }
+          : { ...staffWithCompany, created_at: new Date().toISOString() };
+
+        const { data: newStaff, error } = await (supabase as any)
+          .from('staff')
+          .insert([staffDataWithUser])
+          .select()
+          .single();
+
+        if (error) {
+          console.error('Error creating staff:', error);
+          toast.error(`Erro ao criar funcionário: ${error.message || ''}`.trim());
+          
+          // If staff creation fails but user was created, we should clean up
+          if (userId) {
+            console.error('Staff creation failed but user was created. Manual cleanup may be needed for user_id:', userId);
+          }
+          return;
+        }
+
+        // Show credentials to admin
+        if (credentials) {
+          toast.success(
+            `Funcionário criado! Email: ${credentials.email} | Senha: ${credentials.password}`,
+            { duration: 15000 }
+          );
+        } else {
+          toast.success('Funcionário criado com sucesso!');
+        }
       }
 
       await fetchStaff();
