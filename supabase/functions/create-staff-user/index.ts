@@ -6,6 +6,8 @@ const ALLOWED_ORIGINS = [
   "https://vwonynqoybfvaleyfmog.supabase.co",
   "http://localhost:5173",
   "http://localhost:3000",
+  "https://preview--cagiotech.lovable.app",
+  "https://cagiotech.lovable.app"
 ];
 
 const getCorsHeaders = (origin: string | null) => ({
@@ -24,6 +26,7 @@ const createStaffSchema = z.object({
   name: z.string().trim().min(2).max(100),
   position: z.string().min(1).max(100),
   company_id: z.string().uuid(),
+  role_id: z.string().uuid().optional(),
 });
 
 serve(async (req) => {
@@ -65,7 +68,7 @@ serve(async (req) => {
       );
     }
 
-    const { email, password, name, position, company_id } = validation.data;
+    const { email, password, name, position, company_id, role_id } = validation.data;
 
     console.log("Creating user for staff:", email);
 
@@ -110,6 +113,27 @@ serve(async (req) => {
     }
 
     console.log("User role created successfully");
+
+    // If role_id is provided, create user_role_permissions
+    if (role_id) {
+      console.log("Assigning custom role permissions:", role_id);
+      
+      const { error: permError } = await supabaseAdmin
+        .from('user_role_permissions')
+        .insert({
+          user_id: authData.user.id,
+          role_id: role_id,
+          company_id: company_id
+        });
+
+      if (permError) {
+        console.error("Error creating user role permissions:", permError);
+        // Don't fail the entire operation if permissions fail
+        // Just log the error
+      } else {
+        console.log("User role permissions created successfully");
+      }
+    }
 
     return new Response(
       JSON.stringify({

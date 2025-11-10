@@ -99,7 +99,8 @@ export const useStaff = () => {
               staffData.email, 
               staffData.name, 
               staffData.birth_date,
-              staffData.position
+              staffData.position,
+              staffData.role_id
             );
             
             // Update staff with user_id
@@ -152,10 +153,11 @@ export const useStaff = () => {
     const day = dateObj.getDate().toString().padStart(2, '0');
     const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const year = dateObj.getFullYear().toString();
-    return `${day}${month}${year}`;
+    // Format: Dd[day][month][year] - e.g., Dd01012000 (has uppercase, lowercase, and numbers)
+    return `Dd${day}${month}${year}`;
   };
 
-  const createUserAccount = async (email: string, name: string, birthDate: string, position: string) => {
+  const createUserAccount = async (email: string, name: string, birthDate: string, position: string, roleId?: string) => {
     if (!currentCompany?.id) return;
     
     const password = generatePasswordFromDate(birthDate);
@@ -166,7 +168,8 @@ export const useStaff = () => {
         password,
         name,
         position,
-        company_id: currentCompany.id
+        company_id: currentCompany.id,
+        role_id: roleId
       }
     });
 

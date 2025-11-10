@@ -104,7 +104,8 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
     const day = dateObj.getDate().toString().padStart(2, '0');
     const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
     const year = dateObj.getFullYear().toString();
-    return `${day}${month}${year}`;
+    // Format: Dd[day][month][year] - e.g., Dd01012000
+    return `Dd${day}${month}${year}`;
   };
 
   const copyToClipboard = (text: string) => {
@@ -342,8 +343,8 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                 
                 <Alert>
                   <AlertDescription className="text-sm">
-                    A password é gerada automaticamente usando a data de nascimento no formato DDMMAAAA. 
-                    O funcionário poderá alterar a password após o primeiro login.
+                    A password é gerada automaticamente no formato <strong>DdDDMMAAAA</strong> (ex: Dd01012000). 
+                    O funcionário poderá e deverá alterar a password após o primeiro login.
                   </AlertDescription>
                 </Alert>
               </CardContent>
