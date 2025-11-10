@@ -49,8 +49,8 @@ export const staffSchema = z.object({
   email: optionalEmail,
   phone: z.string().regex(phoneRegex, 'Telefone inválido').optional().or(z.literal('')),
   birth_date: z.string().optional(),
-  position: z.string().max(100).optional(),
-  department: z.string().max(100).optional(),
+  position: z.string().trim().min(1, 'Selecione um cargo').max(100),
+  department: z.string().trim().min(1, 'Selecione um departamento').max(100),
   hire_date: z.string().optional(),
   salary: z.number().min(0, 'Salário não pode ser negativo').max(1000000).optional(),
 });

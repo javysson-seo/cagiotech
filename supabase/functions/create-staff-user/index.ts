@@ -10,8 +10,8 @@ const ALLOWED_ORIGINS = [
   "https://cagiotech.lovable.app"
 ];
 
-const getCorsHeaders = (origin: string | null) => ({
-  "Access-Control-Allow-Origin": origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
+const getCorsHeaders = (_origin: string | null) => ({
+  "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
   "Access-Control-Allow-Credentials": "true",
 });

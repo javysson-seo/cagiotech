@@ -73,7 +73,7 @@ export const useStaff = () => {
 
         if (error) {
           console.error('Error updating staff:', error);
-          toast.error('Erro ao atualizar funcionário.');
+          toast.error(`Erro ao atualizar funcionário: ${error.message || ''}`.trim());
           return;
         }
 
@@ -88,7 +88,7 @@ export const useStaff = () => {
 
         if (error) {
           console.error('Error creating staff:', error);
-          toast.error('Erro ao criar funcionário.');
+          toast.error(`Erro ao criar funcionário: ${error.message || ''}`.trim());
           return;
         }
 

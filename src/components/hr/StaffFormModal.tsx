@@ -189,6 +189,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
               <Select
                 value={formData.position}
                 onValueChange={(value) => setFormData({ ...formData, position: value })}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o cargo" />
@@ -203,6 +204,9 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                   <SelectItem value="outro">Outro</SelectItem>
                 </SelectContent>
               </Select>
+              {validationErrors?.errors.find(e => e.path.join('.') === 'position') && (
+                <p className="text-sm text-destructive">{validationErrors.errors.find(e => e.path.join('.') === 'position')?.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -210,6 +214,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
               <Select
                 value={formData.department}
                 onValueChange={(value) => setFormData({ ...formData, department: value })}
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o departamento" />
@@ -222,6 +227,9 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                   <SelectItem value="treino">Treino e Fitness</SelectItem>
                 </SelectContent>
               </Select>
+              {validationErrors?.errors.find(e => e.path.join('.') === 'department') && (
+                <p className="text-sm text-destructive">{validationErrors.errors.find(e => e.path.join('.') === 'department')?.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
