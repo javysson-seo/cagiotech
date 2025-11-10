@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Menu, 
   X, 
-  Calendar,
+  Calendar as CalendarIcon,
   TrendingUp,
   Zap,
   BarChart3,
@@ -35,11 +35,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { Logo } from '@/components/ui/logo';
+import { Calendar } from '@/components/ui/calendar';
 
 export const Landing = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const features = [
     {
@@ -48,7 +50,7 @@ export const Landing = () => {
       description: "Organize toda a operação: inscrições, presenças, pagamentos e histórico de interações — tudo centralizado e acessível em tempo real."
     },
     {
-      icon: Calendar,
+      icon: CalendarIcon,
       title: "Agendamento Inteligente",
       description: "Sistema de reservas automático com notificações e lista de espera integrada — nunca mais perca uma sessão por desorganização."
     },
@@ -429,8 +431,36 @@ export const Landing = () => {
         </div>
       </section>
 
-      {/* Comparison Section */}
+      {/* Calendar Demo Section */}
       <section className="py-20 md:py-32 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16 animate-fade-in">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
+              Agendamento Simplificado
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              Sistema de calendário intuitivo com navegação rápida por mês e ano. Facilite o agendamento de sessões e treinos.
+            </p>
+          </div>
+
+          <div className="flex justify-center">
+            <Card className="max-w-fit animate-fade-in shadow-xl">
+              <CardContent className="p-6">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  className="rounded-md border shadow-sm"
+                  captionLayout="dropdown"
+                />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Section */}
+      <section className="py-20 md:py-32 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 animate-fade-in">
             <h2 className="text-3xl md:text-5xl font-bold mb-6 text-foreground">
