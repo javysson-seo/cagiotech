@@ -104,6 +104,7 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
                     selected={startDate}
                     onSelect={(date) => date && setStartDate(date)}
                     locale={ptBR}
+                    captionLayout="dropdown"
                   />
                 </PopoverContent>
               </Popover>
@@ -131,6 +132,7 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
                     onSelect={setEndDate}
                     locale={ptBR}
                     disabled={(date) => date < startDate}
+                    captionLayout="dropdown"
                   />
                 </PopoverContent>
               </Popover>

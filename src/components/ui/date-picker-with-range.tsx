@@ -74,6 +74,7 @@ export const DatePickerWithRange: React.FC<DatePickerWithRangeProps> = ({
             }}
             numberOfMonths={2}
             locale={pt}
+            captionLayout="dropdown"
           />
         </PopoverContent>
       </Popover>

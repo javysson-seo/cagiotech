@@ -84,6 +84,7 @@ export const BookingCalendar: React.FC = () => {
             selected={selectedDate}
             onSelect={setSelectedDate}
             className="rounded-md border"
+            captionLayout="dropdown"
           />
         </CardContent>
       </Card>
