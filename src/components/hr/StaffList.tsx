@@ -26,10 +26,12 @@ import {
   Search,
   UserPlus,
   Filter,
-  Users
+  Users,
+  Eye
 } from 'lucide-react';
 import { useStaff, type Staff } from '@/hooks/useStaff';
 import { StaffFormModal } from './StaffFormModal';
+import { StaffDetailModal } from './StaffDetailModal';
 import { Loading } from '@/components/ui/loading';
 import {
   AlertDialog,
@@ -43,9 +45,10 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const StaffList: React.FC = () => {
-  const { staff, loading, saveStaff, deleteStaff } = useStaff();
+  const { staff, loading, saveStaff, deleteStaff, resetStaffPassword } = useStaff();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [staffToDelete, setStaffToDelete] = useState<string | null>(null);
@@ -58,7 +61,12 @@ export const StaffList: React.FC = () => {
 
   const handleEdit = (member: Staff) => {
     setSelectedStaff(member);
-    setIsModalOpen(true);
+    setShowDetailModal(true);
+  };
+
+  const handleView = (member: Staff) => {
+    setSelectedStaff(member);
+    setShowDetailModal(true);
   };
 
   const handleDelete = async () => {
@@ -194,9 +202,13 @@ export const StaffList: React.FC = () => {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => handleView(member)}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              Ver Detalhes
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => handleEdit(member)}>
                               <Pencil className="h-4 w-4 mr-2" />
-                              Editar
+                              Editar Rápido
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => {
@@ -253,6 +265,23 @@ export const StaffList: React.FC = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {selectedStaff && showDetailModal && (
+        <StaffDetailModal
+          isOpen={showDetailModal}
+          onClose={() => {
+            setShowDetailModal(false);
+            setSelectedStaff(null);
+          }}
+          staff={selectedStaff}
+          onSave={async (staffData) => {
+            await saveStaff(staffData);
+            setShowDetailModal(false);
+            setSelectedStaff(null);
+          }}
+          onResetPassword={resetStaffPassword}
+        />
+      )}
     </>
   );
 };
