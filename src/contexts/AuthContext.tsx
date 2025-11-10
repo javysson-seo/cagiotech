@@ -193,9 +193,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return roleMap[dbRole] || 'student';
       };
 
-      // Fetch custom permissions for staff members
+      // Determine permissions based on role
       let customPermissions: string[] | null = null;
-      if (primaryRole.role === 'staff_member') {
+      
+      // Box owners (company owners) always have full access
+      if (primaryRole.role === 'box_owner') {
+        customPermissions = ['all'];
+      } 
+      // Staff members get custom permissions from their role
+      else if (primaryRole.role === 'staff_member') {
         // Get staff info to find role_id
         const { data: staffData } = await supabase
           .from('staff')
@@ -391,7 +397,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'cagio_admin':
         return ['all'];
       case 'box_admin':
-        return ['manage_athletes', 'manage_trainers', 'manage_classes', 'view_reports'];
+        // Box admins (company owners) have full access
+        return ['all'];
       case 'trainer':
         return ['view_schedule', 'manage_classes', 'view_athletes'];
       case 'student':

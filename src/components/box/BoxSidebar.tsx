@@ -143,7 +143,7 @@ export const BoxSidebar: React.FC = () => {
           <p className="font-semibold text-sm text-foreground truncate">{currentCompany.name}</p>
           <p className="text-xs text-muted-foreground truncate">{user?.name}</p>
           <Badge variant="outline" className="text-xs mt-1">
-            Administrador
+            {hasPermission('all') ? 'Administrador' : 'Funcionário'}
           </Badge>
         </div>
       </div>
