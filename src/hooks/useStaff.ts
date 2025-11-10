@@ -213,6 +213,29 @@ export const useStaff = () => {
     };
   };
 
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    if (!currentCompany?.id) return false;
+    
+    try {
+      const { data, error } = await (supabase as any)
+        .from('staff')
+        .select('id, email')
+        .eq('company_id', currentCompany.id)
+        .eq('email', email.toLowerCase().trim())
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error checking email:', error);
+        return false;
+      }
+
+      return !!data;
+    } catch (error) {
+      console.error('Error checking email:', error);
+      return false;
+    }
+  };
+
   const refetchStaff = useCallback(() => {
     fetchStaff();
   }, [fetchStaff]);
@@ -252,6 +275,7 @@ export const useStaff = () => {
     createUserAccount,
     generatePasswordFromDate,
     resetStaffPassword,
-    refetchStaff
+    refetchStaff,
+    checkEmailExists
   };
 };

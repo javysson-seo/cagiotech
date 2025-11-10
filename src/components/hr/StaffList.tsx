@@ -33,6 +33,7 @@ import { useStaff, type Staff } from '@/hooks/useStaff';
 import { StaffFormModal } from './StaffFormModal';
 import { StaffDetailModal } from './StaffDetailModal';
 import { Loading } from '@/components/ui/loading';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +46,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export const StaffList: React.FC = () => {
-  const { staff, loading, saveStaff, deleteStaff, resetStaffPassword } = useStaff();
+  const { staff, loading, saveStaff, deleteStaff, resetStaffPassword, checkEmailExists } = useStaff();
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -240,6 +241,15 @@ export const StaffList: React.FC = () => {
         }}
         staff={selectedStaff}
         onSave={async (staffData) => {
+          // Se estiver criando um novo funcionário, verificar email duplicado
+          if (!staffData.id && staffData.email) {
+            const emailExists = await checkEmailExists(staffData.email);
+            if (emailExists) {
+              toast.error('Este email já está cadastrado no sistema. Use outro email ou edite o funcionário existente.');
+              return;
+            }
+          }
+          
           await saveStaff(staffData);
           setIsModalOpen(false);
           setSelectedStaff(null);
