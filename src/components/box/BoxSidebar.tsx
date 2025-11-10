@@ -25,12 +25,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useCompany } from '@/contexts/CompanyContext';
 import { Logo } from '@/components/ui/logo';
 import { useAthletes } from '@/hooks/useAthletes';
+import { usePermissions } from '@/hooks/usePermissions';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
   const { companyId: routeCompanyId } = useParams<{ companyId: string }>();
   const { currentCompany } = useCompany();
   const { athletes } = useAthletes();
+  const { hasPermission, hasAnyPermission } = usePermissions();
 
   const resolvedCompanyId = routeCompanyId || currentCompany?.id;
 
@@ -41,19 +43,89 @@ export const BoxSidebar: React.FC = () => {
   const activeAthletes = athletes.filter(athlete => athlete.status === 'active').length;
 
   const navigation = [
-    { name: 'Dashboard', href: `/${resolvedCompanyId}`, icon: Home },
-    { name: 'Atletas', href: `/${resolvedCompanyId}/athletes`, icon: Users },
-    { name: 'Recursos humanos', href: `/${resolvedCompanyId}/hr`, icon: UserCheck },
-    { name: 'Aulas / Serviços', href: `/${resolvedCompanyId}/classes`, icon: Calendar },
-    { name: 'Treinos', href: `/${resolvedCompanyId}/workouts`, icon: Trophy },
-    { name: 'CRM', href: `/${resolvedCompanyId}/crm`, icon: UserPlus },
-    { name: 'Comunicação', href: `/${resolvedCompanyId}/communication`, icon: MessageSquare },
-    { name: 'Financeiro', href: `/${resolvedCompanyId}/financial`, icon: Euro },
-    { name: 'Material deportivo', href: `/${resolvedCompanyId}/equipment`, icon: Dumbbell },
-    { name: 'Loja', href: `/${resolvedCompanyId}/store`, icon: Package },
-    { name: 'Eventos', href: `/${resolvedCompanyId}/events`, icon: CalendarDays },
-    { name: 'Configurações', href: `/${resolvedCompanyId}/settings`, icon: Settings },
+    { 
+      name: 'Dashboard', 
+      href: `/${resolvedCompanyId}`, 
+      icon: Home,
+      permissions: [] // Dashboard is always visible
+    },
+    { 
+      name: 'Atletas', 
+      href: `/${resolvedCompanyId}/athletes`, 
+      icon: Users,
+      permissions: ['athletes_view', 'manage_athletes']
+    },
+    { 
+      name: 'Recursos humanos', 
+      href: `/${resolvedCompanyId}/hr`, 
+      icon: UserCheck,
+      permissions: ['hr_view', 'manage_staff']
+    },
+    { 
+      name: 'Aulas / Serviços', 
+      href: `/${resolvedCompanyId}/classes`, 
+      icon: Calendar,
+      permissions: ['classes_view', 'manage_classes']
+    },
+    { 
+      name: 'Treinos', 
+      href: `/${resolvedCompanyId}/workouts`, 
+      icon: Trophy,
+      permissions: ['workouts_view', 'manage_workouts']
+    },
+    { 
+      name: 'CRM', 
+      href: `/${resolvedCompanyId}/crm`, 
+      icon: UserPlus,
+      permissions: ['crm_view', 'manage_crm']
+    },
+    { 
+      name: 'Comunicação', 
+      href: `/${resolvedCompanyId}/communication`, 
+      icon: MessageSquare,
+      permissions: ['communication_view', 'communication_send']
+    },
+    { 
+      name: 'Financeiro', 
+      href: `/${resolvedCompanyId}/financial`, 
+      icon: Euro,
+      permissions: ['financial_view', 'manage_financial']
+    },
+    { 
+      name: 'Material deportivo', 
+      href: `/${resolvedCompanyId}/equipment`, 
+      icon: Dumbbell,
+      permissions: ['equipment_view', 'manage_equipment']
+    },
+    { 
+      name: 'Loja', 
+      href: `/${resolvedCompanyId}/store`, 
+      icon: Package,
+      permissions: ['store_view', 'manage_store']
+    },
+    { 
+      name: 'Eventos', 
+      href: `/${resolvedCompanyId}/events`, 
+      icon: CalendarDays,
+      permissions: ['events_view', 'manage_events']
+    },
+    { 
+      name: 'Configurações', 
+      href: `/${resolvedCompanyId}/settings`, 
+      icon: Settings,
+      permissions: ['settings_view', 'manage_settings']
+    },
   ];
+
+  // Filter navigation items based on permissions
+  const visibleNavigation = navigation.filter(item => {
+    // If no permissions required, always show
+    if (item.permissions.length === 0) return true;
+    // If user has 'all' permission, show everything
+    if (hasPermission('all')) return true;
+    // Check if user has any of the required permissions
+    return hasAnyPermission(item.permissions);
+  });
 
   return (
     <aside className="flex flex-col w-64 bg-card border-r border-border h-screen sticky top-0">
@@ -78,7 +150,7 @@ export const BoxSidebar: React.FC = () => {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto">
-        {navigation.map((item) => (
+        {visibleNavigation.map((item) => (
           <NavLink
             key={item.name}
             to={item.href}

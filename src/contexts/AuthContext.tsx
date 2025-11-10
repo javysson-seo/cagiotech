@@ -188,9 +188,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'personal_trainer': 'trainer',
           'trainer': 'trainer',
           'student': 'student',
+          'staff_member': 'box_admin', // Map staff_member to box_admin role
         };
         return roleMap[dbRole] || 'student';
       };
+
+      // Fetch custom permissions for staff members
+      let customPermissions: string[] | null = null;
+      if (primaryRole.role === 'staff_member') {
+        // Get staff info to find role_id
+        const { data: staffData } = await supabase
+          .from('staff')
+          .select('role_id')
+          .eq('user_id', supabaseUser.id)
+          .eq('company_id', company?.id)
+          .single();
+
+        if (staffData?.role_id) {
+          // Get permissions from the role
+          const { data: rolePermissions } = await supabase
+            .from('role_permissions')
+            .select('permission_key')
+            .eq('role_id', staffData.role_id);
+
+          if (rolePermissions && rolePermissions.length > 0) {
+            customPermissions = rolePermissions.map(p => p.permission_key);
+          }
+        }
+      }
 
       const authUser: User = {
         id: profile.id,
@@ -200,7 +225,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         boxId: company?.id,
         boxName: company?.name,
         isApproved: profile.is_approved,
-        permissions: getDefaultPermissions(mapRole(primaryRole.role)),
+        permissions: customPermissions || getDefaultPermissions(mapRole(primaryRole.role)),
         avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`
       };
 

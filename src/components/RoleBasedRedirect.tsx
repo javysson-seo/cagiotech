@@ -29,13 +29,26 @@ export const RoleBasedRedirect = () => {
 };
 
 const getRoleRedirectPath = async (role: string, userId: string): Promise<string> => {
+  const { supabase } = await import('@/integrations/supabase/client');
+  
   switch (role) {
     case 'cagio_admin':
       return '/admin/dashboard';
     case 'box_admin':
     case 'box_owner': {
-      // Buscar a empresa do usuário
-      const { supabase } = await import('@/integrations/supabase/client');
+      // Check if user is a staff member first
+      const { data: staffData } = await supabase
+        .from('staff')
+        .select('company_id, role_id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (staffData?.company_id) {
+        // Staff member - redirect to company dashboard
+        return `/${staffData.company_id}`;
+      }
+
+      // Box owner - buscar a empresa do usuário
       const { data: company } = await supabase
         .from('companies')
         .select('id')
