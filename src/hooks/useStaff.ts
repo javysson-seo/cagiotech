@@ -101,7 +101,7 @@ export const useStaff = () => {
         // Create user account if email and birth_date are provided
         if (staffData.email && staffData.birth_date) {
           try {
-            const userId = await createUserAccount(
+            const result = await createUserAccount(
               staffData.email, 
               staffData.name, 
               staffData.birth_date,
@@ -110,11 +110,19 @@ export const useStaff = () => {
             );
             
             // Update staff with user_id
-            if (userId && newStaff?.id) {
+            if (result?.userId && newStaff?.id) {
               await (supabase as any)
                 .from('staff')
-                .update({ user_id: userId })
+                .update({ user_id: result.userId })
                 .eq('id', newStaff.id);
+            }
+
+            // Show credentials to admin
+            if (result?.credentials) {
+              toast.success(
+                `Funcionário criado! Email: ${result.credentials.email} | Senha: ${result.credentials.password}`,
+                { duration: 15000 }
+              );
             }
           } catch (userError) {
             console.error('Error creating user account:', userError);
@@ -168,6 +176,8 @@ export const useStaff = () => {
     
     const password = generatePasswordFromDate(birthDate);
     
+    console.log('Creating user account with:', { email, name, position, password });
+    
     const { data, error } = await supabase.functions.invoke('create-staff-user', {
       body: {
         email,
@@ -179,16 +189,24 @@ export const useStaff = () => {
       }
     });
 
+    console.log('Edge function response:', { data, error });
+
     if (error) {
       console.error('Error creating user account:', error);
       throw error;
     }
 
-    if (!data.success) {
-      throw new Error(data.error || 'Erro ao criar usuário');
+    if (!data?.success) {
+      throw new Error(data?.error || 'Erro ao criar usuário');
     }
 
-    return data.user_id;
+    return {
+      userId: data.user_id,
+      credentials: {
+        email: data.email,
+        password: data.temp_password
+      }
+    };
   };
 
   const refetchStaff = useCallback(() => {

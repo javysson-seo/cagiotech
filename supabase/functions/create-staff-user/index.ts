@@ -50,7 +50,9 @@ serve(async (req) => {
       throw new Error("Missing authorization header");
     }
 
-    const { data: requestBody } = await req.json();
+    const requestBody = await req.json();
+    
+    console.log("Received request body:", JSON.stringify(requestBody, null, 2));
     
     // Validate input with Zod
     const validation = createStaffSchema.safeParse(requestBody);
@@ -114,32 +116,18 @@ serve(async (req) => {
 
     console.log("User role created successfully");
 
-    // If role_id is provided, create user_role_permissions
+    // If role_id is provided, assign it to the staff record (not create permissions)
     if (role_id) {
-      console.log("Assigning custom role permissions:", role_id);
-      
-      const { error: permError } = await supabaseAdmin
-        .from('user_role_permissions')
-        .insert({
-          user_id: authData.user.id,
-          role_id: role_id,
-          company_id: company_id
-        });
-
-      if (permError) {
-        console.error("Error creating user role permissions:", permError);
-        // Don't fail the entire operation if permissions fail
-        // Just log the error
-      } else {
-        console.log("User role permissions created successfully");
-      }
+      console.log("Role ID provided, will be saved in staff table:", role_id);
     }
 
     return new Response(
       JSON.stringify({
         success: true,
         user_id: authData.user.id,
-        message: "User created successfully"
+        message: "User created successfully",
+        email: email,
+        temp_password: password
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
