@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Upload, Trash2, Download, FileCheck, Shield } from 'lucide-react';
+import { FileText, Upload, Trash2, Download, FileCheck, Shield, Users } from 'lucide-react';
 import { useCompany } from '@/contexts/CompanyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { StaffRequiredTermsSettings } from '@/components/hr/StaffRequiredTermsSettings';
 
 export const SecurityBackupSettings: React.FC = () => {
   const { currentCompany } = useCompany();
@@ -138,15 +140,19 @@ export const SecurityBackupSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-          <Shield className="h-5 w-5 text-primary" />
-        </div>
-        <div>
-          <h2 className="text-xl font-semibold">Dossiê Digital</h2>
-          <p className="text-sm text-muted-foreground">Contratos, termos e documentos da empresa</p>
-        </div>
-      </div>
+      <Tabs defaultValue="documents" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="documents">
+            <FileText className="h-4 w-4 mr-2" />
+            Documentos
+          </TabsTrigger>
+          <TabsTrigger value="staff-terms">
+            <Users className="h-4 w-4 mr-2" />
+            Termos RH
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="documents" className="space-y-6 mt-6">
 
       {/* Upload de novo documento */}
       <Card>
@@ -278,22 +284,28 @@ export const SecurityBackupSettings: React.FC = () => {
         </CardContent>
       </Card>
 
-      <Card className="bg-muted/30">
-        <CardContent className="p-4">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-green-600">
-              <FileCheck className="h-4 w-4" />
-              <span className="text-sm font-medium">Compliance RGPD (Portugal)</span>
+        <Card className="bg-muted/30">
+          <CardContent className="p-4">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-green-600">
+                <FileCheck className="h-4 w-4" />
+                <span className="text-sm font-medium">Compliance RGPD (Portugal)</span>
+              </div>
+              <div className="text-xs text-muted-foreground space-y-1 ml-6">
+                <div>• Consentimento de dados implementado</div>
+                <div>• Direito ao esquecimento ativo</div>
+                <div>• Export de dados pessoais disponível</div>
+                <div>• Log de acessos mantido</div>
+              </div>
             </div>
-            <div className="text-xs text-muted-foreground space-y-1 ml-6">
-              <div>• Consentimento de dados implementado</div>
-              <div>• Direito ao esquecimento ativo</div>
-              <div>• Export de dados pessoais disponível</div>
-              <div>• Log de acessos mantido</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        </TabsContent>
+
+        <TabsContent value="staff-terms" className="space-y-6 mt-6">
+          <StaffRequiredTermsSettings />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

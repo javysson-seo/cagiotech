@@ -16,6 +16,12 @@ export interface Staff {
   company_id?: string;
   user_id?: string;
   role_id?: string;
+  salary?: number;
+  profile_photo?: string;
+  address?: string;
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
+  notes?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -195,6 +201,27 @@ export const useStaff = () => {
     }
   }, [currentCompany?.id, fetchStaff]);
 
+  const resetStaffPassword = async (staffId: string, newBirthDate: string) => {
+    try {
+      const staffMember = staff.find(s => s.id === staffId);
+      if (!staffMember?.email) {
+        toast.error('Funcionário não possui email cadastrado.');
+        return null;
+      }
+
+      const newPassword = generatePasswordFromDate(newBirthDate);
+      
+      // Aqui você poderia chamar uma edge function para resetar a senha
+      // Por enquanto, apenas retornamos a nova senha gerada
+      toast.success('Nova senha gerada com sucesso!');
+      return newPassword;
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      toast.error('Erro ao gerar nova senha');
+      return null;
+    }
+  };
+
   return {
     staff,
     loading,
@@ -202,6 +229,7 @@ export const useStaff = () => {
     deleteStaff,
     createUserAccount,
     generatePasswordFromDate,
+    resetStaffPassword,
     refetchStaff
   };
 };

@@ -8,6 +8,7 @@ import { Lock, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
+import { StaffTermsAcceptanceModal } from '@/components/hr/StaffTermsAcceptanceModal';
 
 interface ForcePasswordChangeModalProps {
   isOpen: boolean;
@@ -35,6 +36,8 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [passwordChanged, setPasswordChanged] = useState(false);
 
   const validatePasswords = () => {
     const newErrors: Record<string, string> = {};
@@ -139,7 +142,10 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
       }
 
       toast.success('Senha alterada com sucesso!');
-      onPasswordChanged();
+      setPasswordChanged(true);
+      
+      // Mostrar modal de termos
+      setShowTermsModal(true);
 
       // Clear form
       setCurrentPassword('');
@@ -178,7 +184,20 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
 
   const passwordStrength = getPasswordStrength(newPassword);
 
+  const handleTermsCompleted = () => {
+    setShowTermsModal(false);
+    onPasswordChanged();
+  };
+
   return (
+    <>
+      {showTermsModal && (
+        <StaffTermsAcceptanceModal
+          isOpen={showTermsModal}
+          staffId={staffId}
+          onCompleted={handleTermsCompleted}
+        />
+      )}
     <Dialog open={isOpen} onOpenChange={() => {}} modal>
       <DialogContent 
         className="max-w-md" 
@@ -343,5 +362,6 @@ export const ForcePasswordChangeModal: React.FC<ForcePasswordChangeModalProps> =
         </form>
       </DialogContent>
     </Dialog>
+    </>
   );
 };

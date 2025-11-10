@@ -3262,58 +3262,76 @@ export type Database = {
       }
       staff: {
         Row: {
+          address: string | null
           birth_date: string | null
           company_id: string
           created_at: string | null
           department: string
           email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
           first_login: boolean | null
           hire_date: string | null
           id: string
           name: string
+          notes: string | null
           password_changed_at: string | null
           phone: string | null
           position: string
+          profile_photo: string | null
           role_id: string | null
           role_type: string | null
+          salary: number | null
           status: string | null
           updated_at: string | null
           user_id: string | null
         }
         Insert: {
+          address?: string | null
           birth_date?: string | null
           company_id: string
           created_at?: string | null
           department: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           first_login?: boolean | null
           hire_date?: string | null
           id?: string
           name: string
+          notes?: string | null
           password_changed_at?: string | null
           phone?: string | null
           position: string
+          profile_photo?: string | null
           role_id?: string | null
           role_type?: string | null
+          salary?: number | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
         Update: {
+          address?: string | null
           birth_date?: string | null
           company_id?: string
           created_at?: string | null
           department?: string
           email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
           first_login?: boolean | null
           hire_date?: string | null
           id?: string
           name?: string
+          notes?: string | null
           password_changed_at?: string | null
           phone?: string | null
           position?: string
+          profile_photo?: string | null
           role_id?: string | null
           role_type?: string | null
+          salary?: number | null
           status?: string | null
           updated_at?: string | null
           user_id?: string | null
@@ -3324,6 +3342,70 @@ export type Database = {
             columns: ["role_id"]
             isOneToOne: false
             referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_documents: {
+        Row: {
+          company_id: string
+          created_at: string | null
+          document_type: string
+          file_size: number | null
+          file_url: string
+          id: string
+          name: string
+          notes: string | null
+          staff_id: string
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          company_id: string
+          created_at?: string | null
+          document_type: string
+          file_size?: number | null
+          file_url: string
+          id?: string
+          name: string
+          notes?: string | null
+          staff_id: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          company_id?: string
+          created_at?: string | null
+          document_type?: string
+          file_size?: number | null
+          file_url?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          staff_id?: string
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_documents_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_documents_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
             referencedColumns: ["id"]
           },
         ]
@@ -3458,6 +3540,120 @@ export type Database = {
           },
           {
             foreignKeyName: "staff_permissions_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_required_terms: {
+        Row: {
+          auto_accept: boolean | null
+          company_id: string
+          created_at: string | null
+          display_order: number | null
+          document_id: string
+          id: string
+          is_required: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_accept?: boolean | null
+          company_id: string
+          created_at?: string | null
+          display_order?: number | null
+          document_id: string
+          id?: string
+          is_required?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_accept?: boolean | null
+          company_id?: string
+          created_at?: string | null
+          display_order?: number | null
+          document_id?: string
+          id?: string
+          is_required?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_required_terms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_required_terms_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_required_terms_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "company_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_term_acceptances: {
+        Row: {
+          accepted_at: string | null
+          company_id: string
+          document_id: string
+          id: string
+          ip_address: string | null
+          staff_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          company_id: string
+          document_id: string
+          id?: string
+          ip_address?: string | null
+          staff_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          company_id?: string
+          document_id?: string
+          id?: string
+          ip_address?: string | null
+          staff_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_term_acceptances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_term_acceptances_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "staff_term_acceptances_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "company_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_term_acceptances_staff_id_fkey"
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff"
