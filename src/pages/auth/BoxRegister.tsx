@@ -223,7 +223,7 @@ export const BoxRegister: React.FC = () => {
                   )}
                 </Button>
                 
-                <div className="text-center">
+                <div className="text-center space-y-2">
                   <p className="text-sm text-muted-foreground">
                     Já tem conta?{' '}
                     <Button 
@@ -232,6 +232,16 @@ export const BoxRegister: React.FC = () => {
                       onClick={() => navigate('/auth/login')}
                     >
                       Entrar
+                    </Button>
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Esqueceu a senha?{' '}
+                    <Button 
+                      variant="link" 
+                      className="p-0 h-auto font-normal"
+                      onClick={() => navigate('/auth/password-recovery')}
+                    >
+                      Recuperar senha
                     </Button>
                   </p>
                 </div>
