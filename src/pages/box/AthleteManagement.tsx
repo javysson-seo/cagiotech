@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plus, Search, Download, UserCheck } from 'lucide-react';
+import { Plus, Search, Download, UserCheck, FileSpreadsheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { BoxSidebar } from '@/components/box/BoxSidebar';
 import { BoxHeader } from '@/components/box/BoxHeader';
 import { AthleteList } from '@/components/athletes/AthleteList';
 import { AthleteFormModal } from '@/components/athletes/AthleteFormModal';
+import { AthleteImportDialog } from '@/components/athletes/AthleteImportDialog';
 import { AthleteDetailsModal } from '@/components/athletes/AthleteDetailsModal';
 import { AthleteExportDialog } from '@/components/athletes/AthleteExportDialog';
 import { QuickRegisterModal } from '@/components/auth/QuickRegisterModal';
@@ -26,6 +27,7 @@ const AthleteManagementContent: React.FC = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showQuickRegister, setShowQuickRegister] = useState(false);
+  const [showImportDialog, setShowImportDialog] = useState(false);
   const [editingAthlete, setEditingAthlete] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -102,6 +104,10 @@ const AthleteManagementContent: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-3">
+                <Button variant="outline" onClick={() => setShowImportDialog(true)} className="hidden md:flex">
+                  <FileSpreadsheet className="h-4 w-4 mr-2" />
+                  Importar Excel
+                </Button>
                 <Button variant="outline" onClick={handleExport} className="hidden md:flex">
                   <Download className="h-4 w-4 mr-2" />
                   Exportar XLSX
@@ -227,6 +233,14 @@ const AthleteManagementContent: React.FC = () => {
         isOpen={showQuickRegister}
         onClose={() => setShowQuickRegister(false)}
         onSave={handleSaveAthlete}
+      />
+
+      <AthleteImportDialog
+        open={showImportDialog}
+        onOpenChange={setShowImportDialog}
+        onImportComplete={() => {
+          setShowImportDialog(false);
+        }}
       />
     </div>
   );
