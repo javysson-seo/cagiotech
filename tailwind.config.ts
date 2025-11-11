@@ -20,7 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Open Sans', 'sans-serif'],
+				sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				grotesk: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
