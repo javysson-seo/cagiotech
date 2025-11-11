@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.verify-code-and-register]
 verify_jwt = false
+
+[functions.check-email-exists]
+verify_jwt = false

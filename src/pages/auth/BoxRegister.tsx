@@ -6,12 +6,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export const BoxRegister: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [emailExists, setEmailExists] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
   
   const [formData, setFormData] = useState({
     companyName: '',
@@ -23,6 +26,31 @@ export const BoxRegister: React.FC = () => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Reset email exists error when user changes email
+    if (field === 'email' && emailExists) {
+      setEmailExists(false);
+    }
+  };
+
+  const checkEmailExists = async (email: string): Promise<boolean> => {
+    if (!email.trim()) return false;
+    
+    setIsCheckingEmail(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('check-email-exists', {
+        body: { email }
+      });
+
+      if (error) throw error;
+
+      return data.exists;
+    } catch (error: any) {
+      console.error('Error checking email:', error);
+      return false;
+    } finally {
+      setIsCheckingEmail(false);
+    }
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -40,6 +68,14 @@ export const BoxRegister: React.FC = () => {
 
     if (!formData.email.trim()) {
       toast.error('Email é obrigatório');
+      return;
+    }
+
+    // Check if email already exists
+    const exists = await checkEmailExists(formData.email);
+    if (exists) {
+      setEmailExists(true);
+      toast.error('Este email já está registrado. Por favor, faça login.');
       return;
     }
 
@@ -104,6 +140,22 @@ export const BoxRegister: React.FC = () => {
             
             <CardContent>
               <form onSubmit={handleRegister} className="space-y-4">
+                {emailExists && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Este email já está registrado.{' '}
+                      <Button
+                        variant="link"
+                        className="p-0 h-auto font-semibold underline"
+                        onClick={() => navigate('/auth/login')}
+                      >
+                        Clique aqui para fazer login
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="space-y-2">
                   <Label htmlFor="companyName">Nome da empresa *</Label>
                   <Input
@@ -154,12 +206,17 @@ export const BoxRegister: React.FC = () => {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={isLoading}
+                  disabled={isLoading || isCheckingEmail || emailExists}
                 >
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Enviando código...
+                    </>
+                  ) : isCheckingEmail ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Verificando email...
                     </>
                   ) : (
                     'Continuar'
