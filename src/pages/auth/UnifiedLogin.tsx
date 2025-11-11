@@ -205,15 +205,28 @@ export const UnifiedLogin: React.FC = () => {
               </Button>
             </form>
 
-            <div className="mt-6 text-center text-sm">
-              <span className="text-muted-foreground">Não tem conta? </span>
-              <Link 
-                to="/auth/box-register" 
-                className="hover:underline font-medium"
-                style={{ color: '#aeca12' }}
-              >
-                Registrar Empresa
-              </Link>
+            <div className="mt-6 space-y-3 text-center text-sm">
+              <div>
+                <span className="text-muted-foreground">Esqueceu a senha? </span>
+                <Link 
+                  to="/auth/password-recovery" 
+                  className="hover:underline font-medium"
+                  style={{ color: '#aeca12' }}
+                >
+                  Recuperar senha
+                </Link>
+              </div>
+              
+              <div>
+                <span className="text-muted-foreground">Não tem conta? </span>
+                <Link 
+                  to="/auth/box-register" 
+                  className="hover:underline font-medium"
+                  style={{ color: '#aeca12' }}
+                >
+                  Registrar Empresa
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>
