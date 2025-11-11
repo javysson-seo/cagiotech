@@ -3,6 +3,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCompany } from '@/contexts/CompanyContext';
 import { toast } from 'sonner';
 
+const logHRActivity = async (companyId: string, type: string, title: string, referenceId?: string) => {
+  try {
+    const { data: userData } = await supabase.auth.getUser();
+    await supabase.from('hr_activities').insert({
+      company_id: companyId,
+      activity_type: type,
+      title,
+      performed_by: userData.user?.id || '',
+      performed_by_name: userData.user?.email || 'Sistema',
+      reference_id: referenceId
+    });
+  } catch (error) {
+    console.error('Error logging activity:', error);
+  }
+};
+
 export interface Staff {
   id?: string;
   name: string;
@@ -84,6 +100,9 @@ export const useStaff = () => {
         }
 
         toast.success('Funcionário atualizado com sucesso!');
+        
+        // Log activity
+        await logHRActivity(currentCompany.id, 'staff_updated', `Colaborador atualizado: ${staffData.name}`, staffData.id);
       } else {
         // Create new staff
         let userId: string | undefined;
@@ -141,6 +160,9 @@ export const useStaff = () => {
         } else {
           toast.success('Funcionário criado com sucesso!');
         }
+
+        // Log activity
+        await logHRActivity(currentCompany.id, 'staff_added', `Novo colaborador: ${staffData.name} - ${staffData.position}`, newStaff.id);
       }
 
       await fetchStaff();

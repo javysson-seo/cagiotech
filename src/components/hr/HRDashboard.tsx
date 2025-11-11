@@ -16,10 +16,16 @@ import {
 } from 'lucide-react';
 import { StaffList } from './StaffList';
 import { PayrollManagement } from './PayrollManagement';
+import { TimeOffRequests } from './TimeOffRequests';
+import { StaffEventsCalendar } from './StaffEventsCalendar';
 import { useStaff } from '@/hooks/useStaff';
+import { useHRActivities } from '@/hooks/useHRActivities';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const HRDashboard: React.FC = () => {
   const { staff, loading } = useStaff();
+  const { activities, loading: activitiesLoading } = useHRActivities();
   
   // Calculate real KPIs from staff data
   const activeStaff = staff.filter(s => s.status === 'active').length;
@@ -65,56 +71,16 @@ export const HRDashboard: React.FC = () => {
     }
   ];
 
-  const recentActivities = [
-    {
-      id: 1,
-      type: 'contratacao',
-      title: 'Novo Personal Trainer contratado',
-      description: 'Ana Costa foi adicionada à equipa',
-      time: 'Há 2 horas',
-      status: 'success'
-    },
-    {
-      id: 2,
-      type: 'documento',
-      title: 'Documentos pendentes',
-      description: '3 contratos aguardam assinatura',
-      time: 'Há 4 horas',
-      status: 'warning'
-    },
-    {
-      id: 3,
-      type: 'ferias',
-      title: 'Pedido de férias aprovado',
-      description: 'Carlos Santos - 2 semanas em Agosto',
-      time: 'Há 1 dia',
-      status: 'info'
-    }
-  ];
-
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: 'Reunião de equipa',
-      date: '2024-02-15',
-      time: '10:00',
-      type: 'meeting'
-    },
-    {
-      id: 2,
-      title: 'Avaliação de performance - Pedro Silva',
-      date: '2024-02-16',
-      time: '14:30',
-      type: 'evaluation'
-    },
-    {
-      id: 3,
-      title: 'Entrevista - Candidato Personal Trainer',
-      date: '2024-02-17',
-      time: '16:00',
-      type: 'interview'
-    }
-  ];
+  // Get real recent activities
+  const recentActivities = activities.slice(0, 5).map(activity => ({
+    id: activity.id,
+    type: activity.activity_type,
+    title: activity.title,
+    description: activity.description || '',
+    time: format(new Date(activity.created_at), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR }),
+    status: activity.activity_type.includes('approved') ? 'success' : 
+            activity.activity_type.includes('rejected') ? 'warning' : 'info'
+  }));
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -205,51 +171,60 @@ export const HRDashboard: React.FC = () => {
                 <CardTitle className="text-cagio-green">Atividades Recentes</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4 pt-6">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-cagio-green-light/20 transition-colors">
-                    {getStatusIcon(activity.status)}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">
-                        {activity.title}
-                      </p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {activity.description}
-                      </p>
-                      <p className="text-xs text-cagio-green font-medium mt-1">
-                        {activity.time}
-                      </p>
+                {recentActivities.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-8">
+                    Nenhuma atividade recente
+                  </p>
+                ) : (
+                  recentActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-cagio-green-light/20 transition-colors">
+                      {getStatusIcon(activity.status)}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground">
+                          {activity.title}
+                        </p>
+                        {activity.description && (
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {activity.description}
+                          </p>
+                        )}
+                        <p className="text-xs text-cagio-green font-medium mt-1">
+                          {activity.time}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </CardContent>
             </Card>
 
-            {/* Próximos Eventos */}
+            {/* Pedidos de Férias - Preview */}
             <Card className="border-t-4 border-t-cagio-green">
               <CardHeader className="bg-cagio-green-light/30">
-                <CardTitle className="text-cagio-green">Próximos Eventos</CardTitle>
+                <CardTitle className="text-cagio-green">Gestão de Férias e Licenças</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 pt-6">
-                {upcomingEvents.map((event) => (
-                  <div key={event.id} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-cagio-green-light/20 transition-colors">
-                    <div className="p-2 rounded-full bg-cagio-green-light">
-                      <Calendar className="h-4 w-4 text-cagio-green" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">
-                        {event.title}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Badge className="bg-cagio-green text-white text-xs">
-                          {event.date}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground font-medium">
-                          {event.time}
-                        </span>
-                      </div>
-                    </div>
+              <CardContent className="p-12">
+                <div className="text-center">
+                  <div className="inline-flex p-4 rounded-full bg-cagio-green-light mb-4">
+                    <Calendar className="h-12 w-12 text-cagio-green" />
                   </div>
-                ))}
+                  <h3 className="text-xl font-bold text-cagio-green mb-2">
+                    Pedidos de Férias e Licenças
+                  </h3>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Gerencie pedidos de férias, licenças médicas e outras ausências
+                  </p>
+                  <Button 
+                    className="bg-cagio-green hover:bg-cagio-green-dark text-white"
+                    onClick={() => {
+                      const scheduleTab = document.querySelector('[value="schedule"]');
+                      if (scheduleTab) (scheduleTab as HTMLElement).click();
+                    }}
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    Ver Pedidos
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -285,26 +260,11 @@ export const HRDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="schedule">
-          <Card className="border-t-4 border-t-cagio-green">
-            <CardContent className="p-12">
-              <div className="text-center">
-                <div className="inline-flex p-4 rounded-full bg-cagio-green-light mb-4">
-                  <Clock className="h-12 w-12 text-cagio-green" />
-                </div>
-                <h3 className="text-xl font-bold text-cagio-green mb-2">
-                  Gestão de Horários
-                </h3>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Turnos, férias, folgas e gestão completa de tempo de trabalho
-                </p>
-                <Button className="bg-cagio-green hover:bg-cagio-green-dark text-white">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Ver Horários
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="schedule" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            <TimeOffRequests />
+            <StaffEventsCalendar />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

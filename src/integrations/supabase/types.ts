@@ -2194,6 +2194,45 @@ export type Database = {
           },
         ]
       }
+      hr_activities: {
+        Row: {
+          activity_type: string
+          company_id: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          performed_by: string
+          performed_by_name: string | null
+          reference_id: string | null
+          title: string
+        }
+        Insert: {
+          activity_type: string
+          company_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by: string
+          performed_by_name?: string | null
+          reference_id?: string | null
+          title: string
+        }
+        Update: {
+          activity_type?: string
+          company_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          performed_by?: string
+          performed_by_name?: string | null
+          reference_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       kpis: {
         Row: {
           company_id: string
@@ -3467,6 +3506,51 @@ export type Database = {
           },
         ]
       }
+      staff_events: {
+        Row: {
+          company_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          end_date: string | null
+          event_type: string
+          id: string
+          location: string | null
+          staff_ids: string[] | null
+          start_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          event_type: string
+          id?: string
+          location?: string | null
+          staff_ids?: string[] | null
+          start_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          event_type?: string
+          id?: string
+          location?: string | null
+          staff_ids?: string[] | null
+          start_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       staff_payment_config: {
         Row: {
           bank_account: string | null
@@ -3717,6 +3801,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_time_off: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string
+          created_at: string
+          days_count: number
+          end_date: string
+          id: string
+          reason: string | null
+          rejection_reason: string | null
+          request_type: string
+          staff_id: string
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id: string
+          created_at?: string
+          days_count: number
+          end_date: string
+          id?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          request_type: string
+          staff_id: string
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string
+          created_at?: string
+          days_count?: number
+          end_date?: string
+          id?: string
+          reason?: string | null
+          rejection_reason?: string | null
+          request_type?: string
+          staff_id?: string
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       staff_work_log: {
         Row: {
