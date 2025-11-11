@@ -12,17 +12,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loading } from '@/components/ui/loading';
 import { Logo } from '@/components/ui/logo';
+import { useUserProfiles, UserProfile } from '@/hooks/useUserProfiles';
+import { ProfileSelector } from '@/components/auth/ProfileSelector';
 
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showProfileSelector, setShowProfileSelector] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false
   });
+
+  const { profiles, loading: profilesLoading, setSelectedProfile, clearSelectedProfile } = useUserProfiles(userId);
 
   useEffect(() => {
     // Check if already logged in
@@ -33,59 +39,59 @@ export const Login: React.FC = () => {
     });
   }, []);
 
-  const handleRedirect = async (userId: string) => {
+  const handleRedirect = async (userId: string, selectedProfile?: UserProfile) => {
     try {
-      // Get user roles
-      const { data: userRoles } = await supabase
-        .from('user_roles')
-        .select('role, company_id')
-        .eq('user_id', userId);
-
-      if (!userRoles || userRoles.length === 0) {
-        toast.error('Sem permissões atribuídas');
+      // If we have a selected profile, use it directly
+      if (selectedProfile) {
+        redirectToProfile(selectedProfile);
         return;
       }
 
-      // Get the first role (priority: cagio_admin > box_owner > personal_trainer > staff_member > student)
-      const roleOrder = ['cagio_admin', 'box_owner', 'personal_trainer', 'staff_member', 'student'];
-      const sortedRole = userRoles.sort((a, b) => 
-        roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role)
-      )[0];
-
-      // Redirect based on role
-      switch (sortedRole.role) {
-        case 'cagio_admin':
-          navigate('/admin/dashboard');
-          break;
-        case 'box_owner':
-          if (sortedRole.company_id) {
-            const { data: company } = await supabase
-              .from('companies')
-              .select('id')
-              .eq('id', sortedRole.company_id)
-              .single();
-            navigate(company ? `/${company.id}` : '/box/dashboard');
-          } else {
-            navigate('/box/dashboard');
-          }
-          break;
-        case 'personal_trainer':
-          navigate('/trainer/dashboard');
-          break;
-        case 'staff_member':
-          navigate('/box/dashboard');
-          break;
-        case 'student':
-          navigate('/student/dashboard');
-          break;
-        default:
-          toast.error('Tipo de usuário não reconhecido');
-      }
+      // Set userId to trigger profiles loading
+      setUserId(userId);
     } catch (error) {
       console.error('Error redirecting:', error);
       toast.error('Erro ao redirecionar');
     }
   };
+
+  const redirectToProfile = (profile: UserProfile) => {
+    switch (profile.type) {
+      case 'box_owner':
+        navigate(`/${profile.companyId}`);
+        break;
+      case 'personal_trainer':
+        navigate('/trainer/dashboard');
+        break;
+      case 'staff_member':
+        navigate(`/${profile.companyId}`);
+        break;
+      case 'student':
+        navigate('/student/dashboard');
+        break;
+      default:
+        toast.error('Tipo de perfil não reconhecido');
+    }
+  };
+
+  const handleProfileSelection = (profile: UserProfile) => {
+    setSelectedProfile(profile);
+    setShowProfileSelector(false);
+    redirectToProfile(profile);
+  };
+
+  // Check for multiple profiles after loading
+  useEffect(() => {
+    if (!profilesLoading && profiles.length > 0 && userId) {
+      if (profiles.length === 1) {
+        // Only one profile, redirect directly
+        redirectToProfile(profiles[0]);
+      } else {
+        // Multiple profiles, show selector
+        setShowProfileSelector(true);
+      }
+    }
+  }, [profiles, profilesLoading, userId]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +115,7 @@ export const Login: React.FC = () => {
 
       if (data.user) {
         toast.success('Login realizado com sucesso!');
+        clearSelectedProfile(); // Clear any previous profile selection
         await handleRedirect(data.user.id);
       }
     } catch (error) {
@@ -120,8 +127,15 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
-      <div className="w-full max-w-md">
+    <>
+      <ProfileSelector
+        isOpen={showProfileSelector}
+        profiles={profiles}
+        onSelectProfile={handleProfileSelection}
+      />
+      
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
+        <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
@@ -251,7 +265,8 @@ export const Login: React.FC = () => {
           <ArrowLeft className="h-4 w-4" />
           Voltar à página inicial
         </Link>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
