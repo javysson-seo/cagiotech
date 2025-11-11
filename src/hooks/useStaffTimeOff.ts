@@ -135,6 +135,20 @@ export const useStaffTimeOff = () => {
 
       if (error) throw error;
 
+      // Send email notification
+      try {
+        await supabase.functions.invoke('notify-time-off-status', {
+          body: {
+            requestId,
+            status,
+            rejectionReason
+          }
+        });
+      } catch (emailError) {
+        console.error('Error sending notification email:', emailError);
+        // Don't fail the whole operation if email fails
+      }
+
       toast.success(`Pedido ${status === 'approved' ? 'aprovado' : 'rejeitado'} com sucesso`);
       
       await logActivity(

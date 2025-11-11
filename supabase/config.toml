@@ -18,6 +18,9 @@ verify_jwt = true
 [functions.notify-staff-activation]
 verify_jwt = true
 
+[functions.notify-time-off-status]
+verify_jwt = true
+
 [functions.send-verification-code]
 verify_jwt = false
 
