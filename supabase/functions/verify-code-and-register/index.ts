@@ -61,6 +61,27 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Creating user for email: ${email}`);
 
+    // Check if user already exists
+    const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
+    const userExists = existingUsers.users?.some(u => u.email === email);
+
+    if (userExists) {
+      console.error("User already exists:", email);
+      // Mark code as used to prevent reuse
+      await supabaseAdmin
+        .from('email_verification_codes')
+        .update({ used: true })
+        .eq('email', email)
+        .eq('code', code);
+      
+      return new Response(
+        JSON.stringify({ 
+          error: "Este email já está registrado. Por favor, faça login ou use outro email." 
+        }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
     // Create user
     const { data: userData, error: userError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -73,8 +94,20 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (userError || !userData.user) {
       console.error("Error creating user:", userError);
+      
+      // Mark code as used even on error
+      await supabaseAdmin
+        .from('email_verification_codes')
+        .update({ used: true })
+        .eq('email', email)
+        .eq('code', code);
+      
       return new Response(
-        JSON.stringify({ error: userError?.message || "Erro ao criar usuário" }),
+        JSON.stringify({ 
+          error: userError?.code === 'email_exists' 
+            ? "Este email já está registrado. Por favor, faça login." 
+            : userError?.message || "Erro ao criar usuário" 
+        }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
