@@ -96,10 +96,21 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('email', email)
       .eq('code', code);
 
+    // Get user role and email confirmation status
+    const { data: userRole } = await supabaseAdmin
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single();
+
+    const isEmailConfirmed = !!user.email_confirmed_at;
+
     return new Response(
       JSON.stringify({ 
         success: true,
-        message: "Senha atualizada com sucesso"
+        message: "Senha atualizada com sucesso",
+        userRole: userRole?.role || null,
+        isEmailConfirmed
       }),
       {
         status: 200,

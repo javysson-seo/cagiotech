@@ -94,7 +94,16 @@ export const PasswordRecovery: React.FC = () => {
         throw new Error(data.error);
       }
 
-      toast.success('Senha alterada com sucesso! Faça login.');
+      const { userRole, isEmailConfirmed } = data;
+
+      // Check if email is confirmed
+      if (!isEmailConfirmed) {
+        toast.error('Seu email ainda não foi confirmado. Verifique sua caixa de entrada.');
+        setIsLoading(false);
+        return;
+      }
+
+      toast.success('Senha alterada com sucesso! Redirecionando...');
       
       // Login automatically
       const { error: loginError } = await supabase.auth.signInWithPassword({
@@ -104,7 +113,18 @@ export const PasswordRecovery: React.FC = () => {
 
       if (loginError) throw loginError;
 
-      navigate('/');
+      // Redirect based on user role
+      let redirectPath = '/';
+      
+      if (userRole === 'student') {
+        redirectPath = '/student/dashboard';
+      } else if (userRole === 'box_owner' || userRole === 'staff_member' || userRole === 'personal_trainer') {
+        redirectPath = '/box/dashboard';
+      } else if (userRole === 'cagio_admin') {
+        redirectPath = '/admin/dashboard';
+      }
+
+      navigate(redirectPath);
     } catch (error: any) {
       console.error('Reset password error:', error);
       toast.error(error.message || 'Erro ao redefinir senha');
