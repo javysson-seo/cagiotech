@@ -19,10 +19,10 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-				grotesk: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-			},
+		fontFamily: {
+			sans: ['Switzer', 'system-ui', '-apple-system', 'sans-serif'],
+			grotesk: ['Switzer', 'system-ui', '-apple-system', 'sans-serif'],
+		},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
