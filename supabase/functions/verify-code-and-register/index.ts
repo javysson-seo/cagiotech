@@ -12,9 +12,6 @@ interface VerifyRequest {
   password: string;
 }
 
-// Temporary storage (shared with send-verification-code)
-const verificationCodes = new Map<string, { code: string; expires: number; companyName: string }>();
-
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -30,36 +27,37 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Verify code
-    const stored = verificationCodes.get(email);
+    // Create Supabase admin client
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    // Verify code from database
+    const { data: stored, error: fetchError } = await supabaseAdmin
+      .from('email_verification_codes')
+      .select('*')
+      .eq('email', email)
+      .eq('code', code)
+      .eq('used', false)
+      .single();
     
-    if (!stored) {
+    if (fetchError || !stored) {
+      console.error("Code not found:", fetchError);
       return new Response(
-        JSON.stringify({ error: "Código não encontrado ou expirado" }),
+        JSON.stringify({ error: "Código não encontrado ou inválido" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    if (stored.expires < Date.now()) {
-      verificationCodes.delete(email);
+    // Check if code is expired
+    if (new Date(stored.expires_at) < new Date()) {
+      console.error("Code expired");
       return new Response(
         JSON.stringify({ error: "Código expirado" }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
-
-    if (stored.code !== code) {
-      return new Response(
-        JSON.stringify({ error: "Código inválido" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
-    }
-
-    // Code is valid, create user and company
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
 
     console.log(`Creating user for email: ${email}`);
 
@@ -87,7 +85,7 @@ const handler = async (req: Request): Promise<Response> => {
     const { data: companyData, error: companyError } = await supabaseAdmin
       .from('companies')
       .insert({
-        name: stored.companyName,
+        name: stored.company_name,
         owner_id: userData.user.id,
         subscription_status: 'trialing',
         trial_end_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
@@ -119,8 +117,12 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error creating user role:", roleError);
     }
 
-    // Clean up verification code
-    verificationCodes.delete(email);
+    // Mark code as used
+    await supabaseAdmin
+      .from('email_verification_codes')
+      .update({ used: true })
+      .eq('email', email)
+      .eq('code', code);
 
     return new Response(
       JSON.stringify({ 

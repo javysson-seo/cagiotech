@@ -1,7 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const supabaseAdmin = createClient(
+  Deno.env.get("SUPABASE_URL") ?? "",
+  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+);
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,9 +17,6 @@ interface VerificationRequest {
   email: string;
   companyName: string;
 }
-
-// Store codes temporarily (in production, use Redis or database)
-const verificationCodes = new Map<string, { code: string; expires: number; companyName: string }>();
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -34,9 +36,27 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Store code with 10 minutes expiration
-    const expires = Date.now() + 10 * 60 * 1000;
-    verificationCodes.set(email, { code, expires, companyName });
+    // Delete any existing codes for this email
+    await supabaseAdmin
+      .from('email_verification_codes')
+      .delete()
+      .eq('email', email);
+    
+    // Store code in database with 10 minutes expiration
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    const { error: insertError } = await supabaseAdmin
+      .from('email_verification_codes')
+      .insert({
+        email,
+        code,
+        company_name: companyName,
+        expires_at: expiresAt
+      });
+
+    if (insertError) {
+      console.error("Error storing verification code:", insertError);
+      throw new Error("Erro ao armazenar código de verificação");
+    }
 
     console.log(`Generated verification code for ${email}: ${code}`);
 
@@ -96,6 +116,3 @@ const handler = async (req: Request): Promise<Response> => {
 };
 
 serve(handler);
-
-// Export verification codes for use by verify function
-export { verificationCodes };

@@ -1902,6 +1902,36 @@ export type Database = {
           },
         ]
       }
+      email_verification_codes: {
+        Row: {
+          code: string
+          company_name: string
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          used: boolean | null
+        }
+        Insert: {
+          code: string
+          company_name: string
+          created_at?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          used?: boolean | null
+        }
+        Update: {
+          code?: string
+          company_name?: string
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          used?: boolean | null
+        }
+        Relationships: []
+      }
       equipment: {
         Row: {
           category: string | null
@@ -4280,6 +4310,7 @@ export type Database = {
         Args: { _action: string; _user_id: string }
         Returns: boolean
       }
+      clean_expired_verification_codes: { Args: never; Returns: undefined }
       get_company_financial_overview: {
         Args: { target_company_id: string }
         Returns: {
