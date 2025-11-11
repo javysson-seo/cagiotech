@@ -33,24 +33,29 @@ const handler = async (req: Request): Promise<Response> => {
       );
     }
 
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Delete any existing codes for this email
-    await supabaseAdmin
+    // Delete any existing codes for this email (used or not)
+    const { error: deleteError } = await supabaseAdmin
       .from('email_verification_codes')
       .delete()
       .eq('email', email);
     
-    // Store code in database with 10 minutes expiration
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    if (deleteError) {
+      console.error("Error deleting old codes:", deleteError);
+    }
+    
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Store code in database with 15 minutes expiration
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
     const { error: insertError } = await supabaseAdmin
       .from('email_verification_codes')
       .insert({
         email,
         code,
         company_name: companyName,
-        expires_at: expiresAt
+        expires_at: expiresAt,
+        used: false
       });
 
     if (insertError) {

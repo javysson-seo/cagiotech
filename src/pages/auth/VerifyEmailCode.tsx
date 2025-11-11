@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { toast } from 'sonner';
-import { Mail, ArrowLeft, Loader2 } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const VerifyEmailCode: React.FC = () => {
@@ -15,11 +15,41 @@ export const VerifyEmailCode: React.FC = () => {
   
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resendCount, setResendCount] = useState(0);
+  const [canResend, setCanResend] = useState(true);
+  const [countdown, setCountdown] = useState(0);
 
-  if (!email || !password || !companyName) {
-    navigate('/auth/box-register');
-    return null;
-  }
+  useEffect(() => {
+    if (!email || !password || !companyName) {
+      navigate('/auth/box-register');
+      return;
+    }
+
+    // Load resend state from localStorage
+    const storageKey = `resend_${email}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      const { lastResend, count } = JSON.parse(stored);
+      const now = Date.now();
+      const waitTime = count === 0 ? 60000 : 300000; // 1min first, 5min after
+      const elapsed = now - lastResend;
+      
+      if (elapsed < waitTime) {
+        setCanResend(false);
+        setResendCount(count);
+        setCountdown(Math.ceil((waitTime - elapsed) / 1000));
+      }
+    }
+  }, [email, password, companyName, navigate]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && !canResend) {
+      setCanResend(true);
+    }
+  }, [countdown, canResend]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,19 +95,39 @@ export const VerifyEmailCode: React.FC = () => {
   };
 
   const handleResendCode = async () => {
+    if (!canResend) return;
+    
     setIsLoading(true);
     
     try {
-      const { error } = await supabase.functions.invoke('send-verification-code', {
+      const { data, error } = await supabase.functions.invoke('send-verification-code', {
         body: { email, companyName }
       });
 
       if (error) throw error;
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
-      toast.success('Novo código enviado para o seu email');
+      const newCount = resendCount + 1;
+      const waitTime = newCount === 1 ? 60 : 300; // seconds
+      
+      // Save to localStorage
+      const storageKey = `resend_${email}`;
+      localStorage.setItem(storageKey, JSON.stringify({
+        lastResend: Date.now(),
+        count: newCount
+      }));
+      
+      setResendCount(newCount);
+      setCanResend(false);
+      setCountdown(waitTime);
+      
+      toast.success(`Novo código enviado! Aguarde ${waitTime === 60 ? '1 minuto' : '5 minutos'} para reenviar novamente.`);
     } catch (error: any) {
       console.error('Resend error:', error);
-      toast.error('Erro ao reenviar código. Tente novamente.');
+      toast.error(error.message || 'Erro ao reenviar código. Tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -112,19 +162,25 @@ export const VerifyEmailCode: React.FC = () => {
             </CardHeader>
             
             <CardContent>
-              <form onSubmit={handleVerify} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="code">Código de verificação</Label>
-                  <Input
-                    id="code"
-                    type="text"
-                    placeholder="000000"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    maxLength={6}
-                    className="text-center text-2xl tracking-widest font-mono"
-                    required
-                  />
+              <form onSubmit={handleVerify} className="space-y-6">
+                <div className="space-y-3">
+                  <Label htmlFor="code" className="text-center block">Código de verificação</Label>
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={6}
+                      value={code}
+                      onChange={(value) => setCode(value)}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                   <p className="text-xs text-muted-foreground text-center">
                     Insira o código de 6 dígitos enviado para o seu email
                   </p>
@@ -151,9 +207,16 @@ export const VerifyEmailCode: React.FC = () => {
                     variant="outline"
                     className="w-full"
                     onClick={handleResendCode}
-                    disabled={isLoading}
+                    disabled={isLoading || !canResend}
                   >
-                    Reenviar código
+                    {!canResend ? (
+                      <>
+                        <Clock className="w-4 h-4 mr-2" />
+                        Aguarde {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, '0')}
+                      </>
+                    ) : (
+                      'Reenviar código'
+                    )}
                   </Button>
                   
                   <Button
