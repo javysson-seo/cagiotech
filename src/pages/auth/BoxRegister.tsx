@@ -5,13 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const BoxRegister: React.FC = () => {
   const navigate = useNavigate();
-  const { register, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   
   const [formData, setFormData] = useState({
     companyName: '',
@@ -43,16 +43,35 @@ export const BoxRegister: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
+
     try {
-      await register({
-        companyName: formData.companyName,
-        email: formData.email,
-        password: formData.password
-      }, 'box_admin');
+      // Send verification code
+      const { error } = await supabase.functions.invoke('send-verification-code', {
+        body: { 
+          email: formData.email,
+          companyName: formData.companyName
+        }
+      });
+
+      if (error) throw error;
+
+      toast.success('Código de verificação enviado para o seu email');
       
-    } catch (error) {
+      // Navigate to verification page
+      navigate('/auth/verify-email', {
+        state: {
+          email: formData.email,
+          password: formData.password,
+          companyName: formData.companyName
+        }
+      });
+      
+    } catch (error: any) {
       console.error('Registration error:', error);
-      // Error is already handled in the AuthContext
+      toast.error(error.message || 'Erro ao enviar código. Tente novamente.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -137,7 +156,14 @@ export const BoxRegister: React.FC = () => {
                   className="w-full"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'A criar conta...' : 'Criar conta'}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Enviando código...
+                    </>
+                  ) : (
+                    'Continuar'
+                  )}
                 </Button>
                 
                 <div className="text-center">

@@ -20,6 +20,7 @@ import { UnifiedLogin } from "./pages/auth/UnifiedLogin";
 import { BoxRegister } from "./pages/auth/BoxRegister";
 import { StudentRegister } from "./pages/auth/StudentRegister";
 import { EmailVerification } from "./pages/auth/EmailVerification";
+import { VerifyEmailCode } from "./pages/auth/VerifyEmailCode";
 import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import { BoxRegisterWithPlan } from "./pages/auth/BoxRegisterWithPlan";
 import NotFound from "./pages/NotFound";
@@ -93,6 +94,7 @@ function App() {
                     <Route path="/register-with-plan" element={<BoxRegisterWithPlan />} />
                     <Route path="/auth/student-register" element={<StudentRegister />} />
                     <Route path="/auth/email-verification" element={<EmailVerification />} />
+                    <Route path="/auth/verify-email" element={<VerifyEmailCode />} />
                     <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
                   
                   {/* Admin Routes - Sem autenticação */}
