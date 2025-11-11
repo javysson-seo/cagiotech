@@ -212,7 +212,7 @@ export const UnifiedLogin: React.FC = () => {
                 className="hover:underline font-medium"
                 style={{ color: '#aeca12' }}
               >
-                Registrar BOX
+                Registrar Empresa
               </Link>
             </div>
           </CardContent>
