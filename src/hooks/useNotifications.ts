@@ -116,6 +116,29 @@ export const useNotifications = () => {
     }
   };
 
+  const deleteNotification = async (notificationId: string) => {
+    if (!user?.boxId) return;
+
+    try {
+      const { error } = await supabase
+        .from('company_notifications')
+        .delete()
+        .eq('id', notificationId)
+        .eq('company_id', user.boxId);
+
+      if (error) throw error;
+
+      // Update local state
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setUnreadCount(prev => {
+        const notification = notifications.find(n => n.id === notificationId);
+        return notification && !notification.is_read ? Math.max(0, prev - 1) : prev;
+      });
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
 
@@ -169,6 +192,7 @@ export const useNotifications = () => {
     isLoading,
     markAsRead,
     markAllAsRead,
+    deleteNotification,
     refetch: fetchNotifications
   };
 };

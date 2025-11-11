@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, Search, Settings, Globe, LogOut, User } from 'lucide-react';
+import { Bell, Search, Settings, Globe, LogOut, User, Check, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,7 @@ import { ptBR } from 'date-fns/locale';
 export const StudentHeader: React.FC = () => {
   const { language, changeLanguage } = useLanguage();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { notifications, unreadCount, isLoading, markAsRead } = useNotifications();
+  const { notifications, unreadCount, isLoading, markAsRead, deleteNotification } = useNotifications();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
@@ -107,8 +107,7 @@ export const StudentHeader: React.FC = () => {
                   {notifications.slice(0, 5).map((notification) => (
                     <div 
                       key={notification.id} 
-                      className={`p-3 cursor-pointer hover:bg-muted/50 ${!notification.is_read ? 'bg-primary/5' : ''}`}
-                      onClick={() => !notification.is_read && markAsRead(notification.id)}
+                      className={`p-3 ${!notification.is_read ? 'bg-primary/5' : ''}`}
                     >
                       <div className="flex items-start gap-2">
                         {!notification.is_read && (
@@ -129,6 +128,34 @@ export const StudentHeader: React.FC = () => {
                             })}
                           </p>
                         </div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2 justify-end">
+                        {!notification.is_read && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              markAsRead(notification.id);
+                            }}
+                          >
+                            <Check className="h-3 w-3 mr-1" />
+                            Marcar como lida
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteNotification(notification.id);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Excluir
+                        </Button>
                       </div>
                     </div>
                   ))}
