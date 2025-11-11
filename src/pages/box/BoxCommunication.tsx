@@ -14,8 +14,9 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MessageSquare, Bell, Lightbulb, Send, Plus } from 'lucide-react';
 import { useCompany } from '@/contexts/CompanyContext';
+import { supabase } from '@/integrations/supabase/client';
 import { useCompanyMessages } from '@/hooks/useCompanyMessages';
-import { useCompanyNotifications } from '@/hooks/useCompanyNotifications';
+import { useNotifications } from '@/hooks/useNotifications';
 import { usePlatformSuggestions } from '@/hooks/usePlatformSuggestions';
 import { useAthletes } from '@/hooks/useAthletes';
 import { useTrainers } from '@/hooks/useTrainers';
@@ -37,7 +38,7 @@ const BoxCommunicationContent: React.FC = () => {
   const recipientForMessages = selectedRecipient === '_all' ? '' : selectedRecipient;
 
   const { messages, sendMessage } = useCompanyMessages(currentCompany?.id || '', recipientForMessages);
-  const { notifications, createNotification } = useCompanyNotifications(currentCompany?.id || '');
+  const { notifications, markAsRead, markAllAsRead } = useNotifications();
   const { suggestions, createSuggestion, vote } = usePlatformSuggestions(currentCompany?.id);
   const { athletes } = useAthletes();
   const { trainers } = useTrainers();
@@ -50,16 +51,28 @@ const BoxCommunicationContent: React.FC = () => {
     });
   };
 
-  const handleCreateNotification = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleCreateNotification = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    createNotification({
-      title: formData.get('title') as string,
-      message: formData.get('message') as string,
-      isUrgent: formData.get('urgent') === 'on',
-    });
-    setNotificationDialog(false);
-    e.currentTarget.reset();
+    
+    try {
+      const { error } = await supabase
+        .from('company_notifications')
+        .insert({
+          company_id: currentCompany?.id,
+          title: formData.get('title') as string,
+          message: formData.get('message') as string,
+          is_urgent: formData.get('urgent') === 'on',
+          created_by: user?.id,
+        });
+
+      if (error) throw error;
+      
+      setNotificationDialog(false);
+      e.currentTarget.reset();
+    } catch (error) {
+      console.error('Error creating notification:', error);
+    }
   };
 
   const handleCreateSuggestion = (e: React.FormEvent<HTMLFormElement>) => {
@@ -194,7 +207,11 @@ const BoxCommunicationContent: React.FC = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <NotificationsList notifications={notifications} />
+                <NotificationsList 
+                  notifications={notifications}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                />
               </TabsContent>
 
               <TabsContent value="suggestions" className="space-y-4">

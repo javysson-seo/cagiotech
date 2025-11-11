@@ -29,7 +29,7 @@ import { ptBR } from 'date-fns/locale';
 export const BoxHeader: React.FC = () => {
   const { user, logout } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { notifications, unreadCount, isLoading } = useNotifications();
+  const { notifications, unreadCount, isLoading, markAsRead } = useNotifications();
   const { language, changeLanguage } = useLanguage();
   const { theme, toggleTheme } = useAreaTheme();
   const { t, i18n } = useTranslation();
@@ -149,12 +149,16 @@ export const BoxHeader: React.FC = () => {
                   </div>
                 ) : (
                   <div className="divide-y">
-                    {notifications.map((notification) => (
+                    {notifications.slice(0, 5).map((notification) => (
                       <DropdownMenuItem 
                         key={notification.id} 
-                        className="p-4 cursor-pointer flex-col items-start"
+                        className={`p-4 cursor-pointer flex-col items-start ${!notification.is_read ? 'bg-primary/5' : ''}`}
+                        onClick={() => !notification.is_read && markAsRead(notification.id)}
                       >
                         <div className="flex items-start gap-3 w-full">
+                          {!notification.is_read && (
+                            <div className="h-2 w-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                          )}
                           {notification.is_urgent && (
                             <div className="h-2 w-2 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />
                           )}
@@ -162,7 +166,7 @@ export const BoxHeader: React.FC = () => {
                             <p className="text-sm font-medium leading-none">
                               {notification.title}
                             </p>
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-xs text-muted-foreground line-clamp-2">
                               {notification.message}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -178,6 +182,17 @@ export const BoxHeader: React.FC = () => {
                   </div>
                 )}
               </ScrollArea>
+              {notifications.length > 0 && (
+                <div className="p-2 border-t">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full text-xs"
+                    onClick={() => navigate('/box/communication?tab=notifications')}
+                  >
+                    Ver todas as notificações
+                  </Button>
+                </div>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 

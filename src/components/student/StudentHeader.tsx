@@ -28,7 +28,7 @@ import { ptBR } from 'date-fns/locale';
 export const StudentHeader: React.FC = () => {
   const { language, changeLanguage } = useLanguage();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const { notifications, unreadCount, isLoading } = useNotifications();
+  const { notifications, unreadCount, isLoading, markAsRead } = useNotifications();
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
@@ -104,15 +104,22 @@ export const StudentHeader: React.FC = () => {
                 </div>
               ) : (
                 <div className="divide-y">
-                  {notifications.map((notification) => (
-                    <div key={notification.id} className="p-3">
+                  {notifications.slice(0, 5).map((notification) => (
+                    <div 
+                      key={notification.id} 
+                      className={`p-3 cursor-pointer hover:bg-muted/50 ${!notification.is_read ? 'bg-primary/5' : ''}`}
+                      onClick={() => !notification.is_read && markAsRead(notification.id)}
+                    >
                       <div className="flex items-start gap-2">
+                        {!notification.is_read && (
+                          <div className="h-2 w-2 rounded-full bg-primary mt-1 flex-shrink-0" />
+                        )}
                         {notification.is_urgent && (
                           <div className="h-2 w-2 rounded-full bg-red-500 mt-1 flex-shrink-0" />
                         )}
                         <div className="flex-1 space-y-1">
                           <p className="text-sm font-medium">{notification.title}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground line-clamp-2">
                             {notification.message}
                           </p>
                           <p className="text-xs text-muted-foreground">

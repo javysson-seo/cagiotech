@@ -9,6 +9,7 @@ export interface Notification {
   created_at: string;
   is_urgent: boolean;
   created_by: string;
+  is_read?: boolean;
 }
 
 export const useNotifications = () => {
@@ -18,23 +19,40 @@ export const useNotifications = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchNotifications = async () => {
-    if (!user?.boxId) {
+    if (!user?.boxId || !user?.id) {
       setIsLoading(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase
+      // Fetch notifications
+      const { data: notificationsData, error: notificationsError } = await supabase
         .from('company_notifications')
         .select('*')
         .eq('company_id', user.boxId)
         .order('created_at', { ascending: false })
-        .limit(10);
+        .limit(50);
 
-      if (error) throw error;
+      if (notificationsError) throw notificationsError;
 
-      setNotifications(data || []);
-      setUnreadCount(data?.length || 0);
+      // Fetch read status for current user
+      const { data: readsData, error: readsError } = await supabase
+        .from('notification_reads')
+        .select('notification_id')
+        .eq('user_id', user.id);
+
+      if (readsError) throw readsError;
+
+      const readNotificationIds = new Set(readsData?.map(r => r.notification_id) || []);
+
+      // Combine data
+      const notificationsWithReadStatus = (notificationsData || []).map(notification => ({
+        ...notification,
+        is_read: readNotificationIds.has(notification.id)
+      }));
+
+      setNotifications(notificationsWithReadStatus);
+      setUnreadCount(notificationsWithReadStatus.filter(n => !n.is_read).length);
     } catch (error) {
       console.error('Error fetching notifications:', error);
     } finally {
@@ -42,13 +60,69 @@ export const useNotifications = () => {
     }
   };
 
+  const markAsRead = async (notificationId: string) => {
+    if (!user?.id) return;
+
+    try {
+      const { error } = await supabase
+        .from('notification_reads')
+        .insert({
+          notification_id: notificationId,
+          user_id: user.id
+        });
+
+      if (error && error.code !== '23505') { // Ignore duplicate key errors
+        throw error;
+      }
+
+      // Update local state
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId ? { ...n, is_read: true } : n
+        )
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!user?.id) return;
+
+    try {
+      const unreadNotifications = notifications.filter(n => !n.is_read);
+      
+      const inserts = unreadNotifications.map(n => ({
+        notification_id: n.id,
+        user_id: user.id
+      }));
+
+      if (inserts.length > 0) {
+        const { error } = await supabase
+          .from('notification_reads')
+          .insert(inserts);
+
+        if (error) throw error;
+
+        // Update local state
+        setNotifications(prev =>
+          prev.map(n => ({ ...n, is_read: true }))
+        );
+        setUnreadCount(0);
+      }
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
+  };
+
   useEffect(() => {
     fetchNotifications();
 
     // Set up realtime subscription
-    if (!user?.boxId) return;
+    if (!user?.boxId || !user?.id) return;
 
-    const channel = supabase
+    const notificationsChannel = supabase
       .channel('company_notifications_changes')
       .on(
         'postgres_changes',
@@ -65,15 +139,36 @@ export const useNotifications = () => {
       )
       .subscribe();
 
+    const readsChannel = supabase
+      .channel('notification_reads_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'notification_reads',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          console.log('Notification read change:', payload);
+          fetchNotifications();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(notificationsChannel);
+      supabase.removeChannel(readsChannel);
     };
-  }, [user?.boxId]);
+  }, [user?.boxId, user?.id]);
 
   return {
     notifications,
+    unreadNotifications: notifications.filter(n => !n.is_read),
     unreadCount,
     isLoading,
+    markAsRead,
+    markAllAsRead,
     refetch: fetchNotifications
   };
 };
