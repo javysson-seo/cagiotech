@@ -7,20 +7,9 @@ export interface NutritionPlan {
   company_id: string;
   trainer_id: string;
   athlete_id: string;
-  name: string;
+  title: string;
   description?: string;
-  goals?: string[];
-  daily_calories?: number;
-  protein_grams?: number;
-  carbs_grams?: number;
-  fats_grams?: number;
-  meals: any[];
-  supplements: any[];
-  restrictions?: string[];
-  notes?: string;
-  start_date: string;
-  end_date?: string;
-  is_active: boolean;
+  plan_details: any;
   created_at: string;
   updated_at: string;
 }
@@ -32,7 +21,7 @@ export const useNutritionPlans = (companyId: string) => {
     queryKey: ['nutrition-plans', companyId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('nutrition_plans' as any)
+        .from('nutritional_plans')
         .select(`
           *,
           trainer:trainers(name),
@@ -50,7 +39,7 @@ export const useNutritionPlans = (companyId: string) => {
   const createNutritionPlan = useMutation({
     mutationFn: async (plan: Omit<NutritionPlan, 'id' | 'created_at' | 'updated_at'>) => {
       const { data, error } = await supabase
-        .from('nutrition_plans' as any)
+        .from('nutritional_plans')
         .insert([plan])
         .select()
         .single();
@@ -71,7 +60,7 @@ export const useNutritionPlans = (companyId: string) => {
   const updateNutritionPlan = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<NutritionPlan> & { id: string }) => {
       const { data, error } = await supabase
-        .from('nutrition_plans' as any)
+        .from('nutritional_plans')
         .update(updates)
         .eq('id', id)
         .select()
@@ -93,7 +82,7 @@ export const useNutritionPlans = (companyId: string) => {
   const deleteNutritionPlan = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from('nutrition_plans' as any)
+        .from('nutritional_plans')
         .delete()
         .eq('id', id);
 

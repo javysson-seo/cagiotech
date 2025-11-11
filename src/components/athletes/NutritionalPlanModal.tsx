@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,8 @@ interface NutritionalPlanModalProps {
   onClose: () => void;
   athleteId: string;
   athleteName: string;
+  existingPlan?: any;
+  onSuccess?: () => void;
 }
 
 interface MealData {
@@ -72,6 +74,8 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
   onClose,
   athleteId,
   athleteName,
+  existingPlan,
+  onSuccess,
 }) => {
   const { currentCompany } = useCompany();
   const { user } = useAuth();
@@ -107,6 +111,25 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
     sunday: { ...emptyDayPlan },
   });
 
+  // Load existing plan data when editing
+  useEffect(() => {
+    if (existingPlan && isOpen) {
+      setFormData({
+        title: existingPlan.title || '',
+        description: existingPlan.description || '',
+        calories_target: existingPlan.plan_details?.calories_target || '',
+        observations: existingPlan.plan_details?.observations || '',
+      });
+
+      if (existingPlan.plan_details?.week_plans) {
+        setWeekPlans(existingPlan.plan_details.week_plans);
+      }
+    } else if (!existingPlan && isOpen) {
+      // Reset form when opening for new plan
+      resetForm();
+    }
+  }, [existingPlan, isOpen]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -129,31 +152,52 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
         observations: formData.observations,
       };
 
-      const { data, error } = await supabase
-        .from('nutritional_plans')
-        .insert([{
-          company_id: currentCompany.id,
-          trainer_id: user.id,
-          athlete_id: athleteId,
-          title: formData.title,
-          description: formData.description,
-          plan_details: planDetails as any,
-        }])
-        .select()
-        .single();
+      if (existingPlan?.id) {
+        // Update existing plan
+        const { error } = await supabase
+          .from('nutritional_plans')
+          .update({
+            title: formData.title,
+            description: formData.description,
+            plan_details: planDetails as any,
+          })
+          .eq('id', existingPlan.id);
 
-      if (error) {
-        console.error('Error creating nutritional plan:', error);
-        toast.error('Erro ao criar plano nutricional');
-        return;
+        if (error) {
+          console.error('Error updating nutritional plan:', error);
+          toast.error('Erro ao atualizar plano nutricional');
+          return;
+        }
+
+        toast.success('Plano nutricional atualizado com sucesso!');
+      } else {
+        // Create new plan
+        const { error } = await supabase
+          .from('nutritional_plans')
+          .insert([{
+            company_id: currentCompany.id,
+            trainer_id: user.id,
+            athlete_id: athleteId,
+            title: formData.title,
+            description: formData.description,
+            plan_details: planDetails as any,
+          }]);
+
+        if (error) {
+          console.error('Error creating nutritional plan:', error);
+          toast.error('Erro ao criar plano nutricional');
+          return;
+        }
+
+        toast.success('Plano nutricional criado com sucesso!');
       }
-
-      toast.success('Plano nutricional criado com sucesso!');
+      
+      onSuccess?.();
       onClose();
       resetForm();
     } catch (error) {
       console.error('Error in handleSubmit:', error);
-      toast.error('Erro ao criar plano nutricional');
+      toast.error('Erro ao processar plano nutricional');
     } finally {
       setLoading(false);
     }

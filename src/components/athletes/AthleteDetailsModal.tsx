@@ -29,12 +29,12 @@ import {
   Trophy
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { NutritionalPlanModal } from './NutritionalPlanModal';
 import { CheckInDialog } from './CheckInDialog';
 import { BlockAthleteDialog } from './BlockAthleteDialog';
 import { PhysicalAssessmentModal } from './PhysicalAssessmentModal';
 import { WorkoutAssignmentDialog } from './WorkoutAssignmentDialog';
 import { AthleteWorkoutHistory } from './AthleteWorkoutHistory';
+import { AthleteNutritionPlans } from './AthleteNutritionPlans';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -53,7 +53,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
 }) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [documents, setDocuments] = useState<any[]>([]);
-  const [nutritionalPlanModalOpen, setNutritionalPlanModalOpen] = useState(false);
   const [checkInDialogOpen, setCheckInDialogOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [physicalAssessmentOpen, setPhysicalAssessmentOpen] = useState(false);
@@ -107,10 +106,6 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
       onDelete(athlete);
       onClose();
     }
-  };
-
-  const handleCreateNutritionalPlan = () => {
-    setNutritionalPlanModalOpen(true);
   };
 
   const statusBadge = getStatusBadge(athlete.status);
@@ -603,53 +598,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
             </TabsContent>
 
             <TabsContent value="nutrition" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Plano Nutricional</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {athlete.nutrition_preview ? (
-                    <div className="space-y-4">
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="text-sm">{athlete.nutrition_preview}</p>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button variant="outline" className="flex-1">
-                          <FileText className="h-4 w-4 mr-2" />
-                          Ver Plano Completo
-                        </Button>
-                        <Button variant="outline" className="flex-1">
-                          <Edit className="h-4 w-4 mr-2" />
-                          Editar Plano
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-muted-foreground mb-4">
-                        Este atleta ainda não possui um plano nutricional
-                      </p>
-                      <Button 
-                        onClick={handleCreateNutritionalPlan}
-                        className="bg-cagio-green hover:bg-cagio-green-dark text-white"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Criar Plano Nutricional
-                      </Button>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <AthleteNutritionPlans 
+                athleteId={athlete.id}
+                athleteName={athlete.name}
+              />
             </TabsContent>
           </Tabs>
         </div>
-
-        <NutritionalPlanModal
-          isOpen={nutritionalPlanModalOpen}
-          onClose={() => setNutritionalPlanModalOpen(false)}
-          athleteId={athlete.id}
-          athleteName={athlete.name}
-        />
       </DialogContent>
 
       <CheckInDialog
