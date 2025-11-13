@@ -83,6 +83,7 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
   const [activeTab, setActiveTab] = useState('info');
   const [copyModalOpen, setCopyModalOpen] = useState(false);
   const [currentDayToCopy, setCurrentDayToCopy] = useState<string>('');
+  const [trainerId, setTrainerId] = useState<string | null>(null);
   
   const weekDays = [
     { key: 'monday', label: 'Segunda-feira' },
@@ -110,6 +111,30 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
     saturday: { ...emptyDayPlan },
     sunday: { ...emptyDayPlan },
   });
+
+  // Fetch trainer ID for current user
+  useEffect(() => {
+    const fetchTrainerId = async () => {
+      if (!user?.id || !currentCompany?.id) return;
+
+      const { data, error } = await supabase
+        .from('trainers')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('company_id', currentCompany.id)
+        .maybeSingle();
+
+      if (data) {
+        setTrainerId(data.id);
+      } else {
+        console.error('Trainer not found for user:', error);
+      }
+    };
+
+    if (isOpen) {
+      fetchTrainerId();
+    }
+  }, [user?.id, currentCompany?.id, isOpen]);
 
   // Load existing plan data when editing
   useEffect(() => {
@@ -143,6 +168,11 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
       return;
     }
 
+    if (!trainerId && !existingPlan) {
+      toast.error('Não foi possível identificar o treinador. Por favor, tente novamente.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -165,7 +195,7 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
 
         if (error) {
           console.error('Error updating nutritional plan:', error);
-          toast.error('Erro ao atualizar plano nutricional');
+          toast.error('Erro ao atualizar plano nutricional: ' + error.message);
           return;
         }
 
@@ -176,7 +206,7 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
           .from('nutritional_plans')
           .insert([{
             company_id: currentCompany.id,
-            trainer_id: user.id,
+            trainer_id: trainerId,
             athlete_id: athleteId,
             title: formData.title,
             description: formData.description,
@@ -185,7 +215,7 @@ export const NutritionalPlanModal: React.FC<NutritionalPlanModalProps> = ({
 
         if (error) {
           console.error('Error creating nutritional plan:', error);
-          toast.error('Erro ao criar plano nutricional');
+          toast.error('Erro ao criar plano nutricional: ' + error.message);
           return;
         }
 
