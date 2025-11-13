@@ -25,6 +25,11 @@ import { toast } from 'sonner';
 import { useAthletes } from '@/hooks/useAthletes';
 import { useTrainers } from '@/hooks/useTrainers';
 import { useCompany } from '@/contexts/CompanyContext';
+import { useExerciseLibrary } from '@/hooks/useExerciseLibrary';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Exercise {
   name: string;
@@ -64,6 +69,11 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
   const { currentCompany } = useCompany();
   const { athletes } = useAthletes();
   const { trainers } = useTrainers();
+  const { exercises: exerciseLibrary, isLoading: isLoadingExercises } = useExerciseLibrary(currentCompany?.id);
+
+  const [exerciseSearchOpen, setExerciseSearchOpen] = useState(false);
+  const [exerciseCategory, setExerciseCategory] = useState<string>('all');
+  const [exerciseMuscleGroup, setExerciseMuscleGroup] = useState<string>('all');
 
   const [formData, setFormData] = useState<WorkoutPlanFormData>({
     name: '',
@@ -136,7 +146,7 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
 
   const addExercise = () => {
     if (!currentExercise.name.trim()) {
-      toast.error('Nome do exercício é obrigatório');
+      toast.error('Selecione um exercício');
       return;
     }
 
@@ -154,8 +164,33 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
       video_url: '',
     });
 
+    setExerciseSearchOpen(false);
     toast.success('Exercício adicionado');
   };
+
+  const selectExercise = (exerciseName: string) => {
+    setCurrentExercise({
+      ...currentExercise,
+      name: exerciseName,
+    });
+    setExerciseSearchOpen(false);
+  };
+
+  // Filter exercises based on selected category and muscle group
+  const filteredExercises = exerciseLibrary.filter(exercise => {
+    const categoryMatch = exerciseCategory === 'all' || exercise.category === exerciseCategory;
+    const muscleGroupMatch = exerciseMuscleGroup === 'all' || exercise.muscle_group === exerciseMuscleGroup;
+    return categoryMatch && muscleGroupMatch;
+  });
+
+  // Get unique muscle groups from filtered exercises
+  const availableMuscleGroups = Array.from(
+    new Set(
+      exerciseLibrary
+        .filter(e => exerciseCategory === 'all' || e.category === exerciseCategory)
+        .map(e => e.muscle_group)
+    )
+  );
 
   const removeExercise = (index: number) => {
     setFormData({
@@ -322,19 +357,87 @@ export const WorkoutPlanFormModal: React.FC<WorkoutPlanFormModalProps> = ({
                 Adicionar Exercício
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Filtros */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-muted/50 rounded-lg">
                 <div className="space-y-2">
-                  <Label>Nome do Exercício</Label>
-                  <Input
-                    value={currentExercise.name}
-                    onChange={(e) =>
-                      setCurrentExercise({
-                        ...currentExercise,
-                        name: e.target.value,
-                      })
-                    }
-                    placeholder="Ex: Agachamento"
-                  />
+                  <Label>Categoria</Label>
+                  <Select value={exerciseCategory} onValueChange={setExerciseCategory}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas as Categorias</SelectItem>
+                      <SelectItem value="bodybuilding">Musculação</SelectItem>
+                      <SelectItem value="crossfit">CrossFit</SelectItem>
+                      <SelectItem value="other">Outros</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Grupo Muscular</Label>
+                  <Select value={exerciseMuscleGroup} onValueChange={setExerciseMuscleGroup}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos os Grupos</SelectItem>
+                      {availableMuscleGroups.map(group => (
+                        <SelectItem key={group} value={group}>{group}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Selecionar Exercício da Biblioteca</Label>
+                  <Popover open={exerciseSearchOpen} onOpenChange={setExerciseSearchOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={exerciseSearchOpen}
+                        className="w-full justify-between"
+                      >
+                        {currentExercise.name || "Buscar exercício..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar exercício..." />
+                        <CommandEmpty>Nenhum exercício encontrado.</CommandEmpty>
+                        <CommandGroup className="max-h-64 overflow-auto">
+                          {filteredExercises.map((exercise) => (
+                            <CommandItem
+                              key={exercise.id}
+                              value={exercise.name}
+                              onSelect={() => selectExercise(exercise.name)}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  currentExercise.name === exercise.name ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              <div className="flex-1">
+                                <div>{exercise.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {exercise.muscle_group} • {exercise.category}
+                                  {!exercise.is_default && " • Personalizado"}
+                                </div>
+                              </div>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  <p className="text-xs text-muted-foreground">
+                    {filteredExercises.length} exercícios disponíveis
+                  </p>
                 </div>
 
                 <div className="space-y-2">
