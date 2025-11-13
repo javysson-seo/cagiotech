@@ -26,15 +26,20 @@ import {
   CreditCard,
   Plus,
   Trash2,
-  Trophy
+  Trophy,
+  TrendingUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { CheckInDialog } from './CheckInDialog';
 import { BlockAthleteDialog } from './BlockAthleteDialog';
 import { PhysicalAssessmentModal } from './PhysicalAssessmentModal';
+import { PhysicalAssessmentHistory } from './PhysicalAssessmentHistory';
 import { WorkoutAssignmentDialog } from './WorkoutAssignmentDialog';
 import { AthleteWorkoutHistory } from './AthleteWorkoutHistory';
 import { AthleteNutritionPlans } from './AthleteNutritionPlans';
+import { useAthleteActivities } from '@/hooks/useAthleteActivities';
+import { useAthleteDocuments } from '@/hooks/useAthleteDocuments';
+import { useCompany } from '@/contexts/CompanyContext';
 
 interface AthleteDetailsModalProps {
   isOpen: boolean;
@@ -51,12 +56,28 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
-  const [documents, setDocuments] = useState<any[]>([]);
+  const { currentCompany } = useCompany();
   const [checkInDialogOpen, setCheckInDialogOpen] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [physicalAssessmentOpen, setPhysicalAssessmentOpen] = useState(false);
+  const [physicalAssessmentHistoryOpen, setPhysicalAssessmentHistoryOpen] = useState(false);
   const [workoutAssignmentOpen, setWorkoutAssignmentOpen] = useState(false);
+  
+  // Hooks para buscar dados
+  const { activities, loading: activitiesLoading } = useAthleteActivities(
+    athlete?.id || '', 
+    currentCompany?.id || ''
+  );
+  const { 
+    documents, 
+    loading: documentsLoading,
+    uploading,
+    uploadDocument,
+    deleteDocument 
+  } = useAthleteDocuments(
+    athlete?.id || '', 
+    currentCompany?.id || ''
+  );
 
   if (!athlete) return null;
 
@@ -70,35 +91,16 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
     return config[status as keyof typeof config] || config.pending;
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-    if (files) {
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].size > 5 * 1024 * 1024) {
-          toast.error(`O arquivo ${files[i].name} excede o limite de 5MB`);
-          return;
-        }
-      }
-      setSelectedFiles(files);
-      // Simular upload
-      Array.from(files).forEach(file => {
-        const newDoc = {
-          id: Date.now() + Math.random(),
-          name: file.name,
-          size: (file.size / (1024 * 1024)).toFixed(1) + ' MB',
-          uploaded: new Date().toLocaleDateString('pt-PT'),
-          uploadedBy: 'Utilizador Atual'
-        };
-        setDocuments(prev => [...prev, newDoc]);
-      });
-      toast.success('Documentos enviados com sucesso!');
-      console.log('Uploading files:', files);
-    }
-  };
+    if (!files) return;
 
-  const handleDeleteDocument = (docId: number) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== docId));
-    toast.success('Documento excluído com sucesso');
+    for (let i = 0; i < files.length; i++) {
+      await uploadDocument(files[i], 'other');
+    }
+    
+    // Limpar input
+    event.target.value = '';
   };
 
   const handleDelete = () => {
@@ -110,8 +112,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
 
   const statusBadge = getStatusBadge(athlete.status);
 
-  // Dados reais virão do banco de dados via props
-  const athleteHistory: any[] = [];
+  // Dados de pagamento (virão de outro hook específico no futuro)
   const paymentHistory: any[] = [];
 
   const totalPaid = 0;
@@ -178,7 +179,12 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
             
             <Button onClick={() => setPhysicalAssessmentOpen(true)} variant="outline" size="sm">
               <Activity className="h-4 w-4 mr-2" />
-              Avaliação Física
+              Nova Avaliação
+            </Button>
+            
+            <Button onClick={() => setPhysicalAssessmentHistoryOpen(true)} variant="outline" size="sm">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Histórico
             </Button>
             
             <Button onClick={() => setBlockDialogOpen(true)} variant="outline" size="sm" className="text-destructive hover:bg-destructive/10">
@@ -416,9 +422,10 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                           accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                           onChange={handleFileUpload}
                           className="hidden"
+                          disabled={uploading}
                         />
-                        <Button variant="outline" size="sm" asChild>
-                          <span>Selecionar Arquivos</span>
+                        <Button variant="outline" size="sm" asChild disabled={uploading}>
+                          <span>{uploading ? 'Enviando...' : 'Selecionar Arquivos'}</span>
                         </Button>
                       </label>
                     </div>
@@ -431,7 +438,11 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   <CardTitle>Documentos Anexados</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {documents.length === 0 ? (
+                  {documentsLoading ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      A carregar documentos...
+                    </p>
+                  ) : documents.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">
                       Nenhum documento anexado ainda
                     </p>
@@ -444,12 +455,16 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                           <div>
                             <p className="font-medium">{doc.name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {doc.size} • Enviado em {doc.uploaded} por {doc.uploadedBy}
+                              {(doc.file_size / (1024 * 1024)).toFixed(2)} MB • Enviado em {new Date(doc.created_at).toLocaleDateString('pt-PT')}
                             </p>
                           </div>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(doc.file_url, '_blank')}
+                          >
                             <Download className="h-4 w-4 mr-2" />
                             Baixar
                           </Button>
@@ -469,7 +484,7 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction 
-                                  onClick={() => handleDeleteDocument(doc.id)}
+                                  onClick={() => deleteDocument(doc.id, doc.file_url)}
                                   className="bg-red-600 hover:bg-red-700"
                                 >
                                   Excluir
@@ -495,22 +510,26 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {athleteHistory.length === 0 ? (
+                  {activitiesLoading ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      A carregar histórico...
+                    </p>
+                  ) : activities.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">
                       Nenhuma atividade registada ainda
                     </p>
                   ) : (
                     <div className="space-y-4">
-                      {athleteHistory.map((entry, index) => (
-                      <div key={index} className="flex items-start space-x-4 pb-4 border-b last:border-b-0">
+                      {activities.map((activity) => (
+                      <div key={activity.id} className="flex items-start space-x-4 pb-4 border-b last:border-b-0">
                         <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                         <div className="flex-1">
-                          <p className="font-medium">{entry.action}</p>
-                          <p className="text-sm text-muted-foreground mt-1">{entry.details}</p>
+                          <p className="font-medium">{activity.type}</p>
+                          <p className="text-sm text-muted-foreground mt-1">{activity.description}</p>
                           <div className="flex items-center space-x-2 text-sm text-muted-foreground mt-1">
-                            <span>{new Date(entry.date).toLocaleDateString('pt-PT')}</span>
+                            <span>{new Date(activity.created_at).toLocaleDateString('pt-PT')}</span>
                             <span>•</span>
-                            <span>por {entry.user}</span>
+                            <span>por {activity.performed_by_name || 'Sistema'}</span>
                           </div>
                           </div>
                         </div>
@@ -635,6 +654,13 @@ export const AthleteDetailsModal: React.FC<AthleteDetailsModalProps> = ({
         open={workoutAssignmentOpen}
         onOpenChange={setWorkoutAssignmentOpen}
         athleteId={athlete.id}
+      />
+
+      <PhysicalAssessmentHistory
+        isOpen={physicalAssessmentHistoryOpen}
+        onClose={() => setPhysicalAssessmentHistoryOpen(false)}
+        athlete={athlete}
+        companyId={currentCompany?.id || ''}
       />
     </Dialog>
   );
