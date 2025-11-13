@@ -10,7 +10,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Search, Calendar, MapPin, Users, Euro, Megaphone } from 'lucide-react';
 import { useCompany } from '@/contexts/CompanyContext';
 import { useCompanyEvents } from '@/hooks/useCompanyEvents';
-import { AnnouncementsManager } from '@/components/box/AnnouncementsManager';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -143,7 +142,11 @@ export const Events: React.FC = () => {
               </TabsContent>
 
               <TabsContent value="announcements">
-                <AnnouncementsManager />
+                <Card className="p-6">
+                  <p className="text-muted-foreground text-center py-12">
+                    Funcionalidade de anúncios em desenvolvimento
+                  </p>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
