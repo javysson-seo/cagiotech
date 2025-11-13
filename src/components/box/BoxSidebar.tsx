@@ -26,6 +26,7 @@ import { useCompany } from '@/contexts/CompanyContext';
 import { Logo } from '@/components/ui/logo';
 import { useAthletes } from '@/hooks/useAthletes';
 import { usePermissions } from '@/hooks/usePermissions';
+import { AnnouncementsBanner } from './AnnouncementsBanner';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -169,6 +170,11 @@ export const BoxSidebar: React.FC = () => {
           </NavLink>
         ))}
       </nav>
+
+      {/* Announcements Banner */}
+      <div className="shrink-0 border-t border-border">
+        <AnnouncementsBanner />
+      </div>
 
       {/* Quick Stats */}
       <div className="p-3 border-t border-border shrink-0">
