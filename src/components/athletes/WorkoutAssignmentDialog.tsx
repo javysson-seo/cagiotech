@@ -8,10 +8,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Plus } from 'lucide-react';
 import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
 import { useWorkoutAssignments } from '@/hooks/useWorkoutAssignments';
 import { useCompany } from '@/contexts/CompanyContext';
+import { WorkoutPlanFormModal } from '@/components/workouts/WorkoutPlanFormModal';
 import { cn } from '@/lib/utils';
 
 interface WorkoutAssignmentDialogProps {
@@ -28,13 +29,14 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
   trainerId,
 }) => {
   const { currentCompany } = useCompany();
-  const { workoutPlans } = useWorkoutPlans(currentCompany?.id || '');
+  const { workoutPlans, createWorkoutPlan } = useWorkoutPlans(currentCompany?.id || '');
   const { assignWorkoutPlan } = useWorkoutAssignments(currentCompany?.id || '');
   
   const [selectedPlanId, setSelectedPlanId] = useState('');
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>();
   const [notes, setNotes] = useState('');
+  const [showCreatePlanModal, setShowCreatePlanModal] = useState(false);
 
   const handleSubmit = () => {
     if (!selectedPlanId || !currentCompany) return;
@@ -58,6 +60,42 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
     });
   };
 
+  const handleCreateAndAssignPlan = (planData: any) => {
+    if (!currentCompany) return;
+
+    // Criar plano com o atleta já vinculado
+    createWorkoutPlan.mutate({
+      ...planData,
+      company_id: currentCompany.id,
+      athlete_id: athleteId,
+    }, {
+      onSuccess: (newPlan) => {
+        setShowCreatePlanModal(false);
+        // Atribuir o plano recém-criado
+        setSelectedPlanId(newPlan.id);
+        
+        // Auto-atribuir após criar
+        assignWorkoutPlan.mutate({
+          company_id: currentCompany.id,
+          athlete_id: athleteId,
+          workout_plan_id: newPlan.id,
+          assigned_by: trainerId,
+          start_date: format(startDate, 'yyyy-MM-dd'),
+          end_date: endDate ? format(endDate, 'yyyy-MM-dd') : undefined,
+          status: 'active',
+          notes: notes || 'Plano criado e atribuído automaticamente',
+        }, {
+          onSuccess: () => {
+            onOpenChange(false);
+            setSelectedPlanId('');
+            setNotes('');
+            setEndDate(undefined);
+          },
+        });
+      },
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
@@ -67,7 +105,19 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Selecionar Plano de Treino</Label>
+            <div className="flex items-center justify-between">
+              <Label>Selecionar Plano de Treino</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setShowCreatePlanModal(true)}
+                className="gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Criar Novo Plano
+              </Button>
+            </div>
             <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
               <SelectTrigger>
                 <SelectValue placeholder="Escolha um plano..." />
@@ -164,6 +214,12 @@ export const WorkoutAssignmentDialog: React.FC<WorkoutAssignmentDialogProps> = (
           </Button>
         </DialogFooter>
       </DialogContent>
+
+      <WorkoutPlanFormModal
+        open={showCreatePlanModal}
+        onOpenChange={setShowCreatePlanModal}
+        onSave={handleCreateAndAssignPlan}
+      />
     </Dialog>
   );
 };
