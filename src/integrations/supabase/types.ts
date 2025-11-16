@@ -1304,6 +1304,75 @@ export type Database = {
           },
         ]
       }
+      company_announcements: {
+        Row: {
+          background_color: string | null
+          company_id: string
+          content: string | null
+          created_at: string | null
+          created_by: string | null
+          display_order: number | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          link_url: string | null
+          start_date: string | null
+          text_color: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          background_color?: string | null
+          company_id: string
+          content?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          link_url?: string | null
+          start_date?: string | null
+          text_color?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          background_color?: string | null
+          company_id?: string
+          content?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          display_order?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          link_url?: string | null
+          start_date?: string | null
+          text_color?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_announcements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_announcements_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+        ]
+      }
       company_documents: {
         Row: {
           company_id: string
@@ -2034,6 +2103,63 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "company_events"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercise_library: {
+        Row: {
+          category: string
+          company_id: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_default: boolean | null
+          muscle_group: string
+          name: string
+          updated_at: string | null
+          video_url: string | null
+        }
+        Insert: {
+          category: string
+          company_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_default?: boolean | null
+          muscle_group: string
+          name: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          category?: string
+          company_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_default?: boolean | null
+          muscle_group?: string
+          name?: string
+          updated_at?: string | null
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_library_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_library_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
           },
         ]
       }
