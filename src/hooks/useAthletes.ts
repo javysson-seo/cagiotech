@@ -81,33 +81,24 @@ export const useAthletes = () => {
     }
 
     try {
-      // Create user in Supabase Auth if new athlete and has birth_date
-      if (!athleteData.id && athleteData.birth_date) {
-        // Generate password from birth date (dd/mm/yyyy -> ddmmyyyy)
-        const birthDate = new Date(athleteData.birth_date);
-        const day = birthDate.getDate().toString().padStart(2, '0');
-        const month = (birthDate.getMonth() + 1).toString().padStart(2, '0');
-        const year = birthDate.getFullYear().toString();
-        const password = `${day}${month}${year}`;
-
-        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-student', {
+      // Create user in Supabase Auth if new athlete and has birth_date and email
+      if (!athleteData.id && athleteData.birth_date && athleteData.email) {
+        console.log('Creating auth user for athlete:', athleteData.email);
+        
+        const { data: fnData, error: fnError } = await supabase.functions.invoke('create-athlete-with-auth', {
           body: {
-            email: athleteData.email!,
-            password,
-            name: athleteData.name,
-            role: 'student',
+            athleteData: {
+              ...athleteData,
+              company_id: currentCompany.id,
+            },
           },
         });
 
-        const efErrorMsg = (fnError as any)?.message || (fnData as any)?.error || '';
-        if (fnError && !efErrorMsg.toString().includes('already been registered') && !efErrorMsg.toString().includes('email_exists')) {
+        if (fnError) {
           console.error('Error creating auth user:', fnError);
-          toast.error('Erro ao criar usuário no sistema');
-          // Continue saving athlete even if auth creation failed
-        } else if (!fnError && (fnData as any)?.code === 'email_exists') {
-          toast.info('Usuário já existente para este email. Mantendo cadastro do atleta.');
-        } else if (!fnError) {
-          toast.success(`Usuário criado! Email: ${athleteData.email}, Senha: ${password}`);
+          toast.error('Erro ao criar login do atleta');
+        } else if (fnData?.success) {
+          toast.success(`Login criado! Email: ${athleteData.email}, Senha: ${fnData.credentials?.password_hint}`);
         }
       }
 

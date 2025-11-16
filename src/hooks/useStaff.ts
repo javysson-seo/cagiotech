@@ -194,30 +194,21 @@ export const useStaff = () => {
     }
   };
 
-  const generatePasswordFromDate = (date: string): string => {
-    const dateObj = new Date(date);
-    const day = dateObj.getDate().toString().padStart(2, '0');
-    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-    const year = dateObj.getFullYear().toString();
-    // Format: Dd[day][month][year] - e.g., Dd01012000 (has uppercase, lowercase, and numbers)
-    return `Dd${day}${month}${year}`;
-  };
-
   const createUserAccount = async (email: string, name: string, birthDate: string, position: string, roleId?: string) => {
     if (!currentCompany?.id) return;
     
-    const password = generatePasswordFromDate(birthDate);
+    console.log('Creating user account with:', { email, name, position, birth_date: birthDate });
     
-    console.log('Creating user account with:', { email, name, position, password });
-    
-    const { data, error } = await supabase.functions.invoke('create-staff-user', {
+    const { data, error } = await supabase.functions.invoke('create-staff-with-auth', {
       body: {
-        email,
-        password,
-        name,
-        position,
-        company_id: currentCompany.id,
-        role_id: roleId
+        staffData: {
+          email,
+          name,
+          birth_date: birthDate,
+          position,
+          company_id: currentCompany.id,
+          role_id: roleId
+        }
       }
     });
 
@@ -225,20 +216,25 @@ export const useStaff = () => {
 
     if (error) {
       console.error('Error creating user account:', error);
-      // Show user-friendly error message
       throw new Error(error.message || 'Erro ao criar conta de acesso');
     }
 
     if (!data?.success) {
-      // Show the error message from the edge function
       throw new Error(data?.error || 'Erro ao criar usuário');
     }
+
+    // Generate the password format for display (DDMMYYYY)
+    const dateObj = new Date(birthDate);
+    const day = dateObj.getDate().toString().padStart(2, '0');
+    const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+    const year = dateObj.getFullYear().toString();
+    const displayPassword = `${day}${month}${year}`;
 
     return {
       userId: data.user_id,
       credentials: {
-        email: data.email,
-        password: data.temp_password
+        email: email,
+        password: displayPassword
       }
     };
   };
@@ -284,10 +280,14 @@ export const useStaff = () => {
         return null;
       }
 
-      const newPassword = generatePasswordFromDate(newBirthDate);
+      // Generate password from date (DDMMYYYY)
+      const dateObj = new Date(newBirthDate);
+      const day = dateObj.getDate().toString().padStart(2, '0');
+      const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
+      const year = dateObj.getFullYear().toString();
+      const newPassword = `${day}${month}${year}`;
       
-      // Aqui você poderia chamar uma edge function para resetar a senha
-      // Por enquanto, apenas retornamos a nova senha gerada
+      // TODO: Call edge function to reset password in Supabase Auth
       toast.success('Nova senha gerada com sucesso!');
       return newPassword;
     } catch (error) {
@@ -303,7 +303,6 @@ export const useStaff = () => {
     saveStaff,
     deleteStaff,
     createUserAccount,
-    generatePasswordFromDate,
     resetStaffPassword,
     refetchStaff,
     checkEmailExists
