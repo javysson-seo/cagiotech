@@ -48,6 +48,7 @@ import { BoxCommunication } from "./pages/box/BoxCommunication";
 import { BoxEquipment } from "./pages/box/BoxEquipment";
 import { Financial } from "./pages/box/Financial";
 import SubscriptionsManagement from "./pages/box/SubscriptionsManagement";
+import Subscription from "./pages/box/Subscription";
 
 // Student Pages
 import { StudentDashboard } from "./pages/student/StudentDashboard";
@@ -215,6 +216,13 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
+                  <Route path="/:companyId/subscription" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <Subscription />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
 
                   {/* Box Routes (without company slug for direct access) */}
                   <Route path="/box" element={
@@ -277,6 +285,13 @@ function App() {
                     <ProtectedRoute allowedRoles={["box_admin"]}>
                       <CompanyProvider>
                         <BoxReports />
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/box/subscription" element={
+                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                      <CompanyProvider>
+                        <Subscription />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />

@@ -261,6 +261,48 @@ serve(async (req) => {
       throw updateError;
     }
 
+    // Check if this is a Cagio subscription payment
+    const { data: cagioPayment } = await supabaseClient
+      .from('cagio_subscription_payments')
+      .select('*, cagio_subscription_plans(*)')
+      .eq('transaction_id', transaction_id)
+      .single();
+
+    if (cagioPayment) {
+      console.log('Processing Cagio subscription payment');
+      
+      // Update cagio_subscription_payments
+      await supabaseClient
+        .from('cagio_subscription_payments')
+        .update({
+          status: 'paid',
+          paid_date: new Date().toISOString(),
+        })
+        .eq('id', cagioPayment.id);
+
+      // Calculate subscription dates
+      const now = new Date();
+      const endDate = new Date(now);
+      if (cagioPayment.billing_period === 'monthly') {
+        endDate.setMonth(endDate.getMonth() + 1);
+      } else {
+        endDate.setFullYear(endDate.getFullYear() + 1);
+      }
+
+      // Update company subscription
+      await supabaseClient
+        .from('companies')
+        .update({
+          subscription_plan: cagioPayment.cagio_subscription_plans.slug,
+          subscription_status: 'active',
+          subscription_start_date: now.toISOString(),
+          subscription_end_date: endDate.toISOString(),
+        })
+        .eq('id', cagioPayment.company_id);
+
+      console.log('Company subscription activated');
+    }
+
     // Atualizar log do webhook como processado
     await supabaseClient
       .from("payment_webhooks_log")

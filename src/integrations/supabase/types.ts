@@ -793,6 +793,134 @@ export type Database = {
         }
         Relationships: []
       }
+      cagio_subscription_payments: {
+        Row: {
+          amount: number
+          billing_period: string
+          company_id: string
+          created_at: string | null
+          due_date: string
+          id: string
+          notes: string | null
+          paid_date: string | null
+          payment_method: string | null
+          plan_id: string
+          status: string | null
+          transaction_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          billing_period: string
+          company_id: string
+          created_at?: string | null
+          due_date: string
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          plan_id: string
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          billing_period?: string
+          company_id?: string
+          created_at?: string | null
+          due_date?: string
+          id?: string
+          notes?: string | null
+          paid_date?: string | null
+          payment_method?: string | null
+          plan_id?: string
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cagio_subscription_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cagio_subscription_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "company_financial_overview"
+            referencedColumns: ["company_id"]
+          },
+          {
+            foreignKeyName: "cagio_subscription_payments_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "cagio_subscription_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cagio_subscription_payments_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "payment_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cagio_subscription_plans: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          features: Json | null
+          id: string
+          is_active: boolean | null
+          max_athletes: number | null
+          max_classes_per_month: number | null
+          max_staff: number | null
+          name: string
+          price_monthly: number
+          price_yearly: number
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_athletes?: number | null
+          max_classes_per_month?: number | null
+          max_staff?: number | null
+          name: string
+          price_monthly: number
+          price_yearly: number
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          id?: string
+          is_active?: boolean | null
+          max_athletes?: number | null
+          max_classes_per_month?: number | null
+          max_staff?: number | null
+          name?: string
+          price_monthly?: number
+          price_yearly?: number
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       class_bookings: {
         Row: {
           athlete_id: string
@@ -1241,6 +1369,12 @@ export type Database = {
           postal_code: string | null
           slogan: string | null
           slug: string | null
+          subscription_end_date: string | null
+          subscription_plan: string | null
+          subscription_start_date: string | null
+          subscription_status: string | null
+          trial_end_date: string | null
+          trial_start_date: string | null
           updated_at: string | null
           website: string | null
         }
@@ -1266,6 +1400,12 @@ export type Database = {
           postal_code?: string | null
           slogan?: string | null
           slug?: string | null
+          subscription_end_date?: string | null
+          subscription_plan?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string | null
           website?: string | null
         }
@@ -1291,6 +1431,12 @@ export type Database = {
           postal_code?: string | null
           slogan?: string | null
           slug?: string | null
+          subscription_end_date?: string | null
+          subscription_plan?: string | null
+          subscription_start_date?: string | null
+          subscription_status?: string | null
+          trial_end_date?: string | null
+          trial_start_date?: string | null
           updated_at?: string | null
           website?: string | null
         }
