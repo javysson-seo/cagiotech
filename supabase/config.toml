@@ -3,6 +3,12 @@ project_id = "vwonynqoybfvaleyfmog"
 [functions.create-student]
 verify_jwt = false
 
+[functions.create-athlete-with-auth]
+verify_jwt = true
+
+[functions.create-staff-with-auth]
+verify_jwt = true
+
 [functions.ifthenpay-multibanco]
 verify_jwt = true
 
