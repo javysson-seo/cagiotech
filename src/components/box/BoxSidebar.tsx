@@ -115,6 +115,12 @@ export const BoxSidebar: React.FC = () => {
       icon: Settings,
       permissions: ['settings_view', 'manage_settings']
     },
+    { 
+      name: 'Assinatura', 
+      href: `/${resolvedCompanyId}/subscription`, 
+      icon: CreditCard,
+      permissions: [] // Always visible to box owners
+    },
   ];
 
   // Filter navigation items based on permissions
