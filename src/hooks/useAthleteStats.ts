@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './useAuth';
+import { useCurrentAthlete } from './useCurrentAthlete';
 
 export interface AthleteStats {
   currentStreak: number;
@@ -12,7 +12,7 @@ export interface AthleteStats {
 }
 
 export const useAthleteStats = () => {
-  const { user } = useAuth();
+  const { athlete } = useCurrentAthlete();
   const [stats, setStats] = useState<AthleteStats>({
     currentStreak: 0,
     totalPoints: 0,
@@ -24,21 +24,12 @@ export const useAthleteStats = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchStats = async () => {
-    if (!user?.email) return;
+    if (!athlete?.id) {
+      setLoading(false);
+      return;
+    }
 
     try {
-      // Get athlete ID
-      const { data: athlete } = await supabase
-        .from('athletes')
-        .select('id, company_id')
-        .eq('email', user.email)
-        .maybeSingle();
-
-      if (!athlete) {
-        setLoading(false);
-        return;
-      }
-
       // Get gamification data
       const { data: levelData } = await supabase
         .from('athlete_levels')
@@ -73,7 +64,7 @@ export const useAthleteStats = () => {
 
   useEffect(() => {
     fetchStats();
-  }, [user?.email]);
+  }, [athlete?.id]);
 
   return { stats, loading, refetch: fetchStats };
 };

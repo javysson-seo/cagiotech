@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { ResponsiveStudentSidebar } from '@/components/student/ResponsiveStudentSidebar';
 import { StudentHeader } from '@/components/student/StudentHeader';
-import { PaymentHistory } from '@/components/payments/PaymentHistory';
-import { CurrentPlan } from '@/components/payments/CurrentPlan';
+import { PaymentHistoryReal } from '@/components/payments/PaymentHistoryReal';
+import { CurrentPlanReal } from '@/components/payments/CurrentPlanReal';
 import { PaymentMethods } from '@/components/payments/PaymentMethods';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Footer } from '@/components/Footer';
@@ -35,11 +35,11 @@ export const PaymentManagement: React.FC = () => {
               </TabsList>
 
               <TabsContent value="plan">
-                <CurrentPlan />
+                <CurrentPlanReal />
               </TabsContent>
 
               <TabsContent value="history">
-                <PaymentHistory />
+                <PaymentHistoryReal />
               </TabsContent>
 
               <TabsContent value="methods">
