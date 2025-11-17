@@ -17,9 +17,9 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { athleteData } = await req.json();
+    const { athleteData, athleteId } = await req.json();
     
-    console.log('Creating athlete with auth:', { email: athleteData.email, birth_date: athleteData.birth_date });
+    console.log('Creating athlete with auth:', { email: athleteData.email, birth_date: athleteData.birth_date, athleteId });
 
     // Validate required fields
     if (!athleteData.email || !athleteData.birth_date) {
@@ -105,6 +105,21 @@ serve(async (req) => {
     }
 
     console.log('User role created');
+
+    // Update athlete record with user_id
+    if (athleteId) {
+      const { error: updateError } = await supabaseAdmin
+        .from('athletes')
+        .update({ user_id: authData.user.id })
+        .eq('id', athleteId);
+
+      if (updateError) {
+        console.error('Error updating athlete with user_id:', updateError);
+        // Don't throw - auth was created successfully
+      } else {
+        console.log('Athlete updated with user_id');
+      }
+    }
 
     return new Response(
       JSON.stringify({ 
