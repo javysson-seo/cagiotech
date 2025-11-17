@@ -194,7 +194,11 @@ export const Landing = () => {
       <header className="sticky top-0 z-50 w-full border-b border-black/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
-            <Logo size="md" />
+            <img
+              src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png"
+              alt="Cagiotech"
+              className="h-8 w-8"
+            />
             <span className="text-2xl font-bold text-foreground">Cagiotech</span>
           </div>
           
