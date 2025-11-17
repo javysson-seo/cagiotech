@@ -175,9 +175,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Use first role as primary (users typically have one role per company)
-      const primaryRole = userRoles[0];
-      const company = primaryRole.companies;
+      // Determine primary role using priority and prefer company-linked roles
+      const rolePriority = ['cagio_admin','box_owner','personal_trainer','staff_member','student'];
+      let primaryRole: any = (userRoles as any[])
+        .sort((a: any, b: any) => rolePriority.indexOf(a.role) - rolePriority.indexOf(b.role))[0];
+
+      // If student was picked but user has company-linked roles, prefer them
+      if (primaryRole?.role === 'student') {
+        const trainer = (userRoles as any[]).find((r: any) => r.role === 'personal_trainer' && r.company_id);
+        const staff = (userRoles as any[]).find((r: any) => r.role === 'staff_member' && r.company_id);
+        const owner = (userRoles as any[]).find((r: any) => r.role === 'box_owner' && r.company_id);
+        primaryRole = trainer || staff || owner || primaryRole;
+      }
+
+      const company = primaryRole?.companies;
 
       // Map database role to UserRole type
       const mapRole = (dbRole: string): UserRole => {
