@@ -41,7 +41,6 @@ export const Landing = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   const features = [
     {
