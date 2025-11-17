@@ -153,7 +153,14 @@ export const BoxHeader: React.FC = () => {
                       <DropdownMenuItem 
                         key={notification.id} 
                         className={`p-4 cursor-pointer flex-col items-start ${!notification.is_read ? 'bg-primary/5' : ''}`}
-                        onSelect={(e) => e.preventDefault()}
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          // Navigate based on notification type
+                          if ((notification as any).type === 'new_registration') {
+                            markAsRead(notification.id);
+                            navigate(`/${user?.boxId}/athletes`);
+                          }
+                        }}
                       >
                         <div className="flex items-start gap-3 w-full">
                           {!notification.is_read && (

@@ -14,7 +14,7 @@ export const ApprovalQueue = () => {
   const { user } = useAuth();
   const [processing, setProcessing] = useState<string | null>(null);
 
-  const pendingAthletes = athletes.filter(a => a.status === 'pending' && !(a as any).is_approved);
+  const pendingAthletes = athletes.filter(a => !a.is_approved || a.status === 'pending');
 
   const handleApprove = async (athleteId: string) => {
     setProcessing(athleteId);

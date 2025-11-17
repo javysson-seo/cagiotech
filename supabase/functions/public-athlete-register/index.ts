@@ -135,6 +135,29 @@ serve(async (req) => {
         description: 'Novo atleta registrado via link público',
       });
 
+    // Create notification for company admins
+    const { error: notificationError } = await supabaseAdmin
+      .from('company_notifications')
+      .insert({
+        company_id: company_id,
+        created_by: userId,
+        type: 'new_registration',
+        title: 'Novo Atleta Registrado',
+        message: `${name} se registrou e aguarda aprovação`,
+        data: {
+          athlete_id: athlete.id,
+          athlete_name: name,
+          athlete_email: email,
+        },
+        is_active: true,
+        is_urgent: true,
+      });
+
+    if (notificationError) {
+      console.error('Error creating notification:', notificationError);
+      // Don't throw - notification is not critical
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 

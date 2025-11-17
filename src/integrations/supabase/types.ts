@@ -1698,28 +1698,37 @@ export type Database = {
           company_id: string
           created_at: string
           created_by: string
+          data: Json | null
           id: string
+          is_active: boolean | null
           is_urgent: boolean | null
           message: string
           title: string
+          type: string | null
         }
         Insert: {
           company_id: string
           created_at?: string
           created_by: string
+          data?: Json | null
           id?: string
+          is_active?: boolean | null
           is_urgent?: boolean | null
           message: string
           title: string
+          type?: string | null
         }
         Update: {
           company_id?: string
           created_at?: string
           created_by?: string
+          data?: Json | null
           id?: string
+          is_active?: boolean | null
           is_urgent?: boolean | null
           message?: string
           title?: string
+          type?: string | null
         }
         Relationships: [
           {
