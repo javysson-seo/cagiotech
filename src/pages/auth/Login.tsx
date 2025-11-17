@@ -116,6 +116,45 @@ export const Login: React.FC = () => {
       if (data.user) {
         toast.success('Login realizado com sucesso!');
         clearSelectedProfile(); // Clear any previous profile selection
+
+        // Identify roles and redirect accordingly (trainer > company roles > student)
+        const { data: rolesData, error: rolesError } = await supabase
+          .from('user_roles')
+          .select('role, company_id, companies(name)')
+          .eq('user_id', data.user.id);
+
+        if (!rolesError && rolesData && rolesData.length > 0) {
+          const trainerRole = (rolesData as any[]).find(r => r.role === 'personal_trainer' && r.company_id);
+          if (trainerRole) {
+            // Persist selected company context for trainer
+            setSelectedProfile({
+              type: 'personal_trainer',
+              companyId: trainerRole.company_id,
+              companyName: trainerRole.companies?.name || ''
+            });
+            navigate('/trainer/dashboard');
+            return;
+          }
+
+          const companyRole = (rolesData as any[]).find(r => (r.role === 'box_owner' || r.role === 'staff_member') && r.company_id);
+          if (companyRole) {
+            setSelectedProfile({
+              type: companyRole.role === 'box_owner' ? 'box_owner' : 'staff_member',
+              companyId: companyRole.company_id,
+              companyName: companyRole.companies?.name || ''
+            });
+            navigate(`/${companyRole.company_id}`);
+            return;
+          }
+
+          const isStudent = (rolesData as any[]).some(r => r.role === 'student');
+          if (isStudent) {
+            navigate('/student/dashboard');
+            return;
+          }
+        }
+
+        // Fallback to existing profile-based redirect flow
         await handleRedirect(data.user.id);
       }
     } catch (error) {
