@@ -647,6 +647,7 @@ export type Database = {
           total_check_ins: number | null
           trainer: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           address?: string | null
@@ -684,6 +685,7 @@ export type Database = {
           total_check_ins?: number | null
           trainer?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           address?: string | null
@@ -721,6 +723,7 @@ export type Database = {
           total_check_ins?: number | null
           trainer?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -4867,6 +4870,7 @@ export type Database = {
         Returns: boolean
       }
       inserir_3x_e_parar: { Args: never; Returns: undefined }
+      is_athlete_owner: { Args: { _athlete_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:

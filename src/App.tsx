@@ -56,6 +56,7 @@ import { Workouts } from "./pages/student/Workouts";
 import { BookingManagement } from "./pages/student/BookingManagement";
 import { ProgressTracking } from "./pages/student/ProgressTracking";
 import { PaymentManagement } from "./pages/student/PaymentManagement";
+import { PendingApproval } from "./pages/student/PendingApproval";
 
 // Trainer Pages
 import { TrainerDashboard } from "./pages/trainer/TrainerDashboard";
@@ -346,6 +347,7 @@ function App() {
                   } />
 
                   {/* Student Routes */}
+                  <Route path="/student/pending-approval" element={<PendingApproval />} />
                   <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
                   <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
                   <Route path="/student/workouts" element={<ProtectedRoute allowedRoles={["student"]}><Workouts /></ProtectedRoute>} />
