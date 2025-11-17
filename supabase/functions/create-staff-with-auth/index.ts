@@ -58,13 +58,32 @@ serve(async (req) => {
       
       // If user already exists, continue with staff creation
       if (authError.message?.includes('already been registered')) {
-        console.log('User already exists, continuing with staff creation');
+        console.log('User already exists, resetting password and continuing with staff creation');
         
         // Get existing user
         const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
         const user = existingUser.users.find(u => u.email === staffData.email);
         
         if (user) {
+          // Reset password to birth date
+          const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+            user.id,
+            {
+              password: password,
+              user_metadata: {
+                ...user.user_metadata,
+                role: appRole,
+                first_login: true,
+              },
+            }
+          );
+
+          if (updateError) {
+            console.error('Error resetting password:', updateError);
+          } else {
+            console.log('Password reset successfully to birth date format');
+          }
+
           // Create user_roles if not exists
           const { error: roleError } = await supabaseAdmin
             .from('user_roles')
@@ -83,8 +102,12 @@ serve(async (req) => {
           return new Response(
             JSON.stringify({ 
               success: true, 
-              message: 'Staff criado (usuário já existia)',
+              message: 'Staff criado e senha resetada para data de nascimento',
               user_id: user.id,
+              credentials: {
+                email: staffData.email,
+                password_hint: 'Data de nascimento (DDMMAAAA)'
+              }
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
