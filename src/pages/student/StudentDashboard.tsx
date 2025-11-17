@@ -1,5 +1,4 @@
-
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ResponsiveStudentSidebar } from '@/components/student/ResponsiveStudentSidebar';
 import { StudentHeader } from '@/components/student/StudentHeader';
 import { QuickActions } from '@/components/student/QuickActions';
@@ -10,39 +9,60 @@ import { ProgressStats } from '@/components/student/ProgressStats';
 import { BadgesDisplay } from '@/components/student/BadgesDisplay';
 import { NutritionOverview } from '@/components/student/NutritionOverview';
 import { Footer } from '@/components/Footer';
-import { useAuth } from '@/hooks/useAuth';
+import { useCurrentAthlete } from '@/hooks/useCurrentAthlete';
 import { useGamification } from '@/hooks/useGamification';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Calendar, TrendingUp, Award } from 'lucide-react';
+import { Calendar, TrendingUp, Award, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const StudentDashboard: React.FC = () => {
-  const { user } = useAuth();
-  const [athleteId, setAthleteId] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchAthleteId = async () => {
-      if (!user?.email) return;
-
-      const { data } = await supabase
-        .from('athletes')
-        .select('id')
-        .eq('email', user.email)
-        .maybeSingle();
-
-      if (data) {
-        setAthleteId(data.id);
-      }
-    };
-
-    fetchAthleteId();
-  }, [user?.email]);
-
-  const { badges, isLoading } = useGamification(athleteId || undefined);
+  const { athlete, loading } = useCurrentAthlete();
+  const { badges, isLoading: badgesLoading } = useGamification(athlete?.id);
 
   const currentHour = new Date().getHours();
   const greeting = currentHour < 12 ? 'Bom dia' : currentHour < 18 ? 'Boa tarde' : 'Boa noite';
-  const userName = user?.email?.split('@')[0] || 'Atleta';
+  const userName = athlete?.name?.split(' ')[0] || 'Atleta';
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen bg-gradient-to-br from-cagio-green-light/20 via-background to-background">
+        <ResponsiveStudentSidebar />
+        <div className="flex-1 flex flex-col">
+          <StudentHeader />
+          <main className="flex-1 p-3 sm:p-6">
+            <div className="max-w-7xl mx-auto space-y-4">
+              <Skeleton className="h-20 w-full" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-32 w-full" />
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
+  if (!athlete) {
+    return (
+      <div className="flex min-h-screen bg-gradient-to-br from-cagio-green-light/20 via-background to-background">
+        <ResponsiveStudentSidebar />
+        <div className="flex-1 flex flex-col">
+          <StudentHeader />
+          <main className="flex-1 p-6">
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Não foi possível carregar seus dados. Por favor, entre em contato com a academia.
+              </AlertDescription>
+            </Alert>
+          </main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-cagio-green-light/20 via-background to-background">
@@ -108,7 +128,7 @@ export const StudentDashboard: React.FC = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <BadgesDisplay badges={badges || []} isLoading={isLoading} />
+                      <BadgesDisplay badges={badges || []} isLoading={badgesLoading} />
                     </CardContent>
                   </Card>
                 </div>
