@@ -34,7 +34,9 @@ export const BoxSidebar: React.FC = () => {
   const { athletes } = useAthletes();
   const { hasPermission, hasAnyPermission } = usePermissions();
 
-  const resolvedCompanyId = routeCompanyId || currentCompany?.id;
+  // Sanitize potential placeholder param like ":companyId"
+  const validRouteCompanyId = routeCompanyId && !routeCompanyId.startsWith(':') ? routeCompanyId : undefined;
+  const resolvedCompanyId = validRouteCompanyId || currentCompany?.id;
 
   if (!resolvedCompanyId || !currentCompany) {
     return null;
