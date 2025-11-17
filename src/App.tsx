@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
 import { FirstLoginGuard } from "@/components/auth/FirstLoginGuard";
+import { MobileOnlyGuard } from "@/components/mobile/MobileOnlyGuard";
 
 // Pages
 import Index from "./pages/Index";
@@ -348,20 +349,20 @@ function App() {
 
                   {/* Student Routes */}
                   <Route path="/student/pending-approval" element={<PendingApproval />} />
-                  <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
-                  <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["student"]}><StudentDashboard /></ProtectedRoute>} />
-                  <Route path="/student/workouts" element={<ProtectedRoute allowedRoles={["student"]}><Workouts /></ProtectedRoute>} />
-                  <Route path="/student/bookings" element={<ProtectedRoute allowedRoles={["student"]}><BookingManagement /></ProtectedRoute>} />
-                  <Route path="/student/progress" element={<ProtectedRoute allowedRoles={["student"]}><ProgressTracking /></ProtectedRoute>} />
-                  <Route path="/student/payments" element={<ProtectedRoute allowedRoles={["student"]}><PaymentManagement /></ProtectedRoute>} />
+                  <Route path="/student" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><StudentDashboard /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/student/dashboard" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><StudentDashboard /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/student/workouts" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><Workouts /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/student/bookings" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><BookingManagement /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/student/progress" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><ProgressTracking /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/student/payments" element={<ProtectedRoute allowedRoles={["student"]}><MobileOnlyGuard allowedRoles={['student']}><PaymentManagement /></MobileOnlyGuard></ProtectedRoute>} />
 
                   {/* Trainer Routes - Accept both trainer role and box_admin for trainers */}
-                  <Route path="/trainer" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerDashboard /></ProtectedRoute>} />
-                  <Route path="/trainer/dashboard" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerDashboard /></ProtectedRoute>} />
-                  <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerStudents /></ProtectedRoute>} />
-                  <Route path="/trainer/workout-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerWorkoutPlans /></ProtectedRoute>} />
-                  <Route path="/trainer/nutrition-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerNutritionPlans /></ProtectedRoute>} />
-                  <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><TrainerWorkouts /></ProtectedRoute>} />
+                  <Route path="/trainer" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerDashboard /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/trainer/dashboard" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerDashboard /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/trainer/students" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerStudents /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/trainer/workout-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerWorkoutPlans /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/trainer/nutrition-plans" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerNutritionPlans /></MobileOnlyGuard></ProtectedRoute>} />
+                  <Route path="/trainer/workouts" element={<ProtectedRoute allowedRoles={["trainer", "box_admin"]}><MobileOnlyGuard allowedRoles={['trainer', 'personal_trainer']}><TrainerWorkouts /></MobileOnlyGuard></ProtectedRoute>} />
 
                   {/* Landing Page */}
                   <Route path="/landing" element={<LandingPage />} />
