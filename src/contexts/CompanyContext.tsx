@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 
@@ -29,28 +29,38 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [currentCompany, setCurrentCompany] = useState<Company | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { companyId } = useParams<{ companyId: string }>();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+const { companyId } = useParams<{ companyId: string }>();
+const { user } = useAuth();
+const navigate = useNavigate();
+const location = useLocation();
 
-  useEffect(() => {
-    const loadCompany = async () => {
-      const resolvedCompanyId = companyId || user?.boxId;
-      if (!resolvedCompanyId || !user) {
-        setIsLoading(false);
-        return;
-      }
+useEffect(() => {
+  const loadCompany = async () => {
+    // Sanitize param: ignore placeholder like ":companyId"
+    const paramCompanyId = companyId && !companyId.startsWith(':') ? companyId : undefined;
+    const resolvedCompanyId = paramCompanyId || user?.boxId;
 
-      try {
-        setIsLoading(true);
-        setError(null);
+    // If URL contains the placeholder and we know the user's box, fix the URL
+    if (companyId && companyId.startsWith(':') && user?.boxId) {
+      const correctedPath = location.pathname.replace(`/${companyId}`, `/${user.boxId}`);
+      navigate(correctedPath, { replace: true });
+    }
 
-        // Buscar empresa pelo ID
-        const { data: company, error: companyError } = await supabase
-          .from('companies')
-          .select('*')
-          .eq('id', resolvedCompanyId)
-          .single();
+    if (!resolvedCompanyId || !user) {
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Buscar empresa pelo ID
+      const { data: company, error: companyError } = await supabase
+        .from('companies')
+        .select('*')
+        .eq('id', resolvedCompanyId)
+        .single();
 
         if (companyError || !company) {
           setError('Empresa não encontrada');
@@ -79,7 +89,7 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     loadCompany();
-  }, [companyId, user, user?.boxId, navigate]);
+  }, [companyId, user, user?.boxId, navigate, location.pathname]);
 
   const checkUserAccess = async (companyId: string, userId: string): Promise<boolean> => {
     try {
