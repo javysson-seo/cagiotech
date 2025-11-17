@@ -383,15 +383,9 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Alert>
-                  <AlertDescription>
-                    Estas credenciais serão criadas automaticamente para o funcionário aceder ao sistema.
-                  </AlertDescription>
-                </Alert>
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Email de Login:</Label>
+                    <Label className="text-sm font-medium">Email:</Label>
                     <div className="flex items-center space-x-2">
                       <Input
                         value={formData.email}
@@ -410,7 +404,7 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                   </div>
                   
                   <div className="space-y-2">
-                    <Label className="text-sm font-medium">Password:</Label>
+                    <Label className="text-sm font-medium">Senha:</Label>
                     <div className="flex items-center space-x-2">
                       <Input
                         type={showCredentials ? "text" : "password"}
@@ -429,13 +423,6 @@ export const StaffFormModal: React.FC<StaffFormModalProps> = ({
                     </div>
                   </div>
                 </div>
-                
-                <Alert>
-                  <AlertDescription className="text-sm">
-                    A password é gerada automaticamente no formato <strong>DdDDMMAAAA</strong> (ex: Dd01012000). 
-                    O funcionário poderá e deverá alterar a password após o primeiro login.
-                  </AlertDescription>
-                </Alert>
               </CardContent>
             </Card>
           )}
