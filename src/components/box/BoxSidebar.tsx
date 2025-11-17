@@ -68,12 +68,6 @@ export const BoxSidebar: React.FC = () => {
       permissions: ['classes_view', 'manage_classes']
     },
     { 
-      name: 'Treinos', 
-      href: `/${resolvedCompanyId}/workouts`, 
-      icon: Trophy,
-      permissions: ['workouts_view', 'manage_workouts']
-    },
-    { 
       name: 'CRM', 
       href: `/${resolvedCompanyId}/crm`, 
       icon: UserPlus,
@@ -114,12 +108,6 @@ export const BoxSidebar: React.FC = () => {
       href: `/${resolvedCompanyId}/settings`, 
       icon: Settings,
       permissions: ['settings_view', 'manage_settings']
-    },
-    { 
-      name: 'Assinatura', 
-      href: `/${resolvedCompanyId}/subscription`, 
-      icon: CreditCard,
-      permissions: [] // Always visible to box owners
     },
   ];
 
