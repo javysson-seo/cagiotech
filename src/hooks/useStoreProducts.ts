@@ -9,6 +9,7 @@ export interface StoreProduct {
   description?: string;
   price: number;
   stock_quantity: number;
+  low_stock_threshold?: number;
   category?: string;
   image_url?: string;
   sku?: string;
