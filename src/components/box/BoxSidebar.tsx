@@ -95,7 +95,7 @@ export const BoxSidebar: React.FC = () => {
       name: 'Loja', 
       href: `/${resolvedCompanyId}/store`, 
       icon: Package,
-      permissions: ['store_view', 'manage_store']
+      permissions: [] // Accessible to all box users
     },
     { 
       name: 'Eventos', 
