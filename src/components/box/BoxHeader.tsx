@@ -23,6 +23,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { TrialBanner } from '@/components/subscription/TrialBanner';
 import { useCompany } from '@/contexts/CompanyContext';
+import { CompanyLogo } from '@/components/ui/company-logo';
 import { useCompanyNotifications } from '@/hooks/useCompanyNotifications';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -84,6 +85,12 @@ export const BoxHeader: React.FC = () => {
         <div className="flex items-center justify-between">
           {/* Search */}
           <div className="flex items-center space-x-4 flex-1 max-w-md">
+            <CompanyLogo 
+              logoUrl={currentCompany?.logo_url}
+              companyName={currentCompany?.name}
+              size="sm"
+              className="hidden md:block"
+            />
             <div className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input

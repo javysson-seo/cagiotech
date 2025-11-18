@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompany } from '@/contexts/CompanyContext';
-import { Logo } from '@/components/ui/logo';
+import { CompanyLogo } from '@/components/ui/company-logo';
 import { useAthletes } from '@/hooks/useAthletes';
 import { usePermissions } from '@/hooks/usePermissions';
 
@@ -125,20 +125,21 @@ export const BoxSidebar: React.FC = () => {
 
   return (
     <aside className="flex flex-col w-64 bg-card border-r border-border h-screen sticky top-0">
-      {/* Logo */}
-      <div className="flex items-center h-16 px-4 border-b border-border shrink-0">
-        <div className="flex items-center space-x-2">
-          <Logo size="sm" />
-          <span className="text-lg font-bold text-foreground">CAGIO</span>
-        </div>
+      {/* Logo da Empresa */}
+      <div className="flex items-center gap-3 h-16 px-4 border-b border-border shrink-0">
+        <CompanyLogo 
+          logoUrl={currentCompany.logo_url}
+          companyName={currentCompany.name}
+          size="sm"
+        />
+        <span className="text-lg font-bold text-foreground truncate">{currentCompany.name}</span>
       </div>
 
       {/* User Info */}
       <div className="p-4 border-b border-border shrink-0">
         <div className="space-y-1">
-          <p className="font-semibold text-sm text-foreground truncate">{currentCompany.name}</p>
           <p className="text-xs text-muted-foreground truncate">{user?.name}</p>
-          <Badge variant="outline" className="text-xs mt-1">
+          <Badge variant="outline" className="text-xs">
             {hasPermission('all') ? 'Administrador' : 'Funcionário'}
           </Badge>
         </div>
