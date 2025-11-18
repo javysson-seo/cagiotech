@@ -17,8 +17,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ViewPlansModal } from '@/components/subscriptions/ViewPlansModal';
 
 const Subscription: React.FC = () => {
+  const [viewPlansOpen, setViewPlansOpen] = useState(false);
   const { currentCompany } = useCompany();
   const { subscription, loading } = useCompanySubscription();
   const { plans, isLoading: plansLoading } = useCagioSubscriptionPlans();
@@ -83,9 +85,14 @@ const Subscription: React.FC = () => {
         <BoxSidebar />
         <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold">Assinatura do Cagio</h1>
-              <p className="text-muted-foreground">Gerencie sua assinatura e plano</p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold">Assinatura do Cagio</h1>
+                <p className="text-muted-foreground">Gerencie sua assinatura e plano</p>
+              </div>
+              <Button onClick={() => setViewPlansOpen(true)}>
+                Ver Planos
+              </Button>
             </div>
 
             {/* Current Plan */}
@@ -319,6 +326,11 @@ const Subscription: React.FC = () => {
         </main>
       </div>
       <Footer />
+      
+      <ViewPlansModal 
+        open={viewPlansOpen} 
+        onOpenChange={setViewPlansOpen} 
+      />
     </div>
   );
 };
