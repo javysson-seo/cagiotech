@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CompanyProvider } from "@/contexts/CompanyContext";
+import { SubscriptionGuard } from "@/components/guards/SubscriptionGuard";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
@@ -115,7 +116,9 @@ function App() {
                   <Route path="/:companyId" element={
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
-                        <BoxDashboard />
+                        <SubscriptionGuard>
+                          <BoxDashboard />
+                        </SubscriptionGuard>
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />

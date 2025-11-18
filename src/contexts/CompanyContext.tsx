@@ -7,6 +7,32 @@ interface Company {
   id: string;
   name: string;
   owner_id: string;
+  slug: string | null;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  logo_url: string | null;
+  slogan: string | null;
+  business_type: string | null;
+  nif: string | null;
+  website: string | null;
+  instagram: string | null;
+  founded_date: string | null;
+  city: string | null;
+  postal_code: string | null;
+  country: string | null;
+  gps_coordinates: string | null;
+  capacity: number | null;
+  description: string | null;
+  operating_hours: any | null;
+  subscription_plan: string | null;
+  subscription_status: string | null;
+  trial_start_date: string | null;
+  trial_end_date: string | null;
+  subscription_start_date: string | null;
+  subscription_end_date: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 interface CompanyContextType {
