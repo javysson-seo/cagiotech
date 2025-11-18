@@ -23,6 +23,7 @@ import {
 import { LoginModal } from '@/components/modals/LoginModal';
 import { RegisterModal } from '@/components/modals/RegisterModal';
 import { DemoModal } from '@/components/modals/DemoModal';
+import { ViewPlansModal } from '@/components/subscriptions/ViewPlansModal';
 
 export const CompleteLandingPage: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -35,6 +36,7 @@ export const CompleteLandingPage: React.FC = () => {
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [registerModalOpen, setRegisterModalOpen] = useState(false);
   const [demoModalOpen, setDemoModalOpen] = useState(false);
+  const [viewPlansOpen, setViewPlansOpen] = useState(false);
 
   // Animated counters
   useEffect(() => {
@@ -489,7 +491,7 @@ export const CompleteLandingPage: React.FC = () => {
                   <Button 
                     className={`w-full ${plan.popular ? 'bg-[#bed700] hover:bg-[#a5c400] text-white' : ''}`}
                     variant={plan.popular ? 'default' : 'outline'}
-                    onClick={() => setRegisterModalOpen(true)}
+                    onClick={() => setViewPlansOpen(true)}
                   >
                     {plan.cta}
                   </Button>
@@ -741,6 +743,11 @@ export const CompleteLandingPage: React.FC = () => {
       <DemoModal 
         isOpen={demoModalOpen} 
         onClose={() => setDemoModalOpen(false)}
+      />
+      
+      <ViewPlansModal 
+        open={viewPlansOpen} 
+        onOpenChange={setViewPlansOpen} 
       />
     </div>
   );

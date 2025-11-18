@@ -25,11 +25,13 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { Logo } from '@/components/ui/logo';
+import { ViewPlansModal } from '@/components/subscriptions/ViewPlansModal';
 
 export const Landing = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [viewPlansOpen, setViewPlansOpen] = useState(false);
 
   const features = [
     {
@@ -471,7 +473,7 @@ export const Landing = () => {
                     className="w-full mb-6" 
                     variant={plan.popular ? "default" : "outline"}
                     size="lg"
-                    onClick={() => navigate('/box-register')}
+                    onClick={() => setViewPlansOpen(true)}
                   >
                     {plan.cta}
                   </Button>
@@ -658,6 +660,11 @@ export const Landing = () => {
           </div>
         </div>
       </footer>
+      
+      <ViewPlansModal 
+        open={viewPlansOpen} 
+        onOpenChange={setViewPlansOpen} 
+      />
     </div>
   );
 };
