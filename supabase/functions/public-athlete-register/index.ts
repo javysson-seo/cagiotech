@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { publicAthleteRegistrationSchema } from "../_shared/validation.ts";
+import { generateSecurePassword, sanitizeInput, checkRateLimit } from "../_shared/utils.ts";
+import { generatePasswordEmail } from "../_shared/email-templates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,29 +15,77 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting per IP
+    const clientIp = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+    const rateLimit = checkRateLimit(`public-register:${clientIp}`, 5, 3600000); // 5 per hour
+    
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Muitas tentativas. Tente novamente mais tarde.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': Math.ceil((rateLimit.resetAt - Date.now()) / 1000).toString()
+          } 
+        }
+      );
+    }
+
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { name, email, birth_date, phone, company_id } = await req.json();
+    const requestData = await req.json();
+    
+    // Validate input with Zod
+    const validationResult = publicAthleteRegistrationSchema.safeParse(requestData);
+    
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Dados inválidos', 
+          details: validationResult.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { name, email, birth_date, phone, company_id } = validationResult.data;
+    
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(name);
     
     console.log('Public athlete registration:', { email, company_id });
 
-    // Validate required fields
-    if (!name || !email || !birth_date || !company_id) {
-      throw new Error('Nome, email, data de nascimento e empresa são obrigatórios');
-    }
-
-    // Check if company exists
+    // Check if company exists and is active
     const { data: company, error: companyError } = await supabaseAdmin
       .from('companies')
-      .select('id, name')
+      .select('id, name, subscription_status, trial_end_date, subscription_end_date')
       .eq('id', company_id)
       .single();
 
     if (companyError || !company) {
       throw new Error('Empresa não encontrada');
+    }
+
+    // Validate company subscription status
+    const now = new Date();
+    const isTrialActive = company.subscription_status === 'trial' && 
+      company.trial_end_date && new Date(company.trial_end_date) > now;
+    const isSubscriptionActive = company.subscription_status === 'active' &&
+      (!company.subscription_end_date || new Date(company.subscription_end_date) > now);
+    
+    if (!isTrialActive && !isSubscriptionActive) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Esta empresa não está aceitando novos registros no momento. Entre em contato com a administração.' 
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Check if email already exists
@@ -55,12 +106,8 @@ serve(async (req) => {
       }
     }
 
-    // Format birth date as password (DDMMYYYY)
-    const birthDate = new Date(birth_date);
-    const day = String(birthDate.getDate()).padStart(2, '0');
-    const month = String(birthDate.getMonth() + 1).padStart(2, '0');
-    const year = birthDate.getFullYear();
-    const password = `${day}${month}${year}`;
+    // Generate secure random password
+    const tempPassword = generateSecurePassword(16);
 
     let userId = userExists?.id;
 
@@ -68,10 +115,10 @@ serve(async (req) => {
     if (!userExists) {
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email: email,
-        password: password,
+        password: tempPassword,
         email_confirm: true,
         user_metadata: {
-          name: name,
+          name: sanitizedName,
           role: 'student',
           first_login: true,
         },
@@ -90,14 +137,14 @@ serve(async (req) => {
     const { data: athlete, error: athleteError } = await supabaseAdmin
       .from('athletes')
       .insert({
-        name,
+        name: sanitizedName,
         email,
         birth_date,
-        phone,
+        phone: phone || null,
         company_id,
         user_id: userId,
         status: 'active',
-        is_approved: false, // Needs approval from company
+        is_approved: false,
       })
       .select()
       .single();
@@ -132,8 +179,46 @@ serve(async (req) => {
         athlete_id: athlete.id,
         company_id: company_id,
         type: 'registration',
-        description: 'Novo atleta registrado via link público',
+        description: 'Atleta registrado via formulário público',
       });
+
+    // Send welcome email with temporary password
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey) {
+      try {
+        const emailContent = generatePasswordEmail({
+          recipientName: sanitizedName,
+          recipientEmail: email,
+          tempPassword: tempPassword,
+          companyName: company.name,
+          loginUrl: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '')}/auth/login`
+        });
+
+        const emailResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: 'Cagio <noreply@cagio.pt>',
+            to: [email],
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Error sending email:', await emailResponse.text());
+        } else {
+          console.log('Welcome email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
+        // Don't fail the registration if email fails
+      }
+    }
 
     // Create notification for company admins
     const { error: notificationError } = await supabaseAdmin
@@ -143,10 +228,10 @@ serve(async (req) => {
         created_by: userId,
         type: 'new_registration',
         title: 'Novo Atleta Registrado',
-        message: `${name} se registrou e aguarda aprovação`,
+        message: `${sanitizedName} se registrou e aguarda aprovação`,
         data: {
           athlete_id: athlete.id,
-          athlete_name: name,
+          athlete_name: sanitizedName,
           athlete_email: email,
         },
         is_active: true,
@@ -161,12 +246,8 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Registro realizado com sucesso! Aguarde a aprovação da academia.',
+        message: 'Registro realizado com sucesso! Verifique seu email para obter suas credenciais de acesso.',
         athlete_id: athlete.id,
-        credentials: {
-          email: email,
-          password_hint: 'Sua senha é sua data de nascimento no formato DDMMAAAA'
-        },
         requires_approval: true
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
