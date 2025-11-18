@@ -62,11 +62,32 @@ export const useCompanySettings = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['company-settings', companyId] });
+    onMutate: async (updates) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['company-settings', companyId] });
+
+      // Snapshot the previous value
+      const previousCompany = queryClient.getQueryData(['company-settings', companyId]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(['company-settings', companyId], (old: any) => ({
+        ...old,
+        ...updates,
+      }));
+
+      // Return context with snapshot
+      return { previousCompany };
+    },
+    onSuccess: (data) => {
+      // Update with the actual data from server
+      queryClient.setQueryData(['company-settings', companyId], data);
       toast.success('Configurações atualizadas com sucesso!');
     },
-    onError: (error: Error) => {
+    onError: (error: Error, _updates, context) => {
+      // Rollback to the previous value on error
+      if (context?.previousCompany) {
+        queryClient.setQueryData(['company-settings', companyId], context.previousCompany);
+      }
       toast.error(`Erro ao atualizar: ${error.message}`);
     },
   });
