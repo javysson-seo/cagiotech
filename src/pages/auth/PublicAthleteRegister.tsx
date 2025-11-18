@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 import { Calendar, Mail, Phone, User, AlertCircle, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CompanyLogoImage } from '@/components/ui/company-logo';
 
 export const PublicAthleteRegister = () => {
   const { companyId } = useParams<{ companyId: string }>();
@@ -187,13 +188,11 @@ export const PublicAthleteRegister = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
       <header className="bg-card/80 backdrop-blur-sm border-b border-border px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
-          {companyInfo.logo_url && (
-            <img 
-              src={companyInfo.logo_url} 
-              alt={companyInfo.name} 
-              className="h-12 w-auto"
-            />
-          )}
+          <CompanyLogoImage 
+            logoUrl={companyInfo.logo_url}
+            companyName={companyInfo.name}
+            className="h-12 w-auto"
+          />
           <div className="text-center">
             <h1 className="text-2xl font-bold">{companyInfo.name}</h1>
             {companyInfo.slogan && (
@@ -272,7 +271,7 @@ export const PublicAthleteRegister = () => {
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Sua senha inicial será sua data de nascimento no formato DDMMAAAA
+                    Você receberá uma senha temporária por email após o registro
                   </p>
                 </div>
 

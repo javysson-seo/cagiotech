@@ -163,7 +163,7 @@ export const BoxDataSettings: React.FC = () => {
             <Avatar className="h-24 w-24 rounded-lg">
               <AvatarImage src={boxData.logo_url} alt={boxData.name} />
               <AvatarFallback className="rounded-lg bg-primary/10">
-                <Building2 className="h-12 w-12 text-primary" />
+                <ImageIcon className="h-12 w-12 text-primary" />
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
