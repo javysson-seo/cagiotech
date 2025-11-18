@@ -141,7 +141,38 @@ export const BoxDataSettings: React.FC = () => {
       toast.error('O nome da empresa é obrigatório');
       return;
     }
-    updateCompany(boxData);
+    
+    // Converter strings vazias para null nas datas
+    const dataToSave = {
+      ...boxData,
+      founded_date: boxData.founded_date?.trim() || null,
+    };
+    
+    updateCompany(dataToSave);
+  };
+
+  const handleRemoveLogo = async () => {
+    if (!company?.id) return;
+    
+    try {
+      // Remove logo from storage if exists
+      if (boxData.logo_url && !boxData.logo_url.includes('lovable-uploads')) {
+        const oldPath = boxData.logo_url.split('/').pop();
+        await supabase.storage
+          .from('company-logos')
+          .remove([`${company.id}/${oldPath}`]);
+      }
+
+      await updateCompany({ 
+        logo_url: null
+      });
+
+      setBoxData({ ...boxData, logo_url: '' });
+      toast.success('Logo removido com sucesso!');
+    } catch (error) {
+      console.error('Error removing logo:', error);
+      toast.error('Erro ao remover logo');
+    }
   };
 
   if (isLoading) {
@@ -195,24 +226,35 @@ export const BoxDataSettings: React.FC = () => {
                   <Upload className="h-4 w-4" />
                   <span>PNG, JPG, SVG (máx. 512x512px)</span>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  disabled={isUploadingLogo}
-                  onClick={() => document.getElementById('logo-upload')?.click()}
-                >
-                  {isUploadingLogo ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Enviando...
-                    </>
-                  ) : (
-                    <>
-                      <Upload className="h-4 w-4 mr-2" />
-                      Escolher Logo
-                    </>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={isUploadingLogo}
+                    onClick={() => document.getElementById('logo-upload')?.click()}
+                  >
+                    {isUploadingLogo ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Escolher Logo
+                      </>
+                    )}
+                  </Button>
+                  {boxData.logo_url && (
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={handleRemoveLogo}
+                    >
+                      Remover Logo
+                    </Button>
                   )}
-                </Button>
+                </div>
                 <Input
                   id="logo-upload"
                   type="file"
