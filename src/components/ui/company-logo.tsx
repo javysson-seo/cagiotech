@@ -44,7 +44,7 @@ export const CompanyLogo: React.FC<CompanyLogoProps> = ({
   className,
   showFallbackIcon = false,
 }) => {
-  const defaultLogo = '/assets/cagio-logo.png';
+  const defaultLogo = '/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png';
   const displayLogo = logoUrl || defaultLogo;
 
   if (showFallbackIcon && !logoUrl) {
@@ -86,7 +86,7 @@ export const CompanyLogoImage: React.FC<CompanyLogoImageProps> = ({
   companyName = 'Empresa',
   className,
 }) => {
-  const defaultLogo = '/assets/cagio-logo.png';
+  const defaultLogo = '/lovable-uploads/f11d946f-1e84-4046-8622-ffeb54bba33e.png';
   const displayLogo = logoUrl || defaultLogo;
 
   return (

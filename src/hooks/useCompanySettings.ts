@@ -11,20 +11,20 @@ export interface CompanySettings {
   phone: string | null;
   email: string | null;
   address: string | null;
-  nif?: string;
-  business_type?: string;
-  slogan?: string;
-  website?: string;
-  instagram?: string;
-  founded_date?: string;
-  city?: string;
-  postal_code?: string;
-  country?: string;
-  gps_coordinates?: string;
-  capacity?: number;
-  description?: string;
-  operating_hours?: Record<string, any>;
-  logo_url?: string;
+  nif: string | null;
+  business_type: string | null;
+  slogan: string | null;
+  website: string | null;
+  instagram: string | null;
+  founded_date: string | null;
+  city: string | null;
+  postal_code: string | null;
+  country: string | null;
+  gps_coordinates: string | null;
+  capacity: number | null;
+  description: string | null;
+  operating_hours: Record<string, any> | null;
+  logo_url: string | null;
 }
 
 export const useCompanySettings = () => {

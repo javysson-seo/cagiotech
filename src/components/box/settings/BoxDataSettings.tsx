@@ -53,22 +53,22 @@ export const BoxDataSettings: React.FC = () => {
     if (company) {
       setBoxData({
         name: company.name || '',
-        logo_url: (company as any).logo_url || '',
-        slogan: (company as any).slogan || '',
-        business_type: (company as any).business_type || 'CrossFit',
-        nif: (company as any).nif || '',
+        logo_url: company.logo_url || '',
+        slogan: company.slogan || '',
+        business_type: company.business_type || 'CrossFit',
+        nif: company.nif || '',
         phone: company.phone || '',
         email: company.email || '',
-        website: (company as any).website || '',
-        instagram: (company as any).instagram || '',
-        founded_date: (company as any).founded_date || '',
+        website: company.website || '',
+        instagram: company.instagram || '',
+        founded_date: company.founded_date || '',
         address: company.address || '',
-        city: (company as any).city || '',
-        postal_code: (company as any).postal_code || '',
-        country: (company as any).country || 'Portugal',
-        gps_coordinates: (company as any).gps_coordinates || '',
-        capacity: (company as any).capacity || 30,
-        description: (company as any).description || ''
+        city: company.city || '',
+        postal_code: company.postal_code || '',
+        country: company.country || 'Portugal',
+        gps_coordinates: company.gps_coordinates || '',
+        capacity: company.capacity || 30,
+        description: company.description || ''
       });
     }
   }, [company]);
@@ -103,9 +103,8 @@ export const BoxDataSettings: React.FC = () => {
       const newLogoUrl = urlData.publicUrl;
       
       await updateCompany({ 
-        ...boxData,
         logo_url: newLogoUrl
-      } as any);
+      });
 
       setBoxData({ ...boxData, logo_url: newLogoUrl });
       toast.success('Logo atualizado com sucesso!');
@@ -118,7 +117,7 @@ export const BoxDataSettings: React.FC = () => {
   };
 
   const handleSave = () => {
-    updateCompany(boxData as any);
+    updateCompany(boxData);
   };
 
   if (isLoading) {
