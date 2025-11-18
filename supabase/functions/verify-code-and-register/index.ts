@@ -1,16 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
+import { verifyCodeSchema } from "../_shared/validation.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
-
-interface VerifyRequest {
-  email: string;
-  code: string;
-  password: string;
-}
 
 const handler = async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
@@ -18,14 +13,23 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email, code, password }: VerifyRequest = await req.json();
-
-    if (!email || !code || !password) {
+    const requestData = await req.json();
+    
+    // Validate input with Zod
+    const validationResult = verifyCodeSchema.safeParse(requestData);
+    
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error.errors);
       return new Response(
-        JSON.stringify({ error: "Email, código e senha são obrigatórios" }),
+        JSON.stringify({ 
+          error: 'Dados inválidos', 
+          details: validationResult.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
+
+    const { email, code, password } = validationResult.data;
 
     // Create Supabase admin client
     const supabaseAdmin = createClient(

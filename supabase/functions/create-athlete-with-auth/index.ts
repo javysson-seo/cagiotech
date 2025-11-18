@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { athleteCreationSchema } from "../_shared/validation.ts";
+import { generateSecurePassword, sanitizeInput } from "../_shared/utils.ts";
+import { generatePasswordEmail } from "../_shared/email-templates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,33 +20,50 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { athleteData, athleteId } = await req.json();
+    const requestData = await req.json();
     
-    console.log('Creating athlete with auth:', { email: athleteData.email, birth_date: athleteData.birth_date, athleteId });
-
-    // Validate required fields
-    if (!athleteData.email || !athleteData.birth_date) {
-      throw new Error('Email e data de nascimento são obrigatórios');
+    // Validate input with Zod
+    const validationResult = athleteCreationSchema.safeParse(requestData);
+    
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Dados inválidos', 
+          details: validationResult.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Format birth date as password (DDMMYYYY)
-    const birthDate = new Date(athleteData.birth_date);
-    const day = String(birthDate.getDate()).padStart(2, '0');
-    const month = String(birthDate.getMonth() + 1).padStart(2, '0');
-    const year = birthDate.getFullYear();
-    const password = `${day}${month}${year}`;
+    const { athleteData, athleteId } = validationResult.data;
+    
+    console.log('Creating athlete with auth:', { email: athleteData.email, athleteId });
 
-    console.log('Generated password format:', password.substring(0, 4) + '****');
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(athleteData.name);
+
+    // Generate secure random password
+    const tempPassword = generateSecurePassword(16);
+
+    console.log('Generated secure password');
+
+    // Get company info for email
+    const { data: company } = await supabaseAdmin
+      .from('companies')
+      .select('name')
+      .eq('id', athleteData.company_id)
+      .single();
 
     // Create auth user
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: athleteData.email,
-      password: password,
+      password: tempPassword,
       email_confirm: true,
       user_metadata: {
-        name: athleteData.name,
+        name: sanitizedName,
         role: 'student',
-        first_login: true, // Flag to force password change
+        first_login: true,
       },
     });
 
@@ -115,21 +135,54 @@ serve(async (req) => {
 
       if (updateError) {
         console.error('Error updating athlete with user_id:', updateError);
-        // Don't throw - auth was created successfully
-      } else {
-        console.log('Athlete updated with user_id');
+        throw updateError;
+      }
+
+      console.log('Athlete updated with user_id');
+    }
+
+    // Send welcome email with temporary password
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey && company) {
+      try {
+        const emailContent = generatePasswordEmail({
+          recipientName: sanitizedName,
+          recipientEmail: athleteData.email,
+          tempPassword: tempPassword,
+          companyName: company.name,
+          loginUrl: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '')}/auth/login`
+        });
+
+        const emailResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: 'Cagio <noreply@cagio.pt>',
+            to: [athleteData.email],
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Error sending email:', await emailResponse.text());
+        } else {
+          console.log('Welcome email sent successfully');
+        }
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
       }
     }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Login criado com sucesso',
+        message: 'Atleta criado com sucesso! Um email foi enviado com as credenciais de acesso.',
         user_id: authData.user.id,
-        credentials: {
-          email: athleteData.email,
-          password_hint: 'Data de nascimento (DDMMAAAA)'
-        }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

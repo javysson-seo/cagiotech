@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { staffCreationSchema } from "../_shared/validation.ts";
+import { generateSecurePassword, sanitizeInput } from "../_shared/utils.ts";
+import { generatePasswordEmail } from "../_shared/email-templates.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,23 +20,33 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { staffData } = await req.json();
+    const requestData = await req.json();
     
-    console.log('Creating staff with auth:', { email: staffData.email, birth_date: staffData.birth_date });
-
-    // Validate required fields
-    if (!staffData.email || !staffData.birth_date) {
-      throw new Error('Email e data de nascimento são obrigatórios');
+    // Validate input with Zod
+    const validationResult = staffCreationSchema.safeParse(requestData);
+    
+    if (!validationResult.success) {
+      console.error('Validation error:', validationResult.error.errors);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Dados inválidos', 
+          details: validationResult.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }))
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    // Format birth date as password (DDMMYYYY)
-    const birthDate = new Date(staffData.birth_date);
-    const day = String(birthDate.getDate()).padStart(2, '0');
-    const month = String(birthDate.getMonth() + 1).padStart(2, '0');
-    const year = birthDate.getFullYear();
-    const password = `${day}${month}${year}`;
+    const { staffData } = validationResult.data;
+    
+    console.log('Creating staff with auth:', { email: staffData.email });
 
-    console.log('Generated password format:', password.substring(0, 4) + '****');
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(staffData.name);
+
+    // Generate secure random password
+    const tempPassword = generateSecurePassword(16);
+
+    console.log('Generated secure password');
 
     // Determine role based on position
     let appRole: 'staff_member' | 'personal_trainer' = 'staff_member';
@@ -41,15 +54,22 @@ serve(async (req) => {
       appRole = 'personal_trainer';
     }
 
+    // Get company info for email
+    const { data: company } = await supabaseAdmin
+      .from('companies')
+      .select('name')
+      .eq('id', staffData.company_id)
+      .single();
+
     // Create auth user
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: staffData.email,
-      password: password,
+      password: tempPassword,
       email_confirm: true,
       user_metadata: {
-        name: staffData.name,
+        name: sanitizedName,
         role: appRole,
-        first_login: true, // Flag to force password change
+        first_login: true,
       },
     });
 
@@ -65,11 +85,11 @@ serve(async (req) => {
         const user = existingUser.users.find(u => u.email === staffData.email);
         
         if (user) {
-          // Reset password to birth date
+          // Reset password to new secure password
           const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
             user.id,
             {
-              password: password,
+              password: tempPassword,
               user_metadata: {
                 ...user.user_metadata,
                 role: appRole,
@@ -135,15 +155,43 @@ serve(async (req) => {
 
     console.log('User role created');
 
+    // Send welcome email with temporary password
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey && company) {
+      try {
+        const emailContent = generatePasswordEmail({
+          recipientName: sanitizedName,
+          recipientEmail: staffData.email,
+          tempPassword: tempPassword,
+          companyName: company.name,
+          loginUrl: `${Deno.env.get('SUPABASE_URL')?.replace('.supabase.co', '')}/auth/login`
+        });
+
+        await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: 'Cagio <noreply@cagio.pt>',
+            to: [staffData.email],
+            subject: emailContent.subject,
+            html: emailContent.html,
+            text: emailContent.text,
+          }),
+        });
+        console.log('Welcome email sent');
+      } catch (emailError) {
+        console.error('Error sending email:', emailError);
+      }
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Login criado com sucesso',
+        message: 'Staff criado com sucesso! Um email foi enviado com as credenciais.',
         user_id: authData.user.id,
-        credentials: {
-          email: staffData.email,
-          password_hint: 'Data de nascimento (DDMMAAAA)'
-        }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
