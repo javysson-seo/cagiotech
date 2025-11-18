@@ -24,25 +24,45 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCompany } from '@/contexts/CompanyContext';
 import { CompanyLogo } from '@/components/ui/company-logo';
-import { useAthletes } from '@/hooks/useAthletes';
 import { usePermissions } from '@/hooks/usePermissions';
+import { supabase } from '@/integrations/supabase/client';
 
 export const BoxSidebar: React.FC = () => {
   const { user, logout } = useAuth();
   const { companyId: routeCompanyId } = useParams<{ companyId: string }>();
   const { currentCompany } = useCompany();
-  const { athletes } = useAthletes();
   const { hasPermission, hasAnyPermission } = usePermissions();
+  const [activeAthletes, setActiveAthletes] = React.useState(0);
 
   // Sanitize potential placeholder param like ":companyId"
   const validRouteCompanyId = routeCompanyId && !routeCompanyId.startsWith(':') ? routeCompanyId : undefined;
   const resolvedCompanyId = validRouteCompanyId || currentCompany?.id;
 
+  // Load active athletes count silently
+  React.useEffect(() => {
+    const loadAthletesCount = async () => {
+      if (!currentCompany?.id) return;
+      
+      try {
+        const { count } = await supabase
+          .from('athletes')
+          .select('*', { count: 'exact', head: true })
+          .eq('company_id', currentCompany.id)
+          .eq('status', 'active');
+        
+        setActiveAthletes(count || 0);
+      } catch (error) {
+        // Silent fail - don't show error to user
+        console.error('Error loading athletes count:', error);
+      }
+    };
+
+    loadAthletesCount();
+  }, [currentCompany?.id]);
+
   if (!resolvedCompanyId || !currentCompany) {
     return null;
   }
-
-  const activeAthletes = athletes.filter(athlete => athlete.status === 'active').length;
 
   const navigation = [
     { 
