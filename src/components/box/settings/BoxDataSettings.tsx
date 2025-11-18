@@ -77,46 +77,70 @@ export const BoxDataSettings: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !company?.id) return;
 
-    setIsUploadingLogo(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${company.id}/logo.${fileExt}`;
-
-      // Delete old logo if exists
-      if (boxData.logo_url) {
-        const oldPath = boxData.logo_url.split('/').pop();
-        await supabase.storage
-          .from('company-logos')
-          .remove([`${company.id}/${oldPath}`]);
+    // Validar dimensões da imagem
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    
+    img.onload = async () => {
+      URL.revokeObjectURL(objectUrl);
+      
+      if (img.width > 512 || img.height > 512) {
+        toast.error('A imagem deve ter no máximo 512x512 pixels');
+        return;
       }
 
-      const { error: uploadError } = await supabase.storage
-        .from('company-logos')
-        .upload(fileName, file, { upsert: true });
+      setIsUploadingLogo(true);
+      try {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${company.id}/logo.${fileExt}`;
 
-      if (uploadError) throw uploadError;
+        // Delete old logo if exists
+        if (boxData.logo_url) {
+          const oldPath = boxData.logo_url.split('/').pop();
+          await supabase.storage
+            .from('company-logos')
+            .remove([`${company.id}/${oldPath}`]);
+        }
 
-      const { data: urlData } = supabase.storage
-        .from('company-logos')
-        .getPublicUrl(fileName);
+        const { error: uploadError } = await supabase.storage
+          .from('company-logos')
+          .upload(fileName, file, { upsert: true });
 
-      const newLogoUrl = urlData.publicUrl;
-      
-      await updateCompany({ 
-        logo_url: newLogoUrl
-      });
+        if (uploadError) throw uploadError;
 
-      setBoxData({ ...boxData, logo_url: newLogoUrl });
-      toast.success('Logo atualizado com sucesso!');
-    } catch (error) {
-      console.error('Error uploading logo:', error);
-      toast.error('Erro ao fazer upload do logo');
-    } finally {
-      setIsUploadingLogo(false);
-    }
+        const { data: urlData } = supabase.storage
+          .from('company-logos')
+          .getPublicUrl(fileName);
+
+        const newLogoUrl = urlData.publicUrl;
+        
+        await updateCompany({ 
+          logo_url: newLogoUrl
+        });
+
+        setBoxData({ ...boxData, logo_url: newLogoUrl });
+        toast.success('Logo atualizado com sucesso!');
+      } catch (error) {
+        console.error('Error uploading logo:', error);
+        toast.error('Erro ao fazer upload do logo');
+      } finally {
+        setIsUploadingLogo(false);
+      }
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      toast.error('Erro ao validar a imagem');
+    };
+    
+    img.src = objectUrl;
   };
 
   const handleSave = () => {
+    if (!boxData.name.trim()) {
+      toast.error('O nome da empresa é obrigatório');
+      return;
+    }
     updateCompany(boxData);
   };
 
@@ -169,7 +193,7 @@ export const BoxDataSettings: React.FC = () => {
               <Label htmlFor="logo-upload" className="cursor-pointer">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Upload className="h-4 w-4" />
-                  <span>PNG, JPG, SVG até 5MB</span>
+                  <span>PNG, JPG, SVG (máx. 512x512px)</span>
                 </div>
                 <Button
                   type="button"
@@ -233,7 +257,7 @@ export const BoxDataSettings: React.FC = () => {
             </div>
 
             <div>
-              <Label htmlFor="businessType">Ramo de Fitness *</Label>
+              <Label htmlFor="businessType">Ramo de Fitness</Label>
               <Select value={boxData.business_type} onValueChange={(value) => setBoxData({ ...boxData, business_type: value })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o ramo" />
@@ -251,7 +275,7 @@ export const BoxDataSettings: React.FC = () => {
             <div>
               <Label htmlFor="nif" className="flex items-center space-x-1">
                 <Hash className="h-4 w-4" />
-                <span>NIF *</span>
+                <span>NIF</span>
               </Label>
               <Input
                 id="nif"
