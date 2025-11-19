@@ -145,8 +145,8 @@ export const useNotifications = () => {
     // Set up realtime subscription
     if (!user?.boxId || !user?.id) return;
 
-    const notificationsChannel = supabase
-      .channel('company_notifications_changes')
+    const channel = supabase
+      .channel('notifications_realtime')
       .on(
         'postgres_changes',
         {
@@ -155,15 +155,8 @@ export const useNotifications = () => {
           table: 'company_notifications',
           filter: `company_id=eq.${user.boxId}`
         },
-        (payload) => {
-          console.log('Notification change:', payload);
-          fetchNotifications();
-        }
+        () => fetchNotifications()
       )
-      .subscribe();
-
-    const readsChannel = supabase
-      .channel('notification_reads_changes')
       .on(
         'postgres_changes',
         {
@@ -172,16 +165,12 @@ export const useNotifications = () => {
           table: 'notification_reads',
           filter: `user_id=eq.${user.id}`
         },
-        (payload) => {
-          console.log('Notification read change:', payload);
-          fetchNotifications();
-        }
+        () => fetchNotifications()
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(notificationsChannel);
-      supabase.removeChannel(readsChannel);
+      supabase.removeChannel(channel);
     };
   }, [user?.boxId, user?.id]);
 
