@@ -38,7 +38,7 @@ const BoxCommunicationContent: React.FC = () => {
   const recipientForMessages = selectedRecipient === '_all' ? '' : selectedRecipient;
 
   const { messages, sendMessage } = useCompanyMessages(currentCompany?.id || '', recipientForMessages);
-  const { notifications, markAsRead, markAllAsRead } = useNotifications();
+  const { notifications, markAsRead, markAllAsRead, deleteNotification } = useNotifications();
   const { suggestions, createSuggestion, vote } = usePlatformSuggestions(currentCompany?.id);
   const { athletes } = useAthletes();
   const { trainers } = useTrainers();
@@ -211,6 +211,7 @@ const BoxCommunicationContent: React.FC = () => {
                   notifications={notifications}
                   onMarkAsRead={markAsRead}
                   onMarkAllAsRead={markAllAsRead}
+                  onDelete={deleteNotification}
                 />
               </TabsContent>
 

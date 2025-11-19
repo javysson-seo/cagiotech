@@ -1,23 +1,50 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CheckCircle, XCircle, Clock, Mail, Phone } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Mail, Phone, RefreshCw } from 'lucide-react';
 import { useAthletes } from '@/hooks/useAthletes';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useCompany } from '@/contexts/CompanyContext';
 import { toast } from 'sonner';
 
 export const ApprovalQueue = () => {
-  const { athletes, loading } = useAthletes();
+  const { athletes, loading, refetchAthletes } = useAthletes();
   const { user } = useAuth();
+  const { currentCompany } = useCompany();
   const [processing, setProcessing] = useState<string | null>(null);
 
   const pendingAthletes = athletes.filter(a => 
     (a.is_approved === false || a.is_approved === null) && 
     (a.status === 'pending' || a.status === null || a.status === 'inactive')
   );
+
+  // Setup realtime subscription for new pending athletes
+  useEffect(() => {
+    if (!currentCompany?.id) return;
+
+    const channel = supabase
+      .channel('pending-athletes-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'athletes',
+          filter: `company_id=eq.${currentCompany.id}`,
+        },
+        () => {
+          refetchAthletes();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentCompany?.id, refetchAthletes]);
 
   const handleApprove = async (athleteId: string) => {
     setProcessing(athleteId);
@@ -34,6 +61,7 @@ export const ApprovalQueue = () => {
 
       if (error) throw error;
       toast.success('Atleta aprovado com sucesso!');
+      refetchAthletes();
     } catch (error: any) {
       toast.error('Erro ao aprovar atleta');
       console.error(error);
@@ -55,6 +83,7 @@ export const ApprovalQueue = () => {
 
       if (error) throw error;
       toast.success('Cadastro rejeitado');
+      refetchAthletes();
     } catch (error: any) {
       toast.error('Erro ao rejeitar cadastro');
       console.error(error);
@@ -91,9 +120,19 @@ export const ApprovalQueue = () => {
               {pendingAthletes.length} {pendingAthletes.length === 1 ? 'cadastro aguardando' : 'cadastros aguardando'} aprovação
             </CardDescription>
           </div>
-          <Badge variant="outline" className="text-orange-500 border-orange-500">
-            {pendingAthletes.length}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refetchAthletes}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            </Button>
+            <Badge variant="outline" className="text-orange-500 border-orange-500">
+              {pendingAthletes.length}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
