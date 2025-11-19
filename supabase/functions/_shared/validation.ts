@@ -27,18 +27,29 @@ export const publicAthleteRegistrationSchema = z.object({
     .toLowerCase(),
   
   birth_date: z.string()
-    .datetime({ message: "Data de nascimento inválida" })
+    .refine(dateStr => {
+      // Accept both date (YYYY-MM-DD) and datetime formats
+      const date = new Date(dateStr);
+      return !isNaN(date.getTime());
+    }, { message: "Data de nascimento inválida" })
     .refine(dateStr => {
       const date = new Date(dateStr);
       const today = new Date();
       const age = today.getFullYear() - date.getFullYear();
       return age >= 10 && age <= 120;
-    }, { message: "Data de nascimento inválida (idade deve estar entre 10 e 120 anos)" }),
+    }, { message: "Data de nascimento inválida (idade deve estar entre 10 e 120 anos)" })
+    .transform(dateStr => {
+      // Convert to datetime if only date is provided
+      if (!dateStr.includes('T')) {
+        return `${dateStr}T00:00:00Z`;
+      }
+      return dateStr;
+    }),
   
   phone: z.string()
-    .regex(phoneRegex, "Telefone inválido")
     .optional()
-    .or(z.literal('')),
+    .transform(val => val || '')
+    .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
   
   company_id: z.string().uuid("ID da empresa inválido"),
 });
@@ -58,12 +69,21 @@ export const athleteCreationSchema = z.object({
       .toLowerCase(),
     
     birth_date: z.string()
-      .datetime({ message: "Data de nascimento inválida" }),
+      .refine(dateStr => {
+        const date = new Date(dateStr);
+        return !isNaN(date.getTime());
+      }, { message: "Data de nascimento inválida" })
+      .transform(dateStr => {
+        if (!dateStr.includes('T')) {
+          return `${dateStr}T00:00:00Z`;
+        }
+        return dateStr;
+      }),
     
     phone: z.string()
-      .regex(phoneRegex, "Telefone inválido")
       .optional()
-      .or(z.literal('')),
+      .transform(val => val || '')
+      .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
     
     company_id: z.string().uuid("ID da empresa inválido"),
     
@@ -95,19 +115,28 @@ export const staffCreationSchema = z.object({
       .toLowerCase(),
     
     birth_date: z.string()
-      .datetime({ message: "Data de nascimento inválida" }),
+      .refine(dateStr => {
+        const date = new Date(dateStr);
+        return !isNaN(date.getTime());
+      }, { message: "Data de nascimento inválida" })
+      .transform(dateStr => {
+        if (!dateStr.includes('T')) {
+          return `${dateStr}T00:00:00Z`;
+        }
+        return dateStr;
+      }),
     
     phone: z.string()
-      .regex(phoneRegex, "Telefone inválido")
       .optional()
-      .or(z.literal('')),
+      .transform(val => val || '')
+      .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
     
     company_id: z.string().uuid("ID da empresa inválido"),
     
     nif: z.string()
-      .regex(nifRegex, "NIF inválido")
       .optional()
-      .or(z.literal('')),
+      .transform(val => val || '')
+      .refine(val => !val || nifRegex.test(val), { message: "NIF inválido" }),
     
     position: z.string().max(100).optional(),
     department: z.string().max(100).optional(),
