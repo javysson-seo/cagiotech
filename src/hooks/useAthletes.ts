@@ -47,6 +47,7 @@ export const useAthletes = () => {
   const fetchAthletes = async () => {
     if (!currentCompany?.id) {
       setLoading(false);
+      setAthletes([]);
       return;
     }
 
@@ -61,14 +62,14 @@ export const useAthletes = () => {
 
       if (error) {
         console.error('Error fetching athletes:', error);
-        toast.error('Erro ao carregar atletas');
+        setAthletes([]);
         return;
       }
 
       setAthletes(data || []);
     } catch (error) {
       console.error('Error in fetchAthletes:', error);
-      toast.error('Erro ao carregar atletas');
+      setAthletes([]);
     } finally {
       setLoading(false);
     }
