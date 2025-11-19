@@ -149,7 +149,7 @@ serve(async (req) => {
         phone: phone || null,
         company_id,
         user_id: userId,
-        status: 'active',
+        status: 'pending',
         is_approved: false,
       })
       .select()
