@@ -76,7 +76,8 @@ export const PublicAthleteRegister = () => {
     // Validar telefone se fornecido
     if (formData.phone && formData.phone.trim()) {
       const phoneRegex = /^(\+351)?[29]\d{8}$/;
-      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+      const cleanPhone = formData.phone.replace(/\s/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
         toast.error('Telefone inválido. Use formato: 9XXXXXXXX ou 2XXXXXXXX');
         return;
       }
