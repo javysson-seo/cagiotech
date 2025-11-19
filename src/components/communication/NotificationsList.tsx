@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bell, AlertTriangle, Check, Trash2 } from 'lucide-react';
+import { Bell, AlertTriangle, Check, Trash2, Filter, CheckCheck } from 'lucide-react';
 import { Notification } from '@/hooks/useNotifications';
 
 interface NotificationsListProps {
@@ -22,7 +23,15 @@ export const NotificationsList: React.FC<NotificationsListProps> = ({
   onMarkAllAsRead,
   onDelete 
 }) => {
-  const unreadCount = notifications.filter(n => !n.is_read).length;
+  const [filter, setFilter] = useState<'all' | 'unread' | 'urgent'>('all');
+
+  const unreadNotifications = notifications.filter(n => !n.is_read);
+  const urgentNotifications = notifications.filter(n => n.is_urgent && !n.is_read);
+  
+  const filteredNotifications = 
+    filter === 'unread' ? unreadNotifications :
+    filter === 'urgent' ? urgentNotifications :
+    notifications;
 
   if (notifications.length === 0) {
     return (
@@ -37,23 +46,60 @@ export const NotificationsList: React.FC<NotificationsListProps> = ({
 
   return (
     <div className="space-y-4">
-      {unreadCount > 0 && onMarkAllAsRead && (
-        <div className="flex items-center justify-between pb-2">
-          <span className="text-sm text-muted-foreground">
-            {unreadCount} notificação{unreadCount !== 1 ? 'ões' : ''} não lida{unreadCount !== 1 ? 's' : ''}
-          </span>
+      <div className="flex items-center justify-between pb-2 border-b">
+        <div className="flex items-center gap-4">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="w-full">
+            <TabsList>
+              <TabsTrigger value="all" className="gap-2">
+                <Bell className="h-4 w-4" />
+                Todas
+                {notifications.length > 0 && (
+                  <Badge variant="secondary" className="ml-1">{notifications.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="unread" className="gap-2">
+                <Filter className="h-4 w-4" />
+                Não lidas
+                {unreadNotifications.length > 0 && (
+                  <Badge variant="default" className="ml-1">{unreadNotifications.length}</Badge>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="urgent" className="gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                Urgentes
+                {urgentNotifications.length > 0 && (
+                  <Badge variant="destructive" className="ml-1">{urgentNotifications.length}</Badge>
+                )}
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        
+        {unreadNotifications.length > 0 && onMarkAllAsRead && (
           <Button 
             variant="outline" 
             size="sm"
             onClick={onMarkAllAsRead}
           >
-            <Check className="h-4 w-4 mr-2" />
+            <CheckCheck className="h-4 w-4 mr-2" />
             Marcar todas como lidas
           </Button>
-        </div>
-      )}
+        )}
+      </div>
 
-      {notifications.map((notification) => (
+      {filteredNotifications.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center text-muted-foreground">
+            <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>
+              {filter === 'unread' && 'Nenhuma notificação não lida'}
+              {filter === 'urgent' && 'Nenhuma notificação urgente'}
+              {filter === 'all' && 'Nenhuma notificação'}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        filteredNotifications.map((notification) => (
         <Alert 
           key={notification.id} 
           variant={notification.is_urgent ? 'destructive' : 'default'}
@@ -122,7 +168,8 @@ export const NotificationsList: React.FC<NotificationsListProps> = ({
             </div>
           </AlertDescription>
         </Alert>
-      ))}
+        ))
+      )}
     </div>
   );
 };
