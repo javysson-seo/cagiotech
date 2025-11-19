@@ -102,7 +102,13 @@ serve(async (req) => {
         .maybeSingle();
 
       if (existingAthlete) {
-        throw new Error('Este email já está registrado nesta empresa');
+        return new Response(
+          JSON.stringify({ 
+            success: false,
+            error: 'Este email já está registrado nesta empresa'
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       }
     }
 
@@ -246,7 +252,11 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Registro realizado com sucesso! Verifique seu email para obter suas credenciais de acesso.',
+        message: 'Registro realizado com sucesso! Aguarde a aprovação da academia.',
+        credentials: {
+          email: email,
+          password_hint: 'Você receberá um email com suas credenciais de acesso após a aprovação.'
+        },
         athlete_id: athlete.id,
         requires_approval: true
       }),

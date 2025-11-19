@@ -48,8 +48,17 @@ export const publicAthleteRegistrationSchema = z.object({
   
   phone: z.string()
     .optional()
-    .transform(val => val || '')
-    .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
+    .transform(val => {
+      // Handle undefined, null, or empty string
+      if (!val || val.trim() === '') return '';
+      return val.trim();
+    })
+    .refine(val => {
+      // If empty string, it's valid (optional field)
+      if (val === '') return true;
+      // Otherwise, must match phone regex
+      return phoneRegex.test(val.replace(/\s/g, ''));
+    }, { message: "Telefone inválido" }),
   
   company_id: z.string().uuid("ID da empresa inválido"),
 });
@@ -82,8 +91,14 @@ export const athleteCreationSchema = z.object({
     
     phone: z.string()
       .optional()
-      .transform(val => val || '')
-      .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
+      .transform(val => {
+        if (!val || val.trim() === '') return '';
+        return val.trim();
+      })
+      .refine(val => {
+        if (val === '') return true;
+        return phoneRegex.test(val.replace(/\s/g, ''));
+      }, { message: "Telefone inválido" }),
     
     company_id: z.string().uuid("ID da empresa inválido"),
     
@@ -128,8 +143,14 @@ export const staffCreationSchema = z.object({
     
     phone: z.string()
       .optional()
-      .transform(val => val || '')
-      .refine(val => !val || phoneRegex.test(val), { message: "Telefone inválido" }),
+      .transform(val => {
+        if (!val || val.trim() === '') return '';
+        return val.trim();
+      })
+      .refine(val => {
+        if (val === '') return true;
+        return phoneRegex.test(val.replace(/\s/g, ''));
+      }, { message: "Telefone inválido" }),
     
     company_id: z.string().uuid("ID da empresa inválido"),
     
