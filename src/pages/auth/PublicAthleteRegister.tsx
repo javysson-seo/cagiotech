@@ -68,9 +68,18 @@ export const PublicAthleteRegister = () => {
     const birthDate = new Date(formData.birth_date);
     const today = new Date();
     const age = today.getFullYear() - birthDate.getFullYear();
-    if (age < 12 || age > 120) {
-      toast.error('Data de nascimento inválida');
+    if (age < 10 || age > 120) {
+      toast.error('Idade deve estar entre 10 e 120 anos');
       return;
+    }
+
+    // Validar telefone se fornecido
+    if (formData.phone && formData.phone.trim()) {
+      const phoneRegex = /^(\+351)?[29]\d{8}$/;
+      if (!phoneRegex.test(formData.phone.replace(/\s/g, ''))) {
+        toast.error('Telefone inválido. Use formato: 9XXXXXXXX ou 2XXXXXXXX');
+        return;
+      }
     }
 
     setLoading(true);
@@ -79,10 +88,10 @@ export const PublicAthleteRegister = () => {
       // Chamar edge function para criar atleta com autenticação
       const { data, error } = await supabase.functions.invoke('public-athlete-register', {
         body: {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone || null,
-          birth_date: formData.birth_date,
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone?.trim() || '',
+          birth_date: formData.birth_date, // Will be converted to datetime in validation
           company_id: companyId,
         },
       });
@@ -277,19 +286,22 @@ export const PublicAthleteRegister = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="phone">
-                    Telefone
+                    Telefone (opcional)
                   </Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       id="phone"
                       type="tel"
-                      placeholder="(00) 00000-0000"
+                      placeholder="Ex: 912345678 ou 212345678"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="pl-10"
                     />
                   </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Formato: 9XXXXXXXX (telemóvel) ou 2XXXXXXXX (fixo)
+                  </p>
                 </div>
               </div>
 
