@@ -35,6 +35,7 @@ import { BoxOnboarding } from "./pages/admin/BoxOnboarding";
 import { Reports as AdminReports } from "./pages/admin/Reports";
 import { CompanyManagement } from "./pages/admin/CompanyManagement";
 import { AllAthletesManagement } from "./pages/admin/AllAthletesManagement";
+import { AdminSetup } from "./pages/admin/AdminSetup";
 
 // Box Pages
 import { BoxDashboard } from "./pages/box/BoxDashboard";
@@ -101,8 +102,11 @@ function App() {
                     <Route path="/auth/verify-email" element={<VerifyEmailCode />} />
                     <Route path="/auth/password-recovery" element={<PasswordRecovery />} />
                     <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
+                    
+                    {/* Admin Setup - Configuração inicial de admin */}
+                    <Route path="/admin/setup" element={<AdminSetup />} />
                   
-                  {/* Admin Routes - Sem autenticação */}
+                  {/* Admin Routes - Protegidas com AdminAuthGuard */}
                   <Route path="/admin" element={<MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect>} />
                   <Route path="/admin/dashboard" element={<MobileAdminRedirect><CagioAdminDashboard /></MobileAdminRedirect>} />
                   <Route path="/admin/companies" element={<MobileAdminRedirect><CompanyManagement /></MobileAdminRedirect>} />
