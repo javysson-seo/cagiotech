@@ -11,6 +11,11 @@ interface Company {
   is_approved: boolean | null;
   rejection_reason: string | null;
   subscription_status: string | null;
+  business_type: string | null;
+  city: string | null;
+  capacity: number | null;
+  athletes?: { count: number }[];
+  trainers?: { count: number }[];
 }
 
 export const useCompanies = () => {
@@ -21,7 +26,11 @@ export const useCompanies = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('companies')
-        .select('*')
+        .select(`
+          *,
+          athletes:athletes(count),
+          trainers:trainers(count)
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
