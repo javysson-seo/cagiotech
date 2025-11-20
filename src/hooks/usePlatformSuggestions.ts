@@ -30,7 +30,7 @@ export const usePlatformSuggestions = (companyId?: string) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: suggestions = [], isLoading } = useQuery({
+  const { data: suggestions = [], isLoading, refetch } = useQuery({
     queryKey: ['platform-suggestions', companyId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,7 +38,10 @@ export const usePlatformSuggestions = (companyId?: string) => {
 
       let query = supabase
         .from('platform_suggestions')
-        .select('*')
+        .select(`
+          *,
+          company:companies(name, email, logo_url)
+        `)
         .order('created_at', { ascending: false });
 
       if (companyId) {
@@ -48,43 +51,7 @@ export const usePlatformSuggestions = (companyId?: string) => {
       const { data, error } = await query;
       if (error) throw error;
 
-      // Fetch related data and votes for each suggestion
-      const suggestionsWithData = await Promise.all(
-        (data || []).map(async (suggestion: any) => {
-          // Fetch company name
-          const { data: company } = await supabase
-            .from('companies')
-            .select('name')
-            .eq('id', suggestion.company_id)
-            .single();
-
-          // Fetch creator name
-          const { data: creator } = await supabase
-            .from('profiles')
-            .select('name')
-            .eq('id', suggestion.created_by)
-            .maybeSingle();
-
-          // Fetch votes
-          const { data: votes } = await supabase
-            .from('suggestion_votes')
-            .select('vote_type, user_id')
-            .eq('suggestion_id', suggestion.id);
-
-          const positive = votes?.filter(v => v.vote_type === 'positive').length || 0;
-          const negative = votes?.filter(v => v.vote_type === 'negative').length || 0;
-          const userVote = votes?.find(v => v.user_id === user.id)?.vote_type || null;
-
-          return {
-            ...suggestion,
-            company,
-            creator,
-            votes: { positive, negative, userVote },
-          };
-        })
-      );
-
-      return suggestionsWithData as PlatformSuggestion[];
+      return (data || []) as PlatformSuggestion[];
     },
   });
 
@@ -175,10 +142,52 @@ export const usePlatformSuggestions = (companyId?: string) => {
     },
   });
 
+  const updateSuggestionStatus = useMutation({
+    mutationFn: async ({
+      id,
+      status,
+      admin_notes,
+      is_public,
+    }: {
+      id: string;
+      status: string;
+      admin_notes?: string;
+      is_public?: boolean;
+    }) => {
+      const { error } = await supabase
+        .from('platform_suggestions')
+        .update({
+          status,
+          admin_notes,
+          is_public,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['platform-suggestions'] });
+      toast({
+        title: 'Sugestão atualizada',
+        description: 'A sugestão foi atualizada com sucesso',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Erro ao atualizar sugestão',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
   return {
     suggestions,
     isLoading,
+    refetch,
     createSuggestion: createSuggestion.mutate,
     vote: vote.mutate,
+    updateSuggestionStatus: updateSuggestionStatus.mutate,
   };
 };

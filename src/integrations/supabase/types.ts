@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_financial_overview: {
+        Row: {
+          active_subscriptions: number | null
+          churned_companies: number | null
+          created_at: string | null
+          id: string
+          month: string
+          new_companies: number | null
+          revenue_arr: number | null
+          revenue_mrr: number | null
+          total_companies: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          active_subscriptions?: number | null
+          churned_companies?: number | null
+          created_at?: string | null
+          id?: string
+          month: string
+          new_companies?: number | null
+          revenue_arr?: number | null
+          revenue_mrr?: number | null
+          total_companies?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          active_subscriptions?: number | null
+          churned_companies?: number | null
+          created_at?: string | null
+          id?: string
+          month?: string
+          new_companies?: number | null
+          revenue_arr?: number | null
+          revenue_mrr?: number | null
+          total_companies?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       athlete_activities: {
         Row: {
           athlete_id: string
@@ -1352,6 +1391,8 @@ export type Database = {
       companies: {
         Row: {
           address: string | null
+          approved_at: string | null
+          approved_by: string | null
           business_type: string | null
           capacity: number | null
           city: string | null
@@ -1363,6 +1404,7 @@ export type Database = {
           gps_coordinates: string | null
           id: string
           instagram: string | null
+          is_approved: boolean | null
           logo_url: string | null
           name: string
           nif: string | null
@@ -1370,6 +1412,7 @@ export type Database = {
           owner_id: string
           phone: string | null
           postal_code: string | null
+          rejection_reason: string | null
           slogan: string | null
           slug: string | null
           subscription_end_date: string | null
@@ -1383,6 +1426,8 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           business_type?: string | null
           capacity?: number | null
           city?: string | null
@@ -1394,6 +1439,7 @@ export type Database = {
           gps_coordinates?: string | null
           id?: string
           instagram?: string | null
+          is_approved?: boolean | null
           logo_url?: string | null
           name: string
           nif?: string | null
@@ -1401,6 +1447,7 @@ export type Database = {
           owner_id: string
           phone?: string | null
           postal_code?: string | null
+          rejection_reason?: string | null
           slogan?: string | null
           slug?: string | null
           subscription_end_date?: string | null
@@ -1414,6 +1461,8 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           business_type?: string | null
           capacity?: number | null
           city?: string | null
@@ -1425,6 +1474,7 @@ export type Database = {
           gps_coordinates?: string | null
           id?: string
           instagram?: string | null
+          is_approved?: boolean | null
           logo_url?: string | null
           name?: string
           nif?: string | null
@@ -1432,6 +1482,7 @@ export type Database = {
           owner_id?: string
           phone?: string | null
           postal_code?: string | null
+          rejection_reason?: string | null
           slogan?: string | null
           slug?: string | null
           subscription_end_date?: string | null
