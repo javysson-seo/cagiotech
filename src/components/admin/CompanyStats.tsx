@@ -76,7 +76,7 @@ export const CompanyStats: React.FC = () => {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Building2 className="h-5 w-5 text-[#16ff00]" />
+          <Building2 className="h-5 w-5 text-cagio-green" />
           Empresas - Estatísticas Detalhadas
         </CardTitle>
         <CardDescription>
@@ -89,49 +89,49 @@ export const CompanyStats: React.FC = () => {
             {companies?.map((company) => (
               <div
                 key={company.id}
-                className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-gray-50 to-[#16ff00]/5 border-[#16ff00]/20"
+                className="p-4 border rounded-lg hover:shadow-md transition-shadow bg-gradient-to-r from-background to-cagio-green/5 border-cagio-green/20"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <h3 className="font-semibold text-lg text-[#1a1a2e]">{company.name}</h3>
+                    <h3 className="font-semibold text-lg text-foreground">{company.name}</h3>
                     <p className="text-sm text-muted-foreground">{company.city || 'Localização não definida'}</p>
                     <p className="text-xs text-muted-foreground mt-1">
                       Registado em {new Date(company.created_at).toLocaleDateString('pt-PT')}
                     </p>
                   </div>
-                  <Badge variant="outline" className="bg-[#16ff00]/10 text-[#1a1a2e] border-[#16ff00]/30">
+                  <Badge variant="outline" className="bg-cagio-green/10 text-foreground border-cagio-green/30">
                     Ativo
                   </Badge>
                 </div>
 
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                    <div className="p-2 bg-blue-100 rounded">
-                      <Users className="h-4 w-4 text-blue-600" />
+                  <div className="flex items-center gap-2 p-2 bg-card rounded border">
+                    <div className="p-2 bg-cagio-green/10 rounded">
+                      <Users className="h-4 w-4 text-cagio-green" />
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Atletas</p>
-                      <p className="text-lg font-bold text-blue-600">{company.athleteCount}</p>
+                      <p className="text-lg font-bold text-cagio-green">{company.athleteCount}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                    <div className="p-2 bg-green-100 rounded">
-                      <TrendingUp className="h-4 w-4 text-green-600" />
+                  <div className="flex items-center gap-2 p-2 bg-card rounded border">
+                    <div className="p-2 bg-cagio-green/10 rounded">
+                      <TrendingUp className="h-4 w-4 text-cagio-green" />
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">Trainers</p>
-                      <p className="text-lg font-bold text-green-600">{company.trainerCount}</p>
+                      <p className="text-lg font-bold text-cagio-green">{company.trainerCount}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 p-2 bg-white rounded border">
-                    <div className="p-2 bg-emerald-100 rounded">
-                      <DollarSign className="h-4 w-4 text-emerald-600" />
+                  <div className="flex items-center gap-2 p-2 bg-card rounded border">
+                    <div className="p-2 bg-cagio-green/10 rounded">
+                      <DollarSign className="h-4 w-4 text-cagio-green" />
                     </div>
                     <div>
                       <p className="text-xs text-muted-foreground">30d</p>
-                      <p className="text-lg font-bold text-emerald-600">€{company.revenue.toFixed(0)}</p>
+                      <p className="text-lg font-bold text-cagio-green">€{company.revenue.toFixed(0)}</p>
                     </div>
                   </div>
                 </div>
