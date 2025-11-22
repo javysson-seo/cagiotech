@@ -67,11 +67,47 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Check if user already exists
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const userExists = existingUsers.users?.some(u => u.email === email);
+    const existingUser = existingUsers.users?.find(u => u.email === email);
 
-    if (userExists) {
-      console.error("User already exists:", email);
-      // Mark code as used to prevent reuse
+    if (existingUser) {
+      console.log("User already exists:", email);
+      
+      // If email is not confirmed, confirm it now
+      if (!existingUser.email_confirmed_at) {
+        console.log("Confirming email for existing user");
+        const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+          existingUser.id,
+          { email_confirm: true }
+        );
+        
+        if (updateError) {
+          console.error("Error confirming email:", updateError);
+          return new Response(
+            JSON.stringify({ error: "Erro ao confirmar email" }),
+            { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+          );
+        }
+        
+        // Mark code as used
+        await supabaseAdmin
+          .from('email_verification_codes')
+          .update({ used: true })
+          .eq('email', email)
+          .eq('code', code);
+        
+        console.log("Email confirmed successfully");
+        
+        return new Response(
+          JSON.stringify({ 
+            success: true,
+            message: "Email confirmado com sucesso! Você já pode fazer login.",
+            userExists: true
+          }),
+          { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+      
+      // Email already confirmed
       await supabaseAdmin
         .from('email_verification_codes')
         .update({ used: true })
@@ -80,7 +116,7 @@ const handler = async (req: Request): Promise<Response> => {
       
       return new Response(
         JSON.stringify({ 
-          error: "Este email já está registrado. Por favor, faça login ou use outro email." 
+          error: "Este email já está registrado e confirmado. Por favor, faça login." 
         }),
         { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );

@@ -73,6 +73,15 @@ export const VerifyEmailCode: React.FC = () => {
         throw new Error(data.error || 'Erro ao verificar código');
       }
 
+      // Check if user already existed
+      if (data.userExists) {
+        toast.success('Email confirmado com sucesso! Redirecionando para login...');
+        setTimeout(() => {
+          navigate('/auth/login');
+        }, 1500);
+        return;
+      }
+
       toast.success('Conta criada com sucesso!');
       
       // Login the user

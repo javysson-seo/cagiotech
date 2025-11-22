@@ -92,6 +92,12 @@ export const UnifiedLogin: React.FC = () => {
     setError(null);
 
     try {
+      // Delete old codes first
+      await supabase
+        .from('email_verification_codes')
+        .delete()
+        .eq('email', formData.email);
+
       // Get company name for the email
       const { data: companies } = await supabase
         .from('companies')
@@ -109,7 +115,7 @@ export const UnifiedLogin: React.FC = () => {
 
       if (functionError) throw functionError;
 
-      toast.success('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+      toast.success('Novo código de confirmação enviado! Verifique sua caixa de entrada.');
       
       // Redirect to verification page
       navigate('/auth/verify-email', {
