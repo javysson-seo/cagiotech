@@ -131,8 +131,8 @@ const handler = async (req: Request): Promise<Response> => {
             .insert({
               name: stored.company_name,
               owner_id: existingUser.id,
-            subscription_status: 'trialing',
-            subscription_plan: 'enterprise',
+              subscription_status: 'trial',
+              subscription_plan: 'enterprise',
               trial_plan_id: enterprisePlan.id,
               trial_start_date: new Date().toISOString(),
               trial_end_date: trialEndDate.toISOString(),
@@ -266,8 +266,8 @@ const handler = async (req: Request): Promise<Response> => {
       .insert({
         name: stored.company_name,
         owner_id: userData.user.id,
-      subscription_status: 'trialing',
-      subscription_plan: 'enterprise',
+        subscription_status: 'trial',
+        subscription_plan: 'enterprise',
         trial_plan_id: enterprisePlan.id,
         trial_start_date: new Date().toISOString(),
         trial_end_date: trialEndDate.toISOString(),
