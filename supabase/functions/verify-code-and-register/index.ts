@@ -154,14 +154,38 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`User created: ${userData.user.id}`);
 
-    // Create company
+    // Get Business plan (highest plan for trial)
+    const { data: businessPlan } = await supabaseAdmin
+      .from('cagio_subscription_plans')
+      .select('id')
+      .eq('slug', 'business')
+      .eq('is_active', true)
+      .single();
+
+    if (!businessPlan) {
+      console.error("Business plan not found");
+      await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
+      return new Response(
+        JSON.stringify({ error: "Erro ao configurar plano de assinatura" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    const trialEndDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+
+    // Create company with trial period
     const { data: companyData, error: companyError } = await supabaseAdmin
       .from('companies')
       .insert({
         name: stored.company_name,
         owner_id: userData.user.id,
         subscription_status: 'trialing',
-        trial_end_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+        subscription_plan: 'business',
+        trial_plan_id: businessPlan.id,
+        trial_start_date: new Date().toISOString(),
+        trial_end_date: trialEndDate.toISOString(),
+        onboarding_completed: false,
+        onboarding_step: 0
       })
       .select()
       .single();
