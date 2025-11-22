@@ -102,6 +102,8 @@ const handler = async (req: Request): Promise<Response> => {
           );
         }
 
+        let companyId = existingCompany?.id;
+
         // If no company exists, create one with trial
         if (!existingCompany) {
           console.log("Creating company for existing user");
@@ -140,7 +142,7 @@ const handler = async (req: Request): Promise<Response> => {
             .select()
             .single();
 
-          if (companyError) {
+          if (companyError || !companyData) {
             console.error("Error creating company:", companyError);
             return new Response(
               JSON.stringify({ error: "Erro ao criar empresa" }),
@@ -148,23 +150,29 @@ const handler = async (req: Request): Promise<Response> => {
             );
           }
 
-          console.log("Company created for existing user:", companyData.id);
+          companyId = companyData.id;
+          console.log("Company created for existing user:", companyId);
         }
 
         // If no role exists, create one
         if (!existingRole) {
-          console.log("Creating role for existing user");
+          console.log("Creating role for existing user with company_id:", companyId);
           const { error: roleError } = await supabaseAdmin
             .from('user_roles')
             .insert({
               user_id: existingUser.id,
               role: 'box_owner',
-              company_id: existingCompany?.id
+              company_id: companyId
             });
 
           if (roleError) {
             console.error("Error creating user role:", roleError);
+            return new Response(
+              JSON.stringify({ error: "Erro ao criar permissões do usuário" }),
+              { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
           }
+          console.log("User role created successfully");
         }
         
         // Mark code as used
@@ -281,16 +289,21 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`Company created: ${companyData.id}`);
 
-    // Update user role
+    // Update user role with company_id
     const { error: roleError } = await supabaseAdmin
       .from('user_roles')
       .insert({
         user_id: userData.user.id,
-        role: 'box_owner'
+        role: 'box_owner',
+        company_id: companyData.id
       });
 
     if (roleError) {
       console.error("Error creating user role:", roleError);
+      return new Response(
+        JSON.stringify({ error: "Erro ao criar permissões do usuário" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
     }
 
     // Mark code as used
