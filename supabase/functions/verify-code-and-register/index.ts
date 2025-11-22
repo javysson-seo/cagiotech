@@ -108,16 +108,16 @@ const handler = async (req: Request): Promise<Response> => {
         if (!existingCompany) {
           console.log("Creating company for existing user");
           
-          // Get Business plan
-          const { data: businessPlan } = await supabaseAdmin
+          // Get Enterprise plan
+          const { data: enterprisePlan } = await supabaseAdmin
             .from('cagio_subscription_plans')
             .select('id')
-            .eq('slug', 'business')
+            .eq('slug', 'enterprise')
             .eq('is_active', true)
             .single();
 
-          if (!businessPlan) {
-            console.error("Business plan not found");
+          if (!enterprisePlan) {
+            console.error("Enterprise plan not found");
             return new Response(
               JSON.stringify({ error: "Erro ao configurar plano de assinatura" }),
               { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
@@ -131,9 +131,9 @@ const handler = async (req: Request): Promise<Response> => {
             .insert({
               name: stored.company_name,
               owner_id: existingUser.id,
-              subscription_status: 'trialing',
-              subscription_plan: 'business',
-              trial_plan_id: businessPlan.id,
+            subscription_status: 'trialing',
+            subscription_plan: 'enterprise',
+              trial_plan_id: enterprisePlan.id,
               trial_start_date: new Date().toISOString(),
               trial_end_date: trialEndDate.toISOString(),
               onboarding_completed: false,
@@ -241,16 +241,16 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log(`User created: ${userData.user.id}`);
 
-    // Get Business plan (highest plan for trial)
-    const { data: businessPlan } = await supabaseAdmin
+    // Get Enterprise plan (highest plan for trial)
+    const { data: enterprisePlan } = await supabaseAdmin
       .from('cagio_subscription_plans')
       .select('id')
-      .eq('slug', 'business')
+      .eq('slug', 'enterprise')
       .eq('is_active', true)
       .single();
 
-    if (!businessPlan) {
-      console.error("Business plan not found");
+    if (!enterprisePlan) {
+      console.error("Enterprise plan not found");
       await supabaseAdmin.auth.admin.deleteUser(userData.user.id);
       return new Response(
         JSON.stringify({ error: "Erro ao configurar plano de assinatura" }),
@@ -266,9 +266,9 @@ const handler = async (req: Request): Promise<Response> => {
       .insert({
         name: stored.company_name,
         owner_id: userData.user.id,
-        subscription_status: 'trialing',
-        subscription_plan: 'business',
-        trial_plan_id: businessPlan.id,
+      subscription_status: 'trialing',
+      subscription_plan: 'enterprise',
+        trial_plan_id: enterprisePlan.id,
         trial_start_date: new Date().toISOString(),
         trial_end_date: trialEndDate.toISOString(),
         onboarding_completed: false,
