@@ -15,6 +15,8 @@ export const UnifiedLogin: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -85,9 +87,50 @@ export const UnifiedLogin: React.FC = () => {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    setResendingEmail(true);
+    setError(null);
+
+    try {
+      // Get company name for the email
+      const { data: companies } = await supabase
+        .from('companies')
+        .select('name')
+        .limit(1);
+      
+      const companyName = companies?.[0]?.name || 'CagioTech';
+
+      const { error: functionError } = await supabase.functions.invoke('send-verification-code', {
+        body: { 
+          email: formData.email,
+          companyName: companyName
+        }
+      });
+
+      if (functionError) throw functionError;
+
+      toast.success('Email de confirmação reenviado! Verifique sua caixa de entrada.');
+      
+      // Redirect to verification page
+      navigate('/auth/verify-email', {
+        state: {
+          email: formData.email,
+          password: formData.password,
+          companyName: companyName
+        }
+      });
+    } catch (error: any) {
+      console.error('Error resending confirmation:', error);
+      setError('Erro ao reenviar email de confirmação. Tente novamente.');
+    } finally {
+      setResendingEmail(false);
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setEmailNotConfirmed(false);
     setLoading(true);
 
     try {
@@ -97,7 +140,11 @@ export const UnifiedLogin: React.FC = () => {
       });
 
       if (signInError) {
-        if (signInError.message.includes('Invalid login credentials')) {
+        if (signInError.message.includes('Email not confirmed') || 
+            signInError.message.includes('email_not_confirmed')) {
+          setEmailNotConfirmed(true);
+          setError('Email não confirmado. Por favor, verifique seu email ou reenvie o código de confirmação.');
+        } else if (signInError.message.includes('Invalid login credentials')) {
           setError('Email ou password incorretos');
         } else {
           setError(signInError.message);
@@ -147,7 +194,20 @@ export const UnifiedLogin: React.FC = () => {
               {error && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>
+                    {error}
+                    {emailNotConfirmed && (
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="ml-2 p-0 h-auto underline"
+                        onClick={handleResendConfirmation}
+                        disabled={resendingEmail}
+                      >
+                        {resendingEmail ? 'Reenviando...' : 'Reenviar código'}
+                      </Button>
+                    )}
+                  </AlertDescription>
                 </Alert>
               )}
 
