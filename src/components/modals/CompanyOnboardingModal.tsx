@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Building2, Phone, MapPin, Globe, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -30,6 +31,7 @@ export const CompanyOnboardingModal: React.FC<CompanyOnboardingModalProps> = ({ 
     description: '',
     capacity: 30
   });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const totalSteps = 3;
   const progress = (step / totalSteps) * 100;
@@ -268,6 +270,27 @@ export const CompanyOnboardingModal: React.FC<CompanyOnboardingModalProps> = ({ 
                   rows={4}
                 />
               </div>
+
+              <div className="flex items-start space-x-2 pt-4">
+                <Checkbox
+                  id="terms"
+                  checked={acceptedTerms}
+                  onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+                />
+                <Label
+                  htmlFor="terms"
+                  className="text-sm font-normal leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Concordo com os{' '}
+                  <a
+                    href="/termos-e-politicas"
+                    target="_blank"
+                    className="text-primary underline hover:no-underline"
+                  >
+                    Termos de Serviço e Política de Privacidade
+                  </a>
+                </Label>
+              </div>
             </div>
           </div>
         );
@@ -307,7 +330,13 @@ export const CompanyOnboardingModal: React.FC<CompanyOnboardingModalProps> = ({ 
 
           <Button
             onClick={handleNext}
-            disabled={loading || !formData.name || !formData.phone || !formData.email}
+            disabled={
+              loading || 
+              !formData.name || 
+              !formData.phone || 
+              !formData.email ||
+              (step === totalSteps && !acceptedTerms)
+            }
             className="flex-1"
           >
             {loading ? (
