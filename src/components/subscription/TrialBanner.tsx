@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Clock, CreditCard, AlertTriangle } from 'lucide-react';
 import { useCompanySubscription } from '@/hooks/useCompanySubscription';
-import { useNavigate } from 'react-router-dom';
+import { PricingPlansModal } from './PricingPlansModal';
 
 export const TrialBanner: React.FC = () => {
   const { subscription } = useCompanySubscription();
-  const navigate = useNavigate();
+  const [showPlansModal, setShowPlansModal] = useState(false);
 
   if (!subscription || subscription.subscription_status !== 'trial') {
     return null;
@@ -19,64 +19,73 @@ export const TrialBanner: React.FC = () => {
 
   if (isExpired) {
     return (
-      <Alert variant="destructive" className="border-red-500">
-        <AlertTriangle className="h-4 w-4" />
-        <AlertDescription className="flex items-center justify-between">
-          <span className="font-semibold">
-            Seu período de teste expirou. Ative uma assinatura para continuar usando o sistema.
-          </span>
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="ml-4 bg-white text-red-600 hover:bg-red-50"
-            onClick={() => navigate('settings')}
-          >
-            <CreditCard className="h-4 w-4 mr-2" />
-            Assinar Agora
-          </Button>
-        </AlertDescription>
-      </Alert>
+      <>
+        <Alert variant="destructive" className="border-red-500">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="font-semibold">
+              Seu período de teste expirou. Ative uma assinatura para continuar usando o sistema.
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="ml-4 bg-white text-red-600 hover:bg-red-50"
+              onClick={() => setShowPlansModal(true)}
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Assinar Agora
+            </Button>
+          </AlertDescription>
+        </Alert>
+        <PricingPlansModal open={showPlansModal} onOpenChange={setShowPlansModal} />
+      </>
     );
   }
 
   if (isExpiringSoon) {
     return (
-      <Alert variant="destructive" className="border-orange-500 bg-orange-50 dark:bg-orange-950">
-        <Clock className="h-4 w-4 text-orange-600" />
-        <AlertDescription className="flex items-center justify-between">
-          <span className="font-semibold text-orange-900 dark:text-orange-100">
-            ⚠️ Seu teste gratuito termina em {daysLeft} {daysLeft === 1 ? 'dia' : 'dias'}!
-          </span>
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="ml-4 bg-white text-orange-600 hover:bg-orange-50"
-            onClick={() => navigate('settings')}
-          >
-            <CreditCard className="h-4 w-4 mr-2" />
-            Escolher Plano
-          </Button>
-        </AlertDescription>
-      </Alert>
+      <>
+        <Alert variant="destructive" className="border-orange-500 bg-orange-50 dark:bg-orange-950">
+          <Clock className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="font-semibold text-orange-900 dark:text-orange-100">
+              ⚠️ Seu teste gratuito termina em {daysLeft} {daysLeft === 1 ? 'dia' : 'dias'}!
+            </span>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="ml-4 bg-white text-orange-600 hover:bg-orange-50"
+              onClick={() => setShowPlansModal(true)}
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              Escolher Plano
+            </Button>
+          </AlertDescription>
+        </Alert>
+        <PricingPlansModal open={showPlansModal} onOpenChange={setShowPlansModal} />
+      </>
     );
   }
 
   return (
-    <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950">
-      <Clock className="h-4 w-4 text-blue-600" />
-      <AlertDescription className="flex items-center justify-between">
-        <span className="font-semibold text-blue-900 dark:text-blue-100">
-          🎉 Teste grátis ativo! Você tem {daysLeft} dias restantes para explorar todos os recursos.
-        </span>
-        <Button 
-          variant="outline" 
-          size="sm"
-          className="ml-4 bg-white text-blue-600 hover:bg-blue-50"
-          onClick={() => navigate('settings')}
-        >
-          Ver Planos
-        </Button>
-      </AlertDescription>
-    </Alert>
+    <>
+      <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950">
+        <Clock className="h-4 w-4 text-blue-600" />
+        <AlertDescription className="flex items-center justify-between">
+          <span className="font-semibold text-blue-900 dark:text-blue-100">
+            🎉 Teste grátis ativo! Você tem {daysLeft} dias restantes para explorar todos os recursos.
+          </span>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="ml-4 bg-white text-blue-600 hover:bg-blue-50"
+            onClick={() => setShowPlansModal(true)}
+          >
+            Ver Planos
+          </Button>
+        </AlertDescription>
+      </Alert>
+      <PricingPlansModal open={showPlansModal} onOpenChange={setShowPlansModal} />
+    </>
   );
 };
