@@ -64,7 +64,7 @@ export const UnifiedLogin: React.FC = () => {
               .select('id')
               .eq('id', sortedRole.company_id)
               .single();
-            navigate(company ? `/${company.id}` : '/box/dashboard');
+            navigate(company ? `/${company.id}/dashboard` : '/box/dashboard');
           } else {
             navigate('/box/dashboard');
           }
