@@ -72,6 +72,20 @@ const handler = async (req: Request): Promise<Response> => {
     if (existingUser) {
       console.log("User already exists:", email);
       
+      // Check if user has a company
+      const { data: existingCompany } = await supabaseAdmin
+        .from('companies')
+        .select('id')
+        .eq('owner_id', existingUser.id)
+        .maybeSingle();
+
+      // Check if user has role
+      const { data: existingRole } = await supabaseAdmin
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', existingUser.id)
+        .maybeSingle();
+      
       // If email is not confirmed, confirm it now
       if (!existingUser.email_confirmed_at) {
         console.log("Confirming email for existing user");
@@ -86,6 +100,71 @@ const handler = async (req: Request): Promise<Response> => {
             JSON.stringify({ error: "Erro ao confirmar email" }),
             { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
           );
+        }
+
+        // If no company exists, create one with trial
+        if (!existingCompany) {
+          console.log("Creating company for existing user");
+          
+          // Get Business plan
+          const { data: businessPlan } = await supabaseAdmin
+            .from('cagio_subscription_plans')
+            .select('id')
+            .eq('slug', 'business')
+            .eq('is_active', true)
+            .single();
+
+          if (!businessPlan) {
+            console.error("Business plan not found");
+            return new Response(
+              JSON.stringify({ error: "Erro ao configurar plano de assinatura" }),
+              { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+
+          const trialEndDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+
+          const { data: companyData, error: companyError } = await supabaseAdmin
+            .from('companies')
+            .insert({
+              name: stored.company_name,
+              owner_id: existingUser.id,
+              subscription_status: 'trialing',
+              subscription_plan: 'business',
+              trial_plan_id: businessPlan.id,
+              trial_start_date: new Date().toISOString(),
+              trial_end_date: trialEndDate.toISOString(),
+              onboarding_completed: false,
+              onboarding_step: 0
+            })
+            .select()
+            .single();
+
+          if (companyError) {
+            console.error("Error creating company:", companyError);
+            return new Response(
+              JSON.stringify({ error: "Erro ao criar empresa" }),
+              { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+            );
+          }
+
+          console.log("Company created for existing user:", companyData.id);
+        }
+
+        // If no role exists, create one
+        if (!existingRole) {
+          console.log("Creating role for existing user");
+          const { error: roleError } = await supabaseAdmin
+            .from('user_roles')
+            .insert({
+              user_id: existingUser.id,
+              role: 'box_owner',
+              company_id: existingCompany?.id
+            });
+
+          if (roleError) {
+            console.error("Error creating user role:", roleError);
+          }
         }
         
         // Mark code as used
