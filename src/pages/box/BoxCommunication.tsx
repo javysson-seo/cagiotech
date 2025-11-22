@@ -16,6 +16,7 @@ import { MessageSquare, Bell, Lightbulb, Send, Plus } from 'lucide-react';
 import { useCompany } from '@/contexts/CompanyContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useCompanyMessages } from '@/hooks/useCompanyMessages';
+import { NotificationsList } from '@/components/communication/NotificationsList';
 import { useNotifications } from '@/hooks/useNotifications';
 import { usePlatformSuggestions } from '@/hooks/usePlatformSuggestions';
 import { useAthletes } from '@/hooks/useAthletes';
@@ -23,7 +24,6 @@ import { useTrainers } from '@/hooks/useTrainers';
 import { useStaff } from '@/hooks/useStaff';
 import { ChatMessages } from '@/components/communication/ChatMessages';
 import { ChatInput } from '@/components/communication/ChatInput';
-import { NotificationsList } from '@/components/communication/NotificationsList';
 import { SuggestionCard } from '@/components/communication/SuggestionCard';
 import { useAuth } from '@/hooks/useAuth';
 
