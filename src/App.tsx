@@ -79,6 +79,8 @@ const queryClient = new QueryClient({
   },
 });
 
+import { OnboardingGuard } from "@/components/guards/OnboardingGuard";
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -89,7 +91,8 @@ function App() {
               <TooltipProvider>
                 <Toaster />
                 <FirstLoginGuard>
-                  <Routes>
+                  <OnboardingGuard>
+                    <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Landing />} />
                     <Route path="/old-landing" element={<Landing />} />
@@ -376,14 +379,15 @@ function App() {
                     {/* Fallback */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                </FirstLoginGuard>
-              </TooltipProvider>
-            </LanguageProvider>
-          </ThemeProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
+                </OnboardingGuard>
+              </FirstLoginGuard>
+            </TooltipProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  </QueryClientProvider>
+);
 }
 
 export default App;

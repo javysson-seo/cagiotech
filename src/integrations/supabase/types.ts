@@ -1408,6 +1408,8 @@ export type Database = {
           logo_url: string | null
           name: string
           nif: string | null
+          onboarding_completed: boolean | null
+          onboarding_step: number | null
           operating_hours: Json | null
           owner_id: string
           phone: string | null
@@ -1420,6 +1422,7 @@ export type Database = {
           subscription_start_date: string | null
           subscription_status: string | null
           trial_end_date: string | null
+          trial_plan_id: string | null
           trial_start_date: string | null
           updated_at: string | null
           website: string | null
@@ -1443,6 +1446,8 @@ export type Database = {
           logo_url?: string | null
           name: string
           nif?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
           operating_hours?: Json | null
           owner_id: string
           phone?: string | null
@@ -1455,6 +1460,7 @@ export type Database = {
           subscription_start_date?: string | null
           subscription_status?: string | null
           trial_end_date?: string | null
+          trial_plan_id?: string | null
           trial_start_date?: string | null
           updated_at?: string | null
           website?: string | null
@@ -1478,6 +1484,8 @@ export type Database = {
           logo_url?: string | null
           name?: string
           nif?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: number | null
           operating_hours?: Json | null
           owner_id?: string
           phone?: string | null
@@ -1490,6 +1498,7 @@ export type Database = {
           subscription_start_date?: string | null
           subscription_status?: string | null
           trial_end_date?: string | null
+          trial_plan_id?: string | null
           trial_start_date?: string | null
           updated_at?: string | null
           website?: string | null
@@ -1500,6 +1509,13 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: true
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "companies_trial_plan_id_fkey"
+            columns: ["trial_plan_id"]
+            isOneToOne: false
+            referencedRelation: "cagio_subscription_plans"
             referencedColumns: ["id"]
           },
         ]
