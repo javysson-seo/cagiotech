@@ -33,14 +33,31 @@ export const UnifiedLogin: React.FC = () => {
 
   const handleRedirect = async (userId: string) => {
     try {
-      // Get user roles
-      const { data: userRoles } = await supabase
+      // Get user roles with company details
+      const { data: userRoles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('role, company_id')
+        .select(`
+          role, 
+          company_id,
+          companies (
+            id,
+            slug,
+            name
+          )
+        `)
         .eq('user_id', userId);
 
+      if (rolesError) {
+        console.error('Error fetching roles:', rolesError);
+        toast.error('Erro ao buscar permissões');
+        return;
+      }
+
       if (!userRoles || userRoles.length === 0) {
-        toast.error('Sem permissões atribuídas');
+        console.error('No roles found for user');
+        toast.error('Usuário sem permissões. Contacte o suporte.');
+        // Redirect to a waiting page or logout
+        await supabase.auth.signOut();
         return;
       }
 
@@ -50,40 +67,45 @@ export const UnifiedLogin: React.FC = () => {
         roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role)
       )[0];
 
-      console.log('Redirecting with role:', sortedRole.role);
+      console.log('Redirecting with role:', sortedRole.role, 'company:', sortedRole.companies);
 
       // Redirect based on role
       switch (sortedRole.role) {
         case 'cagio_admin':
+          toast.success('Bem-vindo, Admin!');
           navigate('/admin/dashboard');
           break;
         case 'box_owner':
-          if (sortedRole.company_id) {
-            const { data: company } = await supabase
-              .from('companies')
-              .select('id')
-              .eq('id', sortedRole.company_id)
-              .single();
-            navigate(company ? `/${company.id}/dashboard` : '/box/dashboard');
+          if (sortedRole.company_id && sortedRole.companies) {
+            const company = sortedRole.companies as any;
+            // Use slug if available, fallback to ID
+            const companyPath = company.slug || company.id;
+            toast.success(`Bem-vindo à ${company.name}!`);
+            navigate(`/${companyPath}/dashboard`);
           } else {
+            toast.success('Bem-vindo!');
             navigate('/box/dashboard');
           }
           break;
         case 'personal_trainer':
+          toast.success('Bem-vindo, Treinador!');
           navigate('/trainer/dashboard');
           break;
         case 'staff_member':
+          toast.success('Bem-vindo!');
           navigate('/box/dashboard');
           break;
         case 'student':
+          toast.success('Bem-vindo, Atleta!');
           navigate('/student/dashboard');
           break;
         default:
           toast.error('Tipo de usuário não reconhecido');
+          await supabase.auth.signOut();
       }
     } catch (error) {
       console.error('Error redirecting:', error);
-      toast.error('Erro ao redirecionar');
+      toast.error('Erro ao redirecionar. Tente novamente.');
     }
   };
 
