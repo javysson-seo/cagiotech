@@ -60,42 +60,63 @@ const { user } = useAuth();
 const navigate = useNavigate();
 const location = useLocation();
 
-useEffect(() => {
-  const loadCompany = async () => {
-    // Sanitize param: ignore placeholder like ":companyId"
-    const paramCompanyId = companyId && !companyId.startsWith(':') ? companyId : undefined;
-    const resolvedCompanyId = paramCompanyId || user?.boxId;
-
-    // If URL contains the placeholder and we know the user's box, fix the URL
-    if (companyId && companyId.startsWith(':') && user?.boxId) {
-      const correctedPath = location.pathname.replace(`/${companyId}`, `/${user.boxId}`);
-      navigate(correctedPath, { replace: true });
-    }
-
-    if (!resolvedCompanyId || !user) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
+  useEffect(() => {
+    const loadCompany = async () => {
       setIsLoading(true);
       setError(null);
 
-      // Buscar empresa pelo ID
-      const { data: company, error: companyError } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('id', resolvedCompanyId)
-        .single();
-
-        if (companyError || !company) {
-          setError('Empresa não encontrada');
+      try {
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        if (!authUser) {
+          setError('Não autenticado');
           navigate('/auth/login');
           return;
         }
 
-        // Verificar se o usuário tem acesso a esta empresa
-        const hasAccess = await checkUserAccess(company.id, user.id);
+        // Get companyId from URL or user context
+        let targetCompanyId = companyId;
+
+        // If no companyId in URL, get from user's boxId
+        if (!targetCompanyId || targetCompanyId === ':companyId') {
+          // This is a placeholder in the route, need to correct the URL
+          const { data: userRole } = await supabase
+            .from('user_roles')
+            .select(`
+              company_id,
+              companies (
+                id,
+                slug
+              )
+            `)
+            .eq('user_id', authUser.id)
+            .eq('role', 'box_owner')
+            .single();
+
+          if (userRole?.company_id && userRole.companies) {
+            const company = userRole.companies as any;
+            // Use slug if available, fallback to ID
+            const companyPath = company.slug || company.id;
+            navigate(`/${companyPath}/dashboard`, { replace: true });
+            return;
+          }
+        }
+
+        // Fetch company data - support both ID and slug
+        const { data: company, error: companyError } = await supabase
+          .from('companies')
+          .select('*')
+          .or(`id.eq.${targetCompanyId},slug.eq.${targetCompanyId}`)
+          .single();
+
+        if (companyError || !company) {
+          console.error('Company not found:', companyError);
+          setError('Box não encontrado');
+          navigate('/auth/login');
+          return;
+        }
+
+        // Verify user access to this company
+        const hasAccess = await checkUserAccess(company.id, authUser.id);
         
         if (!hasAccess) {
           setError('Acesso não autorizado a esta empresa');
