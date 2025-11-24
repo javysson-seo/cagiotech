@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Dumbbell, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, Dumbbell, AlertCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loading } from '@/components/ui/loading';
@@ -194,9 +194,20 @@ export const UnifiedLogin: React.FC = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md relative">
+        {/* Botão de Voltar */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="absolute -top-2 left-0 mb-4"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 mt-12">
           <div className="inline-flex items-center justify-center mb-4">
             <img 
               src="/lovable-uploads/ceef2c27-35ec-471c-a76f-fa4cbb07ecaa.png" 
