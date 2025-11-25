@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { BoxSidebar } from '@/components/box/BoxSidebar';
-import { BoxHeader } from '@/components/box/BoxHeader';
 import { Footer } from '@/components/Footer';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -123,105 +121,99 @@ const FinancialContent: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <BoxSidebar />
-      
-      <div className="flex-1 flex flex-col min-h-screen">
-        <BoxHeader />
-        
-        <main className="flex-1 overflow-y-auto">
-          <div className="container max-w-full mx-auto p-6 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold">Financeiro</h1>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Gestão completa de receitas, despesas e recebíveis
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowFilters(!showFilters)}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtros
-                </Button>
-                <Button size="sm" onClick={() => setIncomeDialog(true)}>
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Nova Receita
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => setExpenseDialog(true)}>
-                  <TrendingDown className="h-4 w-4 mr-2" />
-                  Nova Despesa
-                </Button>
-              </div>
+    <div className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 overflow-y-auto">
+        <div className="container max-w-full mx-auto p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold">Financeiro</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Gestão completa de receitas, despesas e recebíveis
+              </p>
             </div>
-
-            <FinancialMetricsCards metrics={metrics} />
-
-            {showFilters && (
-              <TransactionFiltersComponent
-                filters={filters}
-                onFiltersChange={setFilters}
-                categories={categories}
-              />
-            )}
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <RevenueExpenseChart transactions={transactions} />
-              <RecentTransactionsList transactions={transactions} />
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Filtros
+              </Button>
+              <Button size="sm" onClick={() => setIncomeDialog(true)}>
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Nova Receita
+              </Button>
+              <Button size="sm" variant="destructive" onClick={() => setExpenseDialog(true)}>
+                <TrendingDown className="h-4 w-4 mr-2" />
+                Nova Despesa
+              </Button>
             </div>
-
-            <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="all">Todas</TabsTrigger>
-                <TabsTrigger value="income">Receitas</TabsTrigger>
-                <TabsTrigger value="expenses">Despesas</TabsTrigger>
-                <TabsTrigger value="receivables">Recebíveis</TabsTrigger>
-                <TabsTrigger value="plans">Planos</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="all" className="space-y-4">
-                <TransactionsTable
-                  transactions={filteredTransactions}
-                  title="Todas as Transações"
-                  description="Histórico completo de receitas e despesas"
-                />
-              </TabsContent>
-
-              <TabsContent value="income" className="space-y-4">
-                <TransactionsTable
-                  transactions={incomeTransactions}
-                  title="Receitas"
-                  description="Histórico de todas as receitas registradas"
-                />
-              </TabsContent>
-
-              <TabsContent value="expenses" className="space-y-4">
-                <TransactionsTable
-                  transactions={expenseTransactions}
-                  title="Despesas"
-                  description="Histórico de todas as despesas registradas"
-                />
-              </TabsContent>
-
-              <TabsContent value="receivables" className="space-y-4">
-                <ReceivablesList 
-                  payments={payments} 
-                  onMarkAsPaid={(id) => markAsPaid.mutate(id)}
-                />
-              </TabsContent>
-
-              <TabsContent value="plans" className="space-y-4">
-                {currentCompany && <SubscriptionPlansList companyId={currentCompany.id} />}
-              </TabsContent>
-            </Tabs>
           </div>
-        </main>
-        
-        <Footer />
-      </div>
+
+          <FinancialMetricsCards metrics={metrics} />
+
+          {showFilters && (
+            <TransactionFiltersComponent
+              filters={filters}
+              onFiltersChange={setFilters}
+              categories={categories}
+            />
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <RevenueExpenseChart transactions={transactions} />
+            <RecentTransactionsList transactions={transactions} />
+          </div>
+
+          <Tabs defaultValue="all" className="w-full">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="all">Todas</TabsTrigger>
+              <TabsTrigger value="income">Receitas</TabsTrigger>
+              <TabsTrigger value="expenses">Despesas</TabsTrigger>
+              <TabsTrigger value="receivables">Recebíveis</TabsTrigger>
+              <TabsTrigger value="plans">Planos</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="all" className="space-y-4">
+              <TransactionsTable
+                transactions={filteredTransactions}
+                title="Todas as Transações"
+                description="Histórico completo de receitas e despesas"
+              />
+            </TabsContent>
+
+            <TabsContent value="income" className="space-y-4">
+              <TransactionsTable
+                transactions={incomeTransactions}
+                title="Receitas"
+                description="Histórico de todas as receitas registradas"
+              />
+            </TabsContent>
+
+            <TabsContent value="expenses" className="space-y-4">
+              <TransactionsTable
+                transactions={expenseTransactions}
+                title="Despesas"
+                description="Histórico de todas as despesas registradas"
+              />
+            </TabsContent>
+
+            <TabsContent value="receivables" className="space-y-4">
+              <ReceivablesList 
+                payments={payments} 
+                onMarkAsPaid={(id) => markAsPaid.mutate(id)}
+              />
+            </TabsContent>
+
+            <TabsContent value="plans" className="space-y-4">
+              {currentCompany && <SubscriptionPlansList companyId={currentCompany.id} />}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+      
+      <Footer />
 
       {/* Transaction Forms */}
       <TransactionForm
