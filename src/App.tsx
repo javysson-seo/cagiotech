@@ -28,6 +28,7 @@ import { VerifyEmailCode } from "./pages/auth/VerifyEmailCode";
 import { PasswordRecovery } from "./pages/auth/PasswordRecovery";
 import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import { BoxRegisterWithPlan } from "./pages/auth/BoxRegisterWithPlan";
+import { SetupTestUsers } from "./pages/SetupTestUsers";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -91,7 +92,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   // Don't show sidebar on public routes
   const publicRoutes = ['/', '/auth/login', '/login', '/auth/box-register', '/register-with-plan', 
                         '/auth/student-register', '/auth/email-verification', '/auth/verify-email', 
-                        '/auth/password-recovery', '/old-landing', '/admin/setup'];
+                        '/auth/password-recovery', '/old-landing', '/admin/setup', '/setup-test-users'];
   const isPublicRoute = publicRoutes.some(route => location.pathname === route) || 
                         location.pathname.startsWith('/register/');
 
@@ -143,6 +144,9 @@ function App() {
                     <Route path="/auth/verify-email" element={<VerifyEmailCode />} />
                     <Route path="/auth/password-recovery" element={<PasswordRecovery />} />
                     <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
+                    
+                    {/* Test Users Setup */}
+                    <Route path="/setup-test-users" element={<SetupTestUsers />} />
                     
                     {/* Admin Setup - Configuração inicial de admin */}
                     <Route path="/admin/setup" element={<AdminSetup />} />
