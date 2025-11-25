@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { ProfileSwitcher } from '@/components/ProfileSwitcher';
 import { toast } from 'sonner';
 
 export const Header: React.FC = () => {
@@ -82,6 +83,9 @@ export const Header: React.FC = () => {
                 <Bell className="h-4 w-4" />
                 <span className="sr-only">Notifications</span>
               </Button>
+
+              {/* Profile Switcher */}
+              <ProfileSwitcher />
 
               {/* User Menu */}
               <DropdownMenu>
