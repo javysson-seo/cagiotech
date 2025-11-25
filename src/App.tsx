@@ -11,6 +11,9 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
 import { FirstLoginGuard } from "@/components/auth/FirstLoginGuard";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { useLocation } from "react-router-dom";
 
 // Pages
 import Index from "./pages/Index";
@@ -81,6 +84,40 @@ const queryClient = new QueryClient({
 
 import { OnboardingGuard } from "@/components/guards/OnboardingGuard";
 
+// Layout component with sidebar
+function AppLayout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  
+  // Don't show sidebar on public routes
+  const publicRoutes = ['/', '/auth/login', '/login', '/auth/box-register', '/register-with-plan', 
+                        '/auth/student-register', '/auth/email-verification', '/auth/verify-email', 
+                        '/auth/password-recovery', '/old-landing', '/admin/setup'];
+  const isPublicRoute = publicRoutes.some(route => location.pathname === route) || 
+                        location.pathname.startsWith('/register/');
+
+  if (isPublicRoute) {
+    return <>{children}</>;
+  }
+
+  return (
+    <SidebarProvider defaultOpen={true}>
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="flex h-14 items-center px-4">
+              <SidebarTrigger />
+            </div>
+          </header>
+          <main className="flex-1">
+            {children}
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -92,7 +129,8 @@ function App() {
                 <Toaster />
                 <FirstLoginGuard>
                   <OnboardingGuard>
-                    <Routes>
+                    <AppLayout>
+                      <Routes>
                     {/* Public Routes */}
                     <Route path="/" element={<Landing />} />
                     <Route path="/old-landing" element={<Landing />} />
@@ -379,6 +417,7 @@ function App() {
                     {/* Fallback */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
+                    </AppLayout>
                 </OnboardingGuard>
               </FirstLoginGuard>
             </TooltipProvider>
