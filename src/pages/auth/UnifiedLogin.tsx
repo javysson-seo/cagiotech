@@ -33,6 +33,8 @@ export const UnifiedLogin: React.FC = () => {
 
   const handleRedirect = async (userId: string) => {
     try {
+      console.log('🔍 Fetching roles for user:', userId);
+      
       // Get user roles with company details
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_roles')
@@ -47,6 +49,9 @@ export const UnifiedLogin: React.FC = () => {
         `)
         .eq('user_id', userId);
 
+      console.log('📋 User roles data:', userRoles);
+      console.log('❌ Roles error:', rolesError);
+
       if (rolesError) {
         console.error('Error fetching roles:', rolesError);
         toast.error('Erro ao buscar permissões');
@@ -54,10 +59,25 @@ export const UnifiedLogin: React.FC = () => {
       }
 
       if (!userRoles || userRoles.length === 0) {
-        console.error('No roles found for user');
-        toast.error('Usuário sem permissões. Contacte o suporte.');
-        // Redirect to a waiting page or logout
-        await supabase.auth.signOut();
+        console.error('❌ No roles found for user:', userId);
+        console.log('🔍 Checking if user exists in database...');
+        
+        // Check if user exists in profiles
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+        
+        console.log('👤 User profile:', profile);
+        
+        toast.error('Usuário sem permissões atribuídas. Por favor, contacte o administrador da empresa.', {
+          duration: 5000
+        });
+        
+        setTimeout(() => {
+          supabase.auth.signOut();
+        }, 3000);
         return;
       }
 
