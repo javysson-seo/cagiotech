@@ -414,7 +414,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             window.location.href = '/admin/dashboard';
             break;
           case 'box_admin':
-            window.location.href = `/${profile.companySlug || profile.companyId}/dashboard`;
+            // SEMPRE usar o ID da company, não o slug
+            window.location.href = `/${profile.companyId}/dashboard`;
             break;
           case 'trainer':
             window.location.href = '/trainer/dashboard';
