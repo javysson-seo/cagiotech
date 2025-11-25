@@ -140,7 +140,17 @@ const location = useLocation();
 
   const checkUserAccess = async (companyId: string, userId: string): Promise<boolean> => {
     try {
-      // Verificar se é o dono da empresa
+      // Verificar se usuário tem permissão via user_roles (mais seguro e principal)
+      const { data: userRole } = await supabase
+        .from('user_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .or(`role.eq.cagio_admin,and(role.in.(box_owner,personal_trainer,staff_member),company_id.eq.${companyId})`)
+        .maybeSingle();
+
+      if (userRole) return true;
+
+      // Fallback: Verificar se é o dono direto da empresa
       const { data: company } = await supabase
         .from('companies')
         .select('owner_id')
@@ -150,7 +160,7 @@ const location = useLocation();
 
       if (company) return true;
 
-      // Verificar se é um trainer da empresa
+      // Fallback: Verificar se é um trainer da empresa
       const { data: trainer } = await supabase
         .from('trainers')
         .select('id')

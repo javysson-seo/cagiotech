@@ -167,6 +167,15 @@ function App() {
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
+                  <Route path="/:companyId/dashboard" element={
+                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                      <CompanyProvider>
+                        <SubscriptionGuard>
+                          <BoxDashboard />
+                        </SubscriptionGuard>
+                      </CompanyProvider>
+                    </ProtectedRoute>
+                  } />
                   <Route path="/:companyId/athletes" element={
                     <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
                       <CompanyProvider>
