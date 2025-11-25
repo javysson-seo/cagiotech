@@ -92,11 +92,9 @@ const location = useLocation();
             .eq('role', 'box_owner')
             .single();
 
-          if (userRole?.company_id && userRole.companies) {
-            const company = userRole.companies as any;
-            // Use slug if available, fallback to ID
-            const companyPath = company.slug || company.id;
-            navigate(`/${companyPath}/dashboard`, { replace: true });
+          if (userRole?.company_id) {
+            // SEMPRE usar o ID da company na URL
+            navigate(`/${userRole.company_id}/dashboard`, { replace: true });
             return;
           }
         }

@@ -52,9 +52,9 @@ export const UnifiedLogin: React.FC = () => {
         navigate('/admin/dashboard');
         break;
       case 'box_owner':
-        const companyPath = profile.companySlug || profile.companyId;
+        // SEMPRE usar o ID da company, não o slug
         toast.success(`Bem-vindo à ${profile.companyName}!`);
-        navigate(`/${companyPath}/dashboard`);
+        navigate(`/${profile.companyId}/dashboard`);
         break;
       case 'personal_trainer':
         toast.success('Bem-vindo, Treinador!');
@@ -138,9 +138,9 @@ export const UnifiedLogin: React.FC = () => {
         case 'box_owner':
           if (sortedRole.company_id && sortedRole.companies) {
             const company = sortedRole.companies as any;
-            const companyPath = company.slug || company.id;
+            // SEMPRE usar o ID da company, não o slug
             toast.success(`Bem-vindo à ${company.name}!`);
-            navigate(`/${companyPath}/dashboard`);
+            navigate(`/${sortedRole.company_id}/dashboard`);
           } else {
             toast.success('Bem-vindo!');
             navigate('/box/dashboard');

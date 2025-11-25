@@ -45,8 +45,8 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
 
-  // Get company path (slug or id)
-  const companyPath = currentCompany?.slug || currentCompany?.id || 'box';
+  // Get company path (always use ID, not slug)
+  const companyPath = currentCompany?.id || 'box';
 
   // Admin menu items
   const adminItems = [
