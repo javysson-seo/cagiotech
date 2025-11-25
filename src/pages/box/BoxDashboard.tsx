@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { AreaThemeProvider } from '@/contexts/AreaThemeContext';
-import { BoxSidebar } from '@/components/box/BoxSidebar';
-import { BoxHeader } from '@/components/box/BoxHeader';
 import { useCompany } from '@/contexts/CompanyContext';
 
 import { DashboardKPIs } from '@/components/box/dashboard/DashboardKPIs';
@@ -85,12 +83,9 @@ const BoxDashboardContent = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <BoxSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <BoxHeader />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+    <div className="flex-1 flex flex-col min-h-screen">
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -329,7 +324,6 @@ const BoxDashboardContent = () => {
         </main>
         <Footer />
       </div>
-    </div>
   );
 };
 
