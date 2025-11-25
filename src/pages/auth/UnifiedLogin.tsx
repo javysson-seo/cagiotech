@@ -5,10 +5,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Dumbbell, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Dumbbell, AlertCircle, ArrowLeft, User, Building2, GraduationCap, Shield } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loading } from '@/components/ui/loading';
+
+interface UserProfile {
+  type: string;
+  companyId?: string;
+  companyName?: string;
+  companySlug?: string;
+}
 
 export const UnifiedLogin: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +24,9 @@ export const UnifiedLogin: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [emailNotConfirmed, setEmailNotConfirmed] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
+  const [showProfileSelector, setShowProfileSelector] = useState(false);
+  const [availableProfiles, setAvailableProfiles] = useState<UserProfile[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -30,6 +40,36 @@ export const UnifiedLogin: React.FC = () => {
       }
     });
   }, []);
+
+  const handleProfileSelection = (profile: UserProfile) => {
+    // Save profile preference
+    localStorage.setItem(`profile_${currentUserId}`, JSON.stringify(profile));
+    
+    // Redirect based on profile
+    switch (profile.type) {
+      case 'cagio_admin':
+        toast.success('Bem-vindo, Admin!');
+        navigate('/admin/dashboard');
+        break;
+      case 'box_owner':
+        const companyPath = profile.companySlug || profile.companyId;
+        toast.success(`Bem-vindo à ${profile.companyName}!`);
+        navigate(`/${companyPath}/dashboard`);
+        break;
+      case 'personal_trainer':
+        toast.success('Bem-vindo, Treinador!');
+        navigate('/trainer/dashboard');
+        break;
+      case 'staff_member':
+        toast.success('Bem-vindo!');
+        navigate('/box/dashboard');
+        break;
+      case 'student':
+        toast.success('Bem-vindo, Atleta!');
+        navigate('/student/dashboard');
+        break;
+    }
+  };
 
   const handleRedirect = async (userId: string) => {
     try {
@@ -60,17 +100,6 @@ export const UnifiedLogin: React.FC = () => {
 
       if (!userRoles || userRoles.length === 0) {
         console.error('❌ No roles found for user:', userId);
-        console.log('🔍 Checking if user exists in database...');
-        
-        // Check if user exists in profiles
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
-        
-        console.log('👤 User profile:', profile);
-        
         toast.error('Usuário sem permissões atribuídas. Por favor, contacte o administrador da empresa.', {
           duration: 5000
         });
@@ -81,12 +110,23 @@ export const UnifiedLogin: React.FC = () => {
         return;
       }
 
-      // Get the first role (priority: cagio_admin > box_owner > personal_trainer > student)
-      const roleOrder = ['cagio_admin', 'box_owner', 'personal_trainer', 'staff_member', 'student'];
-      const sortedRole = userRoles.sort((a, b) => 
-        roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role)
-      )[0];
+      // Check if user has multiple profiles
+      if (userRoles.length > 1) {
+        const profiles: UserProfile[] = userRoles.map((r: any) => ({
+          type: r.role,
+          companyId: r.company_id,
+          companyName: r.companies?.name || 'Cagio',
+          companySlug: r.companies?.slug
+        }));
+        
+        setAvailableProfiles(profiles);
+        setCurrentUserId(userId);
+        setShowProfileSelector(true);
+        return;
+      }
 
+      // Single profile - redirect directly
+      const sortedRole = userRoles[0];
       console.log('Redirecting with role:', sortedRole.role, 'company:', sortedRole.companies);
 
       // Redirect based on role
@@ -98,7 +138,6 @@ export const UnifiedLogin: React.FC = () => {
         case 'box_owner':
           if (sortedRole.company_id && sortedRole.companies) {
             const company = sortedRole.companies as any;
-            // Use slug if available, fallback to ID
             const companyPath = company.slug || company.id;
             toast.success(`Bem-vindo à ${company.name}!`);
             navigate(`/${companyPath}/dashboard`);
@@ -211,6 +250,83 @@ export const UnifiedLogin: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const getProfileIcon = (type: string) => {
+    switch (type) {
+      case 'cagio_admin':
+        return <Shield className="h-8 w-8" />;
+      case 'box_owner':
+        return <Building2 className="h-8 w-8" />;
+      case 'personal_trainer':
+        return <Dumbbell className="h-8 w-8" />;
+      case 'staff_member':
+        return <User className="h-8 w-8" />;
+      case 'student':
+        return <GraduationCap className="h-8 w-8" />;
+      default:
+        return <User className="h-8 w-8" />;
+    }
+  };
+
+  const getProfileLabel = (type: string) => {
+    switch (type) {
+      case 'cagio_admin':
+        return 'Administrador Cagio';
+      case 'box_owner':
+        return 'Proprietário';
+      case 'personal_trainer':
+        return 'Personal Trainer';
+      case 'staff_member':
+        return 'Colaborador';
+      case 'student':
+        return 'Atleta/Aluno';
+      default:
+        return type;
+    }
+  };
+
+  if (showProfileSelector) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
+        <Card className="w-full max-w-2xl shadow-xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Selecione seu Perfil</CardTitle>
+            <CardDescription>
+              Detectamos que você possui múltiplos perfis. Escolha qual deseja acessar:
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            {availableProfiles.map((profile, index) => (
+              <Card
+                key={`${profile.type}-${profile.companyId}-${index}`}
+                className="cursor-pointer hover:border-primary hover:shadow-md transition-all"
+                onClick={() => handleProfileSelection(profile)}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <div className="text-primary">
+                      {getProfileIcon(profile.type)}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-lg">
+                        {getProfileLabel(profile.type)}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.companyName}
+                      </p>
+                    </div>
+                    <Button variant="outline">
+                      Selecionar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">

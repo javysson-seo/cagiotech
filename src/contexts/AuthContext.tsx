@@ -6,6 +6,14 @@ import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'cagio_admin' | 'box_admin' | 'trainer' | 'student';
 
+export interface UserProfile {
+  type: string;
+  role: UserRole;
+  companyId?: string;
+  companyName?: string;
+  companySlug?: string;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -16,6 +24,7 @@ export interface User {
   avatar?: string;
   isApproved?: boolean;
   permissions?: string[];
+  availableProfiles?: UserProfile[];
 }
 
 interface AuthContextType {
@@ -24,6 +33,7 @@ interface AuthContextType {
   login: (email: string, password: string, role?: UserRole) => Promise<void>;
   register: (userData: any, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
+  switchProfile: (profile: UserProfile) => void;
   isLoading: boolean;
   error: string | null;
   clearError: () => void;
@@ -151,7 +161,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           company_id,
           companies (
             id,
-            name
+            name,
+            slug
           )
         `)
         .eq('user_id', supabaseUser.id);
@@ -175,17 +186,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      // Determine primary role using priority and prefer company-linked roles
-      const rolePriority = ['cagio_admin','box_owner','personal_trainer','staff_member','student'];
-      let primaryRole: any = (userRoles as any[])
-        .sort((a: any, b: any) => rolePriority.indexOf(a.role) - rolePriority.indexOf(b.role))[0];
+      // Build available profiles list
+      const availableProfiles: UserProfile[] = userRoles.map((r: any) => ({
+        type: r.role,
+        role: mapRole(r.role),
+        companyId: r.company_id,
+        companyName: r.companies?.name,
+        companySlug: r.companies?.slug
+      }));
 
-      // If student was picked but user has company-linked roles, prefer them
-      if (primaryRole?.role === 'student') {
-        const trainer = (userRoles as any[]).find((r: any) => r.role === 'personal_trainer' && r.company_id);
-        const staff = (userRoles as any[]).find((r: any) => r.role === 'staff_member' && r.company_id);
-        const owner = (userRoles as any[]).find((r: any) => r.role === 'box_owner' && r.company_id);
-        primaryRole = trainer || staff || owner || primaryRole;
+      // Check if user has selected a profile preference
+      const savedProfile = localStorage.getItem(`profile_${supabaseUser.id}`);
+      let primaryRole: any;
+      
+      if (savedProfile) {
+        const parsed = JSON.parse(savedProfile);
+        primaryRole = userRoles.find((r: any) => 
+          r.role === parsed.type && r.company_id === parsed.companyId
+        );
+      }
+      
+      if (!primaryRole) {
+        // Determine primary role using priority and prefer company-linked roles
+        const rolePriority = ['cagio_admin','box_owner','personal_trainer','staff_member','student'];
+        primaryRole = (userRoles as any[])
+          .sort((a: any, b: any) => rolePriority.indexOf(a.role) - rolePriority.indexOf(b.role))[0];
+
+        // If student was picked but user has company-linked roles, prefer them
+        if (primaryRole?.role === 'student') {
+          const trainer = (userRoles as any[]).find((r: any) => r.role === 'personal_trainer' && r.company_id);
+          const staff = (userRoles as any[]).find((r: any) => r.role === 'staff_member' && r.company_id);
+          const owner = (userRoles as any[]).find((r: any) => r.role === 'box_owner' && r.company_id);
+          primaryRole = trainer || staff || owner || primaryRole;
+        }
       }
 
       const company = primaryRole?.companies;
@@ -243,7 +276,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         boxName: company?.name,
         isApproved: profile.is_approved,
         permissions: customPermissions || getDefaultPermissions(mapRole(primaryRole.role)),
-        avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`
+        avatar: profile.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${hashEmail(profile.email)}`,
+        availableProfiles
       };
 
       if (import.meta.env.DEV) {
@@ -367,9 +401,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const switchProfile = (profile: UserProfile) => {
+    if (session?.user) {
+      localStorage.setItem(`profile_${session.user.id}`, JSON.stringify(profile));
+      fetchUserProfile(session.user);
+      toast.success('Perfil alterado com sucesso!');
+      
+      // Redirect based on profile
+      setTimeout(() => {
+        switch (profile.role) {
+          case 'cagio_admin':
+            window.location.href = '/admin/dashboard';
+            break;
+          case 'box_admin':
+            window.location.href = `/${profile.companySlug || profile.companyId}/dashboard`;
+            break;
+          case 'trainer':
+            window.location.href = '/trainer/dashboard';
+            break;
+          case 'student':
+            window.location.href = '/student/dashboard';
+            break;
+        }
+      }, 500);
+    }
+  };
+
   const logout = async () => {
     try {
       setIsLoading(true);
+      
+      // Clear profile preference
+      if (session?.user) {
+        localStorage.removeItem(`profile_${session.user.id}`);
+      }
       
       // Clear state immediately for better UX
       setUser(null);
@@ -443,6 +508,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login, 
       register, 
       logout, 
+      switchProfile,
       isLoading, 
       error, 
       clearError 
