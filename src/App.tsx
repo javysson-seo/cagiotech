@@ -165,7 +165,7 @@ function App() {
 
                   {/* Company-specific Routes */}
                   <Route path="/:companyId" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <SubscriptionGuard>
                           <BoxDashboard />
@@ -174,7 +174,7 @@ function App() {
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/dashboard" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <SubscriptionGuard>
                           <BoxDashboard />
@@ -183,105 +183,105 @@ function App() {
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/athletes" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <AthleteManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/hr" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <HumanResources />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/trainers" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <TrainerManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/classes" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <ClassManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/workouts" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxWorkouts />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/crm" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCRM />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/communication" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCommunication />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/financial" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <Financial />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/subscriptions" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <SubscriptionsManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/equipment" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxEquipment />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/store" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <Store />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/events" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <Events />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/settings" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <BoxSettings />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/reports" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <BoxReports />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/:companyId/subscription" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <Subscription />
                       </CompanyProvider>
@@ -290,91 +290,91 @@ function App() {
 
                   {/* Box Routes (without company slug for direct access) */}
                   <Route path="/box" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxDashboard />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/dashboard" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxDashboard />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/athletes" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <AthleteManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/hr" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <HumanResources />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/trainers" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <TrainerManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/classes" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <ClassManagement />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/workouts" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxWorkouts />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/settings" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <BoxSettings />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/reports" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <BoxReports />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/subscription" element={
-                    <ProtectedRoute allowedRoles={["box_admin"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin"]}>
                       <CompanyProvider>
                         <Subscription />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/crm" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCRM />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/communication" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxCommunication />
                       </CompanyProvider>
                     </ProtectedRoute>
                   } />
                   <Route path="/box/equipment" element={
-                    <ProtectedRoute allowedRoles={["box_admin", "trainer"]}>
+                    <ProtectedRoute allowedRoles={["box_owner", "box_admin", "trainer"]}>
                       <CompanyProvider>
                         <BoxEquipment />
                       </CompanyProvider>
