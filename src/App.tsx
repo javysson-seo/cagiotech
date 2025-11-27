@@ -11,7 +11,6 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
 import { FirstLoginGuard } from "@/components/auth/FirstLoginGuard";
-import { AutoRedirect } from "@/components/AutoRedirect";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useLocation } from "react-router-dom";
@@ -30,6 +29,7 @@ import { PasswordRecovery } from "./pages/auth/PasswordRecovery";
 import { PublicAthleteRegister } from "./pages/auth/PublicAthleteRegister";
 import { BoxRegisterWithPlan } from "./pages/auth/BoxRegisterWithPlan";
 import { SetupTestUsers } from "./pages/SetupTestUsers";
+import { DebugAuth } from "./pages/DebugAuth";
 import NotFound from "./pages/NotFound";
 
 // Admin Pages
@@ -93,7 +93,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
   // Don't show sidebar on public routes
   const publicRoutes = ['/', '/auth/login', '/login', '/auth/box-register', '/register-with-plan', 
                         '/auth/student-register', '/auth/email-verification', '/auth/verify-email', 
-                        '/auth/password-recovery', '/old-landing', '/admin/setup', '/setup-test-users'];
+                        '/auth/password-recovery', '/old-landing', '/admin/setup', '/setup-test-users', '/debug-auth'];
   const isPublicRoute = publicRoutes.some(route => location.pathname === route) || 
                         location.pathname.startsWith('/register/');
 
@@ -134,7 +134,7 @@ function App() {
                     <AppLayout>
                       <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<AutoRedirect><Landing /></AutoRedirect>} />
+                    <Route path="/" element={<Landing />} />
                     <Route path="/old-landing" element={<Landing />} />
                     <Route path="/auth/login" element={<UnifiedLogin />} />
                     <Route path="/login" element={<UnifiedLogin />} />
@@ -148,6 +148,7 @@ function App() {
                     
                     {/* Test Users Setup */}
                     <Route path="/setup-test-users" element={<SetupTestUsers />} />
+                    <Route path="/debug-auth" element={<DebugAuth />} />
                     
                     {/* Admin Setup - Configuração inicial de admin */}
                     <Route path="/admin/setup" element={<AdminSetup />} />

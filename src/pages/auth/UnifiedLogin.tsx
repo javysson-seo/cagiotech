@@ -33,12 +33,15 @@ export const UnifiedLogin: React.FC = () => {
   });
 
   useEffect(() => {
-    // Check if already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
+    // Don't redirect if already on login page
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && window.location.pathname !== '/auth/login' && window.location.pathname !== '/login') {
         handleRedirect(session.user.id);
       }
-    });
+    };
+    
+    checkAuth();
   }, []);
 
   const handleProfileSelection = (profile: UserProfile) => {

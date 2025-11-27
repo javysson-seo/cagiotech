@@ -218,6 +218,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
+      // Map database role to UserRole type
+      const mapRole = (dbRole: string): UserRole => {
+        const roleMap: Record<string, UserRole> = {
+          'cagio_admin': 'cagio_admin',
+          'box_owner': 'box_admin',
+          'box_admin': 'box_admin',
+          'personal_trainer': 'trainer',
+          'trainer': 'trainer',
+          'student': 'student',
+          'staff_member': 'box_admin', // Map staff_member to box_admin role
+        };
+        return roleMap[dbRole] || 'student';
+      };
+
       // Build available profiles list
       const availableProfiles: UserProfile[] = userRoles.map((r: any) => ({
         type: r.role,
@@ -254,20 +268,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const company = primaryRole?.companies;
-
-      // Map database role to UserRole type
-      const mapRole = (dbRole: string): UserRole => {
-        const roleMap: Record<string, UserRole> = {
-          'cagio_admin': 'cagio_admin',
-          'box_owner': 'box_admin',
-          'box_admin': 'box_admin',
-          'personal_trainer': 'trainer',
-          'trainer': 'trainer',
-          'student': 'student',
-          'staff_member': 'box_admin', // Map staff_member to box_admin role
-        };
-        return roleMap[dbRole] || 'student';
-      };
 
       // Determine permissions based on role
       let customPermissions: string[] | null = null;
