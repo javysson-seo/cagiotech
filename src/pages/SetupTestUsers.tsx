@@ -16,19 +16,29 @@ export const SetupTestUsers: React.FC = () => {
     setSuccess(false);
 
     try {
-      const { data, error: functionError } = await supabase.functions.invoke('setup-test-users');
+      console.log('🚀 Invoking setup-test-users function...');
+      
+      const { data, error: functionError } = await supabase.functions.invoke('setup-test-users', {
+        body: {}
+      });
+
+      console.log('📦 Function response:', data);
+      console.log('❌ Function error:', functionError);
 
       if (functionError) {
-        throw functionError;
+        console.error('Function invocation error:', functionError);
+        throw new Error(`Function error: ${functionError.message}`);
       }
 
-      if (data.success) {
+      if (data?.success) {
         setSuccess(true);
+        console.log('✅ Users created:', data.users);
       } else {
-        throw new Error(data.error || 'Unknown error');
+        throw new Error(data?.error || data?.details || 'Unknown error');
       }
     } catch (err: any) {
-      setError(err.message);
+      console.error('❌ Setup error:', err);
+      setError(`Erro: ${err.message}. Verifique os logs da função no Supabase.`);
     } finally {
       setLoading(false);
     }
