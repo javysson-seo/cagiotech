@@ -62,25 +62,66 @@ Deno.serve(async (req) => {
     const companyId = '00000000-0000-0000-0000-000000000001';
     const createdUsers = [];
 
-    // STEP 1: Clean up existing test data
+    // STEP 1: Clean up existing test data in correct order
     console.log('🧹 Cleaning up existing test data...');
     
-    // Delete athlete levels
-    await supabaseAdmin.from('athlete_levels').delete().eq('athlete_id', '00000000-0000-0000-0000-000000000003');
+    // Delete in correct order to avoid foreign key violations
     
-    // Delete trainers
-    await supabaseAdmin.from('trainers').delete().eq('id', '00000000-0000-0000-0000-000000000004');
+    // 1. Delete athlete_levels (references athletes)
+    const { error: levelsDeleteError } = await supabaseAdmin
+      .from('athlete_levels')
+      .delete()
+      .eq('athlete_id', '00000000-0000-0000-0000-000000000003');
+    if (levelsDeleteError) console.log('Note: No athlete_levels to delete');
     
-    // Delete athletes
-    await supabaseAdmin.from('athletes').delete().eq('id', '00000000-0000-0000-0000-000000000003');
+    // 2. Delete class_bookings (references athletes and classes)
+    const { error: bookingsDeleteError } = await supabaseAdmin
+      .from('class_bookings')
+      .delete()
+      .eq('company_id', companyId);
+    if (bookingsDeleteError) console.log('Note: No bookings to delete');
     
-    // Delete user roles
+    // 3. Delete athlete_subscriptions (references athletes)
+    const { error: subsDeleteError } = await supabaseAdmin
+      .from('athlete_subscriptions')
+      .delete()
+      .eq('company_id', companyId);
+    if (subsDeleteError) console.log('Note: No subscriptions to delete');
+    
+    // 4. Delete athletes
+    const { error: athletesDeleteError } = await supabaseAdmin
+      .from('athletes')
+      .delete()
+      .eq('id', '00000000-0000-0000-0000-000000000003');
+    if (athletesDeleteError) console.log('Note: No athletes to delete');
+    
+    // 5. Delete trainers
+    const { error: trainersDeleteError } = await supabaseAdmin
+      .from('trainers')
+      .delete()
+      .eq('id', '00000000-0000-0000-0000-000000000004');
+    if (trainersDeleteError) console.log('Note: No trainers to delete');
+    
+    // 6. Delete staff members
+    const { error: staffDeleteError } = await supabaseAdmin
+      .from('staff')
+      .delete()
+      .eq('company_id', companyId);
+    if (staffDeleteError) console.log('Note: No staff to delete');
+    
+    // 7. Delete user_roles
     for (const user of testUsers) {
       await supabaseAdmin.from('user_roles').delete().eq('user_id', user.id);
     }
     
-    // Delete company
-    await supabaseAdmin.from('companies').delete().eq('id', companyId);
+    // 8. Delete company (must be last)
+    const { error: companyDeleteError } = await supabaseAdmin
+      .from('companies')
+      .delete()
+      .eq('id', companyId);
+    if (companyDeleteError) {
+      console.log('Company delete error:', companyDeleteError);
+    }
     
     console.log('✅ Cleanup completed');
 
