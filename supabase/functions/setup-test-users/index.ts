@@ -62,11 +62,33 @@ Deno.serve(async (req) => {
     const companyId = '00000000-0000-0000-0000-000000000001';
     const createdUsers = [];
 
-    // Create auth users first
+    // STEP 1: Clean up existing test data
+    console.log('🧹 Cleaning up existing test data...');
+    
+    // Delete athlete levels
+    await supabaseAdmin.from('athlete_levels').delete().eq('athlete_id', '00000000-0000-0000-0000-000000000003');
+    
+    // Delete trainers
+    await supabaseAdmin.from('trainers').delete().eq('id', '00000000-0000-0000-0000-000000000004');
+    
+    // Delete athletes
+    await supabaseAdmin.from('athletes').delete().eq('id', '00000000-0000-0000-0000-000000000003');
+    
+    // Delete user roles
+    for (const user of testUsers) {
+      await supabaseAdmin.from('user_roles').delete().eq('user_id', user.id);
+    }
+    
+    // Delete company
+    await supabaseAdmin.from('companies').delete().eq('id', companyId);
+    
+    console.log('✅ Cleanup completed');
+
+    // STEP 2: Delete and recreate auth users
     console.log('📝 Creating auth users...');
     for (const user of testUsers) {
       try {
-        // Try to delete existing user first
+        // Try to delete existing user
         try {
           await supabaseAdmin.auth.admin.deleteUser(user.id);
           console.log(`🗑️  Deleted existing user: ${user.email}`);
@@ -115,11 +137,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create company
+    // STEP 3: Create company
     console.log('🏢 Creating test company...');
     const { error: companyError } = await supabaseAdmin
       .from('companies')
-      .upsert({
+      .insert({
         id: companyId,
         name: 'Cagio Tech Test Company',
         slug: 'cagio-tech-test',
@@ -138,17 +160,15 @@ Deno.serve(async (req) => {
     }
     console.log('✅ Company created');
 
-    // Create user roles
+    // STEP 4: Create user roles
     console.log('👤 Creating user roles...');
     for (const user of testUsers) {
       const { error: roleError } = await supabaseAdmin
         .from('user_roles')
-        .upsert({
+        .insert({
           user_id: user.id,
           role: user.appRole,
           company_id: user.appRole === 'cagio_admin' ? null : companyId
-        }, {
-          onConflict: 'user_id,role'
         });
 
       if (roleError) {
@@ -158,11 +178,11 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Create athlete for student
+    // STEP 5: Create athlete for student
     console.log('🏃 Creating athlete record...');
     const { error: athleteError } = await supabaseAdmin
       .from('athletes')
-      .upsert({
+      .insert({
         id: '00000000-0000-0000-0000-000000000003',
         company_id: companyId,
         user_id: '00000000-0000-0000-0000-000000000003',
@@ -181,11 +201,11 @@ Deno.serve(async (req) => {
       console.log('✅ Athlete created');
     }
 
-    // Create trainer for personal
+    // STEP 6: Create trainer for personal
     console.log('💪 Creating trainer record...');
     const { error: trainerError } = await supabaseAdmin
       .from('trainers')
-      .upsert({
+      .insert({
         id: '00000000-0000-0000-0000-000000000004',
         company_id: companyId,
         user_id: '00000000-0000-0000-0000-000000000004',
@@ -202,11 +222,11 @@ Deno.serve(async (req) => {
       console.log('✅ Trainer created');
     }
 
-    // Create athlete levels
+    // STEP 7: Create athlete levels
     console.log('📊 Creating athlete levels...');
     const { error: levelsError } = await supabaseAdmin
       .from('athlete_levels')
-      .upsert({
+      .insert({
         athlete_id: '00000000-0000-0000-0000-000000000003',
         company_id: companyId,
         current_level: 'Bronze',
