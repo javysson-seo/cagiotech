@@ -114,14 +114,21 @@ Deno.serve(async (req) => {
       await supabaseAdmin.from('user_roles').delete().eq('user_id', user.id);
     }
     
-    // 8. Delete company (must be last)
-    const { error: companyDeleteError } = await supabaseAdmin
-      .from('companies')
-      .delete()
-      .eq('id', companyId);
-    if (companyDeleteError) {
-      console.log('Company delete error:', companyDeleteError);
+    // 8. Delete ALL companies owned by test users (must be last)
+    for (const user of testUsers) {
+      if (user.role === 'box_owner') {
+        const { error: companiesDeleteError } = await supabaseAdmin
+          .from('companies')
+          .delete()
+          .eq('owner_id', user.id);
+        if (companiesDeleteError) {
+          console.log(`Error deleting companies for ${user.email}:`, companiesDeleteError);
+        }
+      }
     }
+    
+    // Also delete the specific test company by ID
+    await supabaseAdmin.from('companies').delete().eq('id', companyId);
     
     console.log('✅ Cleanup completed');
 
