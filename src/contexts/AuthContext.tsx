@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as SupabaseUser, Session } from '@supabase/supabase-js';
 
-export type UserRole = 'cagio_admin' | 'box_admin' | 'trainer' | 'student';
+export type UserRole = 'cagio_admin' | 'box_owner' | 'box_admin' | 'trainer' | 'student';
 
 export interface UserProfile {
   type: string;
