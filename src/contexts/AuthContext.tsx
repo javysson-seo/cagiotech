@@ -222,7 +222,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const mapRole = (dbRole: string): UserRole => {
         const roleMap: Record<string, UserRole> = {
           'cagio_admin': 'cagio_admin',
-          'box_owner': 'box_admin',
+          'box_owner': 'box_owner', // Keep box_owner as is
           'box_admin': 'box_admin',
           'personal_trainer': 'trainer',
           'trainer': 'trainer',
