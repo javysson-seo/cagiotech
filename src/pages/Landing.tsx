@@ -19,16 +19,19 @@ import {
   ChevronDown,
   Play,
   Package,
-  X as XIcon
+  X as XIcon,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { Logo } from '@/components/ui/logo';
 import { ViewPlansModal } from '@/components/subscriptions/ViewPlansModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Landing = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [viewPlansOpen, setViewPlansOpen] = useState(false);
@@ -218,12 +221,21 @@ export const Landing = () => {
             <a href="#faq" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               FAQ
             </a>
-            <Button variant="outline" onClick={() => navigate('/login')}>
-              Entrar
-            </Button>
-            <Button onClick={() => navigate('/box-register')}>
-              Começar Grátis
-            </Button>
+            {user ? (
+              <Button variant="destructive" onClick={logout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sair
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" onClick={() => navigate('/login')}>
+                  Entrar
+                </Button>
+                <Button onClick={() => navigate('/box-register')}>
+                  Começar Grátis
+                </Button>
+              </>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -251,12 +263,21 @@ export const Landing = () => {
               <a href="#faq" className="text-sm font-medium" onClick={() => setIsMenuOpen(false)}>
                 FAQ
               </a>
-              <Button variant="outline" className="w-full" onClick={() => navigate('/login')}>
-                Entrar
-              </Button>
-              <Button className="w-full" onClick={() => navigate('/box-register')}>
-                Começar Grátis
-              </Button>
+              {user ? (
+                <Button variant="destructive" className="w-full" onClick={logout}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sair
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" className="w-full" onClick={() => navigate('/login')}>
+                    Entrar
+                  </Button>
+                  <Button className="w-full" onClick={() => navigate('/box-register')}>
+                    Começar Grátis
+                  </Button>
+                </>
+              )}
             </nav>
           </div>
         )}
