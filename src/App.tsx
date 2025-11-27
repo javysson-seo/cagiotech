@@ -11,6 +11,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { MobileAdminRedirect } from "@/components/MobileAdminRedirect";
 import { RoleBasedRedirect } from "./components/RoleBasedRedirect";
 import { FirstLoginGuard } from "@/components/auth/FirstLoginGuard";
+import { AutoRedirect } from "@/components/AutoRedirect";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { useLocation } from "react-router-dom";
@@ -133,7 +134,7 @@ function App() {
                     <AppLayout>
                       <Routes>
                     {/* Public Routes */}
-                    <Route path="/" element={<Landing />} />
+                    <Route path="/" element={<AutoRedirect><Landing /></AutoRedirect>} />
                     <Route path="/old-landing" element={<Landing />} />
                     <Route path="/auth/login" element={<UnifiedLogin />} />
                     <Route path="/login" element={<UnifiedLogin />} />
