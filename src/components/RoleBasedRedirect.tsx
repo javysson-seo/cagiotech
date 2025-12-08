@@ -1,21 +1,31 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const RoleBasedRedirect = () => {
   const { user } = useAuth();
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     if (user) {
-      getRoleRedirectPath(user.role, user.id).then((path) => {
-        setRedirectPath(path);
-        if (window.location.pathname === '/auth/login' || window.location.pathname === '/') {
-          window.location.href = path;
+      // Extract the route suffix from the current path (e.g., /uuid/subscription -> /subscription)
+      const pathParts = location.pathname.split('/').filter(Boolean);
+      let targetRoute = '/dashboard';
+      
+      // If there's a second part after the UUID, use that as the target
+      if (pathParts.length > 1) {
+        const routeSuffix = pathParts.slice(1).join('/');
+        if (routeSuffix && routeSuffix !== 'dashboard') {
+          targetRoute = `/${routeSuffix}`;
         }
+      }
+
+      getRoleRedirectPath(user.role, user.id, targetRoute).then((path) => {
+        setRedirectPath(path);
       });
     }
-  }, [user]);
+  }, [user, location.pathname]);
 
   if (!user) {
     return <Navigate to="/auth/login" replace />;
@@ -28,7 +38,7 @@ export const RoleBasedRedirect = () => {
   return <Navigate to={redirectPath} replace />;
 };
 
-const getRoleRedirectPath = async (role: string, userId: string): Promise<string> => {
+const getRoleRedirectPath = async (role: string, userId: string, targetRoute: string): Promise<string> => {
   const { supabase } = await import('@/integrations/supabase/client');
   
   // Helper function to get user email
@@ -41,28 +51,11 @@ const getRoleRedirectPath = async (role: string, userId: string): Promise<string
     case 'cagio_admin':
       return '/admin/dashboard';
     case 'box_admin':
-    case 'box_owner': {
-      // Check if user is a staff member first
-      const { data: staffData } = await supabase
-        .from('staff')
-        .select('company_id, role_id')
-        .eq('user_id', userId)
-        .maybeSingle();
-
-      if (staffData?.company_id) {
-        // Staff member - redirect to company dashboard
-        return `/${staffData.company_id}`;
-      }
-
-      // Box owner - buscar a empresa do usuário
-      const { data: company } = await supabase
-        .from('companies')
-        .select('id')
-        .eq('owner_id', userId)
-        .single();
-      
-      return company ? `/${company.id}` : '/box/dashboard';
-    }
+    case 'box_owner':
+    case 'personal_trainer':
+    case 'staff_member':
+      // Redirect to clean URL based on the route they were trying to access
+      return targetRoute;
     case 'trainer':
       return '/trainer/dashboard';
     case 'student': {
@@ -85,6 +78,6 @@ const getRoleRedirectPath = async (role: string, userId: string): Promise<string
       return '/student/dashboard';
     }
     default:
-      return '/auth/login';
+      return targetRoute;
   }
 };

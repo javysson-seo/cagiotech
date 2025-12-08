@@ -147,6 +147,17 @@ function App() {
                     <Route path="/auth/password-recovery" element={<PasswordRecovery />} />
                     <Route path="/register/:companyId" element={<PublicAthleteRegister />} />
                     
+                    {/* Legacy routes with company ID - redirect to clean URLs */}
+                    <Route path="/:companyId/dashboard" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/subscription" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/athletes" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/hr" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/trainers" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/classes" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/settings" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/financial" element={<RoleBasedRedirect />} />
+                    <Route path="/:companyId/*" element={<RoleBasedRedirect />} />
+                    
                     {/* Test Users Setup */}
                     <Route path="/setup-test-users" element={<SetupTestUsers />} />
                     <Route path="/debug-auth" element={<DebugAuth />} />
