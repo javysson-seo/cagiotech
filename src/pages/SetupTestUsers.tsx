@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, Loader2, AlertCircle, Building2, GraduationCap, Dumbbell } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export const SetupTestUsers: React.FC = () => {
@@ -50,7 +50,7 @@ export const SetupTestUsers: React.FC = () => {
         <CardHeader>
           <CardTitle>Configurar Usuários de Teste</CardTitle>
           <CardDescription>
-            Crie automaticamente 4 usuários de teste para todas as áreas da aplicação
+            Crie automaticamente 3 usuários de teste para todas as áreas da aplicação
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -58,31 +58,37 @@ export const SetupTestUsers: React.FC = () => {
             <h3 className="font-semibold text-lg">Usuários que serão criados:</h3>
             
             <div className="space-y-2">
-              <div className="border rounded-lg p-3">
-                <div className="font-medium">Admin</div>
-                <div className="text-sm text-muted-foreground">Email: cagiotech@admin.com</div>
-                <div className="text-sm text-muted-foreground">Senha: Cagiotech123/</div>
+              <div className="border rounded-lg p-4 bg-primary/5">
+                <div className="flex items-center gap-3">
+                  <Building2 className="h-5 w-5 text-primary" />
+                  <div className="font-medium">Company Owner (Área da Empresa)</div>
+                </div>
+                <div className="mt-2 ml-8 space-y-1">
+                  <div className="text-sm text-muted-foreground">Email: <code className="bg-muted px-1 rounded">company@cagiotech.com</code></div>
+                  <div className="text-sm text-muted-foreground">Senha: <code className="bg-muted px-1 rounded">123456</code></div>
+                </div>
               </div>
 
-              <div className="border rounded-lg p-3">
-                <div className="font-medium">Company Owner (Box Owner)</div>
-                <div className="text-sm text-muted-foreground">Email: cagiotech@company.com</div>
-                <div className="text-sm text-muted-foreground">Senha: Cagiotech123/</div>
-                <div className="text-xs text-muted-foreground mt-1">Company: Cagio Tech Test Company</div>
+              <div className="border rounded-lg p-4 bg-blue-500/5">
+                <div className="flex items-center gap-3">
+                  <GraduationCap className="h-5 w-5 text-blue-500" />
+                  <div className="font-medium">Aluno (Área do Atleta)</div>
+                </div>
+                <div className="mt-2 ml-8 space-y-1">
+                  <div className="text-sm text-muted-foreground">Email: <code className="bg-muted px-1 rounded">aluno@cagiotech.com</code></div>
+                  <div className="text-sm text-muted-foreground">Senha: <code className="bg-muted px-1 rounded">123456</code></div>
+                </div>
               </div>
 
-              <div className="border rounded-lg p-3">
-                <div className="font-medium">Student (Athlete)</div>
-                <div className="text-sm text-muted-foreground">Email: cagiotech@student.com</div>
-                <div className="text-sm text-muted-foreground">Senha: Cagiotech123/</div>
-                <div className="text-xs text-muted-foreground mt-1">Vinculado à: Cagio Tech Test Company</div>
-              </div>
-
-              <div className="border rounded-lg p-3">
-                <div className="font-medium">Personal Trainer</div>
-                <div className="text-sm text-muted-foreground">Email: cagiotech@personal.com</div>
-                <div className="text-sm text-muted-foreground">Senha: Cagiotech123/</div>
-                <div className="text-xs text-muted-foreground mt-1">Vinculado à: Cagio Tech Test Company</div>
+              <div className="border rounded-lg p-4 bg-orange-500/5">
+                <div className="flex items-center gap-3">
+                  <Dumbbell className="h-5 w-5 text-orange-500" />
+                  <div className="font-medium">Trainer (Área do Treinador)</div>
+                </div>
+                <div className="mt-2 ml-8 space-y-1">
+                  <div className="text-sm text-muted-foreground">Email: <code className="bg-muted px-1 rounded">staff@cagiotech.com</code></div>
+                  <div className="text-sm text-muted-foreground">Senha: <code className="bg-muted px-1 rounded">123456</code></div>
+                </div>
               </div>
             </div>
           </div>

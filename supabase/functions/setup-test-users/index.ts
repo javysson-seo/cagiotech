@@ -26,109 +26,67 @@ Deno.serve(async (req) => {
 
     const testUsers = [
       {
-        id: '00000000-0000-0000-0000-000000000001',
-        email: 'cagiotech@admin.com',
-        password: 'Cagiotech123/',
-        name: 'Cagio Admin',
-        role: 'cagio_admin',
-        appRole: 'cagio_admin' as const
-      },
-      {
-        id: '00000000-0000-0000-0000-000000000002',
-        email: 'cagiotech@company.com',
-        password: 'Cagiotech123/',
-        name: 'Cagio Company Owner',
+        id: '00000000-0000-0000-0000-000000000010',
+        email: 'company@cagiotech.com',
+        password: '123456',
+        name: 'Company Owner',
         role: 'box_owner',
         appRole: 'box_owner' as const
       },
       {
-        id: '00000000-0000-0000-0000-000000000003',
-        email: 'cagiotech@student.com',
-        password: 'Cagiotech123/',
-        name: 'Cagio Student Test',
+        id: '00000000-0000-0000-0000-000000000011',
+        email: 'aluno@cagiotech.com',
+        password: '123456',
+        name: 'Aluno Teste',
         role: 'student',
         appRole: 'student' as const
       },
       {
-        id: '00000000-0000-0000-0000-000000000004',
-        email: 'cagiotech@personal.com',
-        password: 'Cagiotech123/',
-        name: 'Cagio Personal Trainer',
+        id: '00000000-0000-0000-0000-000000000012',
+        email: 'staff@cagiotech.com',
+        password: '123456',
+        name: 'Trainer Teste',
         role: 'trainer',
         appRole: 'personal_trainer' as const
       }
     ];
 
-    const companyId = '00000000-0000-0000-0000-000000000001';
+    const companyId = '00000000-0000-0000-0000-000000000010';
     const createdUsers = [];
 
     // STEP 1: Clean up existing test data in correct order
     console.log('🧹 Cleaning up existing test data...');
     
-    // Delete in correct order to avoid foreign key violations
-    
-    // 1. Delete athlete_levels (references athletes)
-    const { error: levelsDeleteError } = await supabaseAdmin
-      .from('athlete_levels')
-      .delete()
-      .eq('athlete_id', '00000000-0000-0000-0000-000000000003');
-    if (levelsDeleteError) console.log('Note: No athlete_levels to delete');
-    
-    // 2. Delete class_bookings (references athletes and classes)
-    const { error: bookingsDeleteError } = await supabaseAdmin
-      .from('class_bookings')
-      .delete()
-      .eq('company_id', companyId);
-    if (bookingsDeleteError) console.log('Note: No bookings to delete');
-    
-    // 3. Delete athlete_subscriptions (references athletes)
-    const { error: subsDeleteError } = await supabaseAdmin
-      .from('athlete_subscriptions')
-      .delete()
-      .eq('company_id', companyId);
-    if (subsDeleteError) console.log('Note: No subscriptions to delete');
-    
-    // 4. Delete athletes
-    const { error: athletesDeleteError } = await supabaseAdmin
-      .from('athletes')
-      .delete()
-      .eq('id', '00000000-0000-0000-0000-000000000003');
-    if (athletesDeleteError) console.log('Note: No athletes to delete');
-    
-    // 5. Delete trainers
-    const { error: trainersDeleteError } = await supabaseAdmin
-      .from('trainers')
-      .delete()
-      .eq('id', '00000000-0000-0000-0000-000000000004');
-    if (trainersDeleteError) console.log('Note: No trainers to delete');
-    
-    // 6. Delete staff members
-    const { error: staffDeleteError } = await supabaseAdmin
-      .from('staff')
-      .delete()
-      .eq('company_id', companyId);
-    if (staffDeleteError) console.log('Note: No staff to delete');
-    
-    // 7. Delete user_roles
+    // Delete user_roles first
     for (const user of testUsers) {
       await supabaseAdmin.from('user_roles').delete().eq('user_id', user.id);
     }
     
-    // 8. Delete ALL companies owned by test users (must be last)
-    for (const user of testUsers) {
-      if (user.role === 'box_owner') {
-        const { error: companiesDeleteError } = await supabaseAdmin
-          .from('companies')
-          .delete()
-          .eq('owner_id', user.id);
-        if (companiesDeleteError) {
-          console.log(`Error deleting companies for ${user.email}:`, companiesDeleteError);
-        }
-      }
-    }
+    // Delete athlete_levels (references athletes)
+    await supabaseAdmin.from('athlete_levels').delete().eq('company_id', companyId);
     
-    // Also delete the specific test company by ID
+    // Delete class_bookings (references athletes and classes)
+    await supabaseAdmin.from('class_bookings').delete().eq('company_id', companyId);
+    
+    // Delete athlete_subscriptions (references athletes)
+    await supabaseAdmin.from('athlete_subscriptions').delete().eq('company_id', companyId);
+    
+    // Delete athletes
+    await supabaseAdmin.from('athletes').delete().eq('company_id', companyId);
+    
+    // Delete trainers
+    await supabaseAdmin.from('trainers').delete().eq('company_id', companyId);
+    
+    // Delete staff members
+    await supabaseAdmin.from('staff').delete().eq('company_id', companyId);
+    
+    // Delete company
     await supabaseAdmin.from('companies').delete().eq('id', companyId);
+    
+    // Delete profiles
+    for (const user of testUsers) {
+      await supabaseAdmin.from('profiles').delete().eq('id', user.id);
+    }
     
     console.log('✅ Cleanup completed');
 
@@ -162,7 +120,7 @@ Deno.serve(async (req) => {
         }
 
         console.log(`✅ Created auth user: ${user.email}`);
-        createdUsers.push({ email: user.email, id: authData.user.id });
+        createdUsers.push({ email: user.email, id: authData.user.id, password: user.password });
 
         // Create profile
         const { error: profileError } = await supabaseAdmin
@@ -191,10 +149,10 @@ Deno.serve(async (req) => {
       .from('companies')
       .insert({
         id: companyId,
-        name: 'Cagio Tech Test Company',
-        slug: 'cagio-tech-test',
-        owner_id: '00000000-0000-0000-0000-000000000002',
-        email: 'cagiotech@company.com',
+        name: 'CagioTech Demo Company',
+        slug: 'cagiotech-demo',
+        owner_id: '00000000-0000-0000-0000-000000000010',
+        email: 'company@cagiotech.com',
         phone: '+351912345678',
         is_approved: true,
         approved_at: new Date().toISOString(),
@@ -216,7 +174,7 @@ Deno.serve(async (req) => {
         .insert({
           user_id: user.id,
           role: user.appRole,
-          company_id: user.appRole === 'cagio_admin' ? null : companyId
+          company_id: companyId // All users belong to this company
         });
 
       if (roleError) {
@@ -231,16 +189,16 @@ Deno.serve(async (req) => {
     const { error: athleteError } = await supabaseAdmin
       .from('athletes')
       .insert({
-        id: '00000000-0000-0000-0000-000000000003',
+        id: '00000000-0000-0000-0000-000000000011',
         company_id: companyId,
-        user_id: '00000000-0000-0000-0000-000000000003',
-        name: 'Cagio Student Test',
-        email: 'cagiotech@student.com',
+        user_id: '00000000-0000-0000-0000-000000000011',
+        name: 'Aluno Teste',
+        email: 'aluno@cagiotech.com',
         phone: '+351912345679',
         status: 'active',
         is_approved: true,
         approved_at: new Date().toISOString(),
-        approved_by: '00000000-0000-0000-0000-000000000002'
+        approved_by: '00000000-0000-0000-0000-000000000010'
       });
 
     if (athleteError) {
@@ -249,18 +207,18 @@ Deno.serve(async (req) => {
       console.log('✅ Athlete created');
     }
 
-    // STEP 6: Create trainer for personal
+    // STEP 6: Create trainer
     console.log('💪 Creating trainer record...');
     const { error: trainerError } = await supabaseAdmin
       .from('trainers')
       .insert({
-        id: '00000000-0000-0000-0000-000000000004',
+        id: '00000000-0000-0000-0000-000000000012',
         company_id: companyId,
-        user_id: '00000000-0000-0000-0000-000000000004',
-        name: 'Cagio Personal Trainer',
-        email: 'cagiotech@personal.com',
+        user_id: '00000000-0000-0000-0000-000000000012',
+        name: 'Trainer Teste',
+        email: 'staff@cagiotech.com',
         phone: '+351912345680',
-        specialization: 'CrossFit, Nutrição',
+        specialization: 'CrossFit, Functional',
         status: 'active'
       });
 
@@ -275,7 +233,7 @@ Deno.serve(async (req) => {
     const { error: levelsError } = await supabaseAdmin
       .from('athlete_levels')
       .insert({
-        athlete_id: '00000000-0000-0000-0000-000000000003',
+        athlete_id: '00000000-0000-0000-0000-000000000011',
         company_id: companyId,
         current_level: 'Bronze',
         total_points: 100,
@@ -298,7 +256,12 @@ Deno.serve(async (req) => {
         success: true, 
         message: 'Test users created successfully',
         companyId,
-        users: createdUsers
+        users: createdUsers.map(u => ({ email: u.email, password: u.password })),
+        credentials: {
+          company: { email: 'company@cagiotech.com', password: '123456', area: 'Company Dashboard' },
+          aluno: { email: 'aluno@cagiotech.com', password: '123456', area: 'Student Dashboard' },
+          staff: { email: 'staff@cagiotech.com', password: '123456', area: 'Trainer Dashboard' }
+        }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
