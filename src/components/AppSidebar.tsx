@@ -45,9 +45,6 @@ export function AppSidebar() {
   const currentPath = location.pathname;
   const isActive = (path: string) => currentPath === path || currentPath.startsWith(path);
 
-  // Get company path (always use ID, not slug)
-  const companyPath = currentCompany?.id || 'box';
-
   // Admin menu items
   const adminItems = [
     { title: 'Dashboard', url: '/admin/dashboard', icon: LayoutDashboard },
@@ -56,23 +53,23 @@ export function AppSidebar() {
     { title: 'Relatórios', url: '/admin/reports', icon: BarChart3 },
   ];
 
-  // Box/Company menu items
+  // Box/Company menu items - using clean URLs without company ID
   const boxItems = [
-    { title: 'Dashboard', url: `/${companyPath}/dashboard`, icon: LayoutDashboard },
-    { title: 'Atletas', url: `/${companyPath}/athletes`, icon: Users },
-    { title: 'Treinadores', url: `/${companyPath}/trainers`, icon: UserCog },
-    { title: 'Aulas', url: `/${companyPath}/classes`, icon: Calendar },
-    { title: 'Treinos', url: `/${companyPath}/workouts`, icon: Dumbbell },
-    { title: 'CRM', url: `/${companyPath}/crm`, icon: Target },
-    { title: 'Comunicação', url: `/${companyPath}/communication`, icon: MessageSquare },
-    { title: 'Financeiro', url: `/${companyPath}/financial`, icon: DollarSign },
-    { title: 'Assinaturas', url: `/${companyPath}/subscriptions`, icon: CreditCard },
-    { title: 'Equipamentos', url: `/${companyPath}/equipment`, icon: Package },
-    { title: 'Loja', url: `/${companyPath}/store`, icon: ShoppingBag },
-    { title: 'Eventos', url: `/${companyPath}/events`, icon: CalendarDays },
-    { title: 'RH', url: `/${companyPath}/hr`, icon: Users },
-    { title: 'Relatórios', url: `/${companyPath}/reports`, icon: BarChart3 },
-    { title: 'Configurações', url: `/${companyPath}/settings`, icon: Settings },
+    { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
+    { title: 'Atletas', url: '/athletes', icon: Users },
+    { title: 'Treinadores', url: '/trainers', icon: UserCog },
+    { title: 'Aulas', url: '/classes', icon: Calendar },
+    { title: 'Treinos', url: '/workouts', icon: Dumbbell },
+    { title: 'CRM', url: '/crm', icon: Target },
+    { title: 'Comunicação', url: '/communication', icon: MessageSquare },
+    { title: 'Financeiro', url: '/financial', icon: DollarSign },
+    { title: 'Assinaturas', url: '/subscriptions', icon: CreditCard },
+    { title: 'Equipamentos', url: '/equipment', icon: Package },
+    { title: 'Loja', url: '/store', icon: ShoppingBag },
+    { title: 'Eventos', url: '/events', icon: CalendarDays },
+    { title: 'RH', url: '/hr', icon: Users },
+    { title: 'Relatórios', url: '/reports', icon: BarChart3 },
+    { title: 'Configurações', url: '/settings', icon: Settings },
   ];
 
   // Trainer menu items
