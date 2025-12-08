@@ -55,10 +55,10 @@ export const CompanyProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [currentCompany, setCurrentCompany] = useState<Company | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-const { companyId } = useParams<{ companyId: string }>();
-const { user } = useAuth();
-const navigate = useNavigate();
-const location = useLocation();
+  const { companyId: urlCompanyId } = useParams<{ companyId: string }>();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const loadCompany = async () => {
@@ -73,33 +73,55 @@ const location = useLocation();
           return;
         }
 
-        // Get companyId from URL or user context
-        let targetCompanyId = companyId;
+        // Get companyId from URL or from user's role
+        let targetCompanyId = urlCompanyId;
 
-        // If no companyId in URL, get from user's boxId
+        // If no companyId in URL, get from user's role
         if (!targetCompanyId || targetCompanyId === ':companyId') {
-          // This is a placeholder in the route, need to correct the URL
+          // First check if user is a company owner
           const { data: userRole } = await supabase
             .from('user_roles')
-            .select(`
-              company_id,
-              companies (
-                id,
-                slug
-              )
-            `)
+            .select('company_id, role')
             .eq('user_id', authUser.id)
-            .eq('role', 'box_owner')
-            .single();
+            .in('role', ['box_owner', 'personal_trainer', 'staff_member'])
+            .maybeSingle();
 
           if (userRole?.company_id) {
-            // SEMPRE usar o ID da company na URL
-            navigate(`/${userRole.company_id}/dashboard`, { replace: true });
-            return;
+            targetCompanyId = userRole.company_id;
+          } else {
+            // Check if user is a staff member
+            const { data: staffData } = await supabase
+              .from('staff')
+              .select('company_id')
+              .eq('user_id', authUser.id)
+              .maybeSingle();
+
+            if (staffData?.company_id) {
+              targetCompanyId = staffData.company_id;
+            } else {
+              // Check if user is a trainer
+              const { data: trainerData } = await supabase
+                .from('trainers')
+                .select('company_id')
+                .eq('user_id', authUser.id)
+                .eq('status', 'active')
+                .maybeSingle();
+
+              if (trainerData?.company_id) {
+                targetCompanyId = trainerData.company_id;
+              }
+            }
           }
         }
 
-        // Fetch company data - support both ID and slug
+        if (!targetCompanyId) {
+          console.error('No company found for user');
+          setError('Nenhuma empresa encontrada');
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch company data
         const { data: company, error: companyError } = await supabase
           .from('companies')
           .select('*')
@@ -109,7 +131,7 @@ const location = useLocation();
         if (companyError || !company) {
           console.error('Company not found:', companyError);
           setError('Box não encontrado');
-          navigate('/auth/login');
+          setIsLoading(false);
           return;
         }
 
@@ -127,14 +149,13 @@ const location = useLocation();
       } catch (err) {
         console.error('Error loading company:', err);
         setError('Erro ao carregar empresa');
-        navigate('/auth/login');
       } finally {
         setIsLoading(false);
       }
     };
 
     loadCompany();
-  }, [companyId, user, user?.boxId, navigate, location.pathname]);
+  }, [urlCompanyId, user, navigate, location.pathname]);
 
   const checkUserAccess = async (companyId: string, userId: string): Promise<boolean> => {
     try {
