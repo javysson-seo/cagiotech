@@ -48,30 +48,36 @@ export const UnifiedLogin: React.FC = () => {
     // Save profile preference
     localStorage.setItem(`profile_${currentUserId}`, JSON.stringify(profile));
     
-    // Redirect based on profile
+    // Redirect based on profile using window.location for guaranteed navigation
+    let redirectUrl = '/';
+    let message = 'Bem-vindo!';
+    
     switch (profile.type) {
       case 'cagio_admin':
-        toast.success('Bem-vindo, Admin!');
-        navigate('/admin/dashboard');
+        message = 'Bem-vindo, Admin!';
+        redirectUrl = '/admin/dashboard';
         break;
       case 'box_owner':
-        // SEMPRE usar o ID da company, não o slug
-        toast.success(`Bem-vindo à ${profile.companyName}!`);
-        navigate(`/${profile.companyId}/dashboard`);
+        message = `Bem-vindo à ${profile.companyName}!`;
+        redirectUrl = `/${profile.companyId}/dashboard`;
         break;
       case 'personal_trainer':
-        toast.success('Bem-vindo, Treinador!');
-        navigate('/trainer/dashboard');
+        message = 'Bem-vindo, Treinador!';
+        redirectUrl = '/trainer/dashboard';
         break;
       case 'staff_member':
-        toast.success('Bem-vindo!');
-        navigate('/box/dashboard');
+        message = 'Bem-vindo!';
+        redirectUrl = '/box/dashboard';
         break;
       case 'student':
-        toast.success('Bem-vindo, Atleta!');
-        navigate('/student/dashboard');
+        message = 'Bem-vindo, Atleta!';
+        redirectUrl = '/student/dashboard';
         break;
     }
+    
+    toast.success(message);
+    console.log('🔀 Redirecting to:', redirectUrl);
+    window.location.href = redirectUrl;
   };
 
   const handleRedirect = async (userId: string) => {
@@ -130,41 +136,50 @@ export const UnifiedLogin: React.FC = () => {
 
       // Single profile - redirect directly
       const sortedRole = userRoles[0];
-      console.log('Redirecting with role:', sortedRole.role, 'company:', sortedRole.companies);
+      console.log('✅ Redirecting with role:', sortedRole.role, 'company_id:', sortedRole.company_id);
 
-      // Redirect based on role
+      let redirectUrl = '/';
+      let message = 'Bem-vindo!';
+
+      // Redirect based on role using window.location for guaranteed navigation
       switch (sortedRole.role) {
         case 'cagio_admin':
-          toast.success('Bem-vindo, Admin!');
-          navigate('/admin/dashboard');
+          message = 'Bem-vindo, Admin!';
+          redirectUrl = '/admin/dashboard';
           break;
         case 'box_owner':
-          if (sortedRole.company_id && sortedRole.companies) {
+          if (sortedRole.company_id) {
             const company = sortedRole.companies as any;
-            // SEMPRE usar o ID da company, não o slug
-            toast.success(`Bem-vindo à ${company.name}!`);
-            navigate(`/${sortedRole.company_id}/dashboard`);
+            message = `Bem-vindo à ${company?.name || 'sua empresa'}!`;
+            redirectUrl = `/${sortedRole.company_id}/dashboard`;
           } else {
-            toast.success('Bem-vindo!');
-            navigate('/box/dashboard');
+            redirectUrl = '/box/dashboard';
           }
           break;
         case 'personal_trainer':
-          toast.success('Bem-vindo, Treinador!');
-          navigate('/trainer/dashboard');
+          message = 'Bem-vindo, Treinador!';
+          redirectUrl = '/trainer/dashboard';
           break;
         case 'staff_member':
-          toast.success('Bem-vindo!');
-          navigate('/box/dashboard');
+          redirectUrl = '/box/dashboard';
           break;
         case 'student':
-          toast.success('Bem-vindo, Atleta!');
-          navigate('/student/dashboard');
+          message = 'Bem-vindo, Atleta!';
+          redirectUrl = '/student/dashboard';
           break;
         default:
           toast.error('Tipo de usuário não reconhecido');
           await supabase.auth.signOut();
+          return;
       }
+      
+      console.log('🔀 Final redirect URL:', redirectUrl);
+      toast.success(message);
+      
+      // Use window.location for guaranteed navigation after auth
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 100);
     } catch (error) {
       console.error('Error redirecting:', error);
       toast.error('Erro ao redirecionar. Tente novamente.');
