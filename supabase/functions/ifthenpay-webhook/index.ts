@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { sanitizeError } from "../_shared/error-sanitizer.ts";
 
 // Webhook is server-to-server, CORS not needed
 // Reject browser preflight requests
@@ -324,10 +325,11 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error in ifthenpay-webhook:", error);
+    const sanitized = sanitizeError(error, "Error in ifthenpay-webhook");
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : "Unknown error",
+        success: false,
+        error: sanitized.message,
       }),
       {
         status: 500,

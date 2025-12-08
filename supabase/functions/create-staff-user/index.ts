@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { createErrorResponse } from "../_shared/error-sanitizer.ts";
 
 const ALLOWED_ORIGINS = [
   "https://vwonynqoybfvaleyfmog.supabase.co",
@@ -149,16 +150,6 @@ serve(async (req) => {
       }
     );
   } catch (error) {
-    console.error("Error in create-staff-user:", error);
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: error instanceof Error ? error.message : "Unknown error"
-      }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return createErrorResponse(error, corsHeaders, "Error in create-staff-user");
   }
 });

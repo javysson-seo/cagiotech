@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { publicAthleteRegistrationSchema } from "../_shared/validation.ts";
 import { generateSecurePassword, sanitizeInput, checkRateLimit } from "../_shared/utils.ts";
 import { generatePasswordEmail } from "../_shared/email-templates.ts";
+import { createErrorResponse } from "../_shared/error-sanitizer.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -263,17 +264,7 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error: any) {
-    console.error('Error in public-athlete-register:', error);
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: error.message 
-      }),
-      { 
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
+  } catch (error: unknown) {
+    return createErrorResponse(error, corsHeaders, "Error in public-athlete-register");
   }
 });
