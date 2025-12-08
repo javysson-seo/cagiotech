@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
+import { generateSecureCode } from "../_shared/error-sanitizer.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseAdmin = createClient(
@@ -58,8 +59,8 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error deleting old codes:", deleteError);
     }
     
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate cryptographically secure 6-digit code
+    const code = generateSecureCode();
     
     // Store code in database with 15 minutes expiration
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
@@ -77,7 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Erro ao armazenar código de recuperação");
     }
 
-    console.log(`Generated password reset code for ${email}: ${code}`);
+    console.log(`Generated password reset code for ${email.substring(0, 3)}***`);
 
     const emailResponse = await resend.emails.send({
       from: "CagioTech <onboarding@resend.dev>",
