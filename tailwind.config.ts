@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 		fontFamily: {
-			sans: ['Switzer', 'system-ui', '-apple-system', 'sans-serif'],
-			grotesk: ['Switzer', 'system-ui', '-apple-system', 'sans-serif'],
+			sans: ['"Inter Tight"', 'system-ui', '-apple-system', 'sans-serif'],
+			'inter-tight': ['"Inter Tight"', 'system-ui', '-apple-system', 'sans-serif'],
 		},
 			colors: {
 				border: 'hsl(var(--border))',
