@@ -59,7 +59,7 @@ export const UnifiedLogin: React.FC = () => {
         break;
       case 'box_owner':
         message = `Bem-vindo à ${profile.companyName}!`;
-        redirectUrl = `/${profile.companyId}/dashboard`;
+        redirectUrl = '/dashboard';
         break;
       case 'personal_trainer':
         message = 'Bem-vindo, Treinador!';
@@ -67,7 +67,7 @@ export const UnifiedLogin: React.FC = () => {
         break;
       case 'staff_member':
         message = 'Bem-vindo!';
-        redirectUrl = '/box/dashboard';
+        redirectUrl = '/dashboard';
         break;
       case 'student':
         message = 'Bem-vindo, Atleta!';
@@ -148,20 +148,17 @@ export const UnifiedLogin: React.FC = () => {
           redirectUrl = '/admin/dashboard';
           break;
         case 'box_owner':
-          if (sortedRole.company_id) {
-            const company = sortedRole.companies as any;
-            message = `Bem-vindo à ${company?.name || 'sua empresa'}!`;
-            redirectUrl = `/${sortedRole.company_id}/dashboard`;
-          } else {
-            redirectUrl = '/box/dashboard';
-          }
+          const company = sortedRole.companies as any;
+          message = `Bem-vindo à ${company?.name || 'sua empresa'}!`;
+          redirectUrl = '/dashboard';
           break;
         case 'personal_trainer':
           message = 'Bem-vindo, Treinador!';
           redirectUrl = '/trainer/dashboard';
           break;
         case 'staff_member':
-          redirectUrl = '/box/dashboard';
+          message = 'Bem-vindo!';
+          redirectUrl = '/dashboard';
           break;
         case 'student':
           message = 'Bem-vindo, Atleta!';
