@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@4.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.55.0";
+import { generateSecureCode, sanitizeError } from "../_shared/error-sanitizer.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseAdmin = createClient(
@@ -43,8 +44,8 @@ const handler = async (req: Request): Promise<Response> => {
       console.error("Error deleting old codes:", deleteError);
     }
     
-    // Generate 6-digit code
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    // Generate secure 6-digit code using crypto
+    const code = generateSecureCode(6);
     
     // Store code in database with 15 minutes expiration
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
@@ -63,7 +64,8 @@ const handler = async (req: Request): Promise<Response> => {
       throw new Error("Erro ao armazenar código de verificação");
     }
 
-    console.log(`Generated verification code for ${email}: ${code}`);
+    // Log without exposing actual code
+    console.log(`Verification code generated for ${email}`);
 
     const emailResponse = await resend.emails.send({
       from: "CagioTech <onboarding@resend.dev>",
@@ -108,10 +110,10 @@ const handler = async (req: Request): Promise<Response> => {
         headers: { "Content-Type": "application/json", ...corsHeaders },
       }
     );
-  } catch (error: any) {
-    console.error("Error sending verification code:", error);
+  } catch (error: unknown) {
+    const sanitized = sanitizeError(error, "Error sending verification code");
     return new Response(
-      JSON.stringify({ error: error.message || "Erro ao enviar código" }),
+      JSON.stringify({ error: sanitized.message }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
